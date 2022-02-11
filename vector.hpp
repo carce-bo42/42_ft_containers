@@ -1,5 +1,6 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
+#pragma once
 
 #include <memory> // std::allocator, std::allocator_traits.
 #include <cstddef> // std::size_t, std::ptrdiff_t

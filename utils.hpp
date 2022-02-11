@@ -1,5 +1,7 @@
 #include <cstddef> // std::ptrdiff_t
 
+// important about typedefs : https://stackoverflow.com/questions/34975536/are-public-in-class-typedefs-necessary-in-c1y?rq=1
+
 namespace ft {
 
 	template < class Iter >
@@ -7,6 +9,7 @@ namespace ft {
 
 			using difference_type	Iter::difference_type;
 			using value_type		Iter::value_type;
+			// important about typedefs : https://stackoverflow.com/questions/34975536/are-public-in-class-typedefs-necessary-in-c1y?rq=1
 			using pointer			Iter::pointer;
 			using reference			Iter::reference;
 			using iterator_category	Iter::iterator_category;
