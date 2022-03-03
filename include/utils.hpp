@@ -14,8 +14,8 @@ namespace ft {
       using difference_type   = typename Iter::difference_type;
       using value_type        = typename Iter::value_type;
       using pointer           = typename Iter::pointer;
-      using reference			    = typename Iter::reference;
-      using iterator_category	= typename Iter::iterator_category;
+      using reference         = typename Iter::reference;
+      using iterator_category = typename Iter::iterator_category;
     };
 
   template < class T >
@@ -23,15 +23,15 @@ namespace ft {
 
       using difference_type   = std::ptrdiff_t;
       using value_type        = T;
-      using pointer			      = T*;
-      using reference			    = T&;
-      using iterator_category	= typename ft::random_access_iterator_tag;
+      using pointer           = T*;
+      using reference         = T&;
+      using iterator_category = typename ft::random_access_iterator_tag;
     };
 
   template < class T >
     struct iterator_traits< const T* > {
 
-    using difference_type	    = std::ptrdiff_t;
+    using difference_type     = std::ptrdiff_t;
     using value_type          = T;
     using pointer             = const T*;
     using reference           = const T&;
