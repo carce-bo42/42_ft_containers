@@ -18,23 +18,23 @@ namespace ft {
     };
 
   template < class T >
-    struct iterator_traits< T* > {
+    struct iterator_traits<T*> {
 
       using difference_type   = std::ptrdiff_t;
       using value_type        = T;
       using pointer           = T*;
       using reference         = T&;
-      using iterator_category = std::random_access_iterator_tag;
+      using iterator_category = ft::random_access_iterator_tag;
     };
 
-  template < class T >
+  template <class T>
     struct iterator_traits< const T* > {
 
       using difference_type     = std::ptrdiff_t;
       using value_type          = T;
       using pointer             = const T*;
       using reference           = const T&;
-      using iterator_category   = std::random_access_iterator_tag;
+      using iterator_category   = ft::random_access_iterator_tag;
     };
 
   /* ---------------------------------------------------------------*/

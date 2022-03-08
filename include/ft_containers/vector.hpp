@@ -28,7 +28,7 @@ namespace ft {
       using iterator                = ; // this will be MY own implementation of iterators.
       using const_iterator          = ;
       using reverse_iterator        = ;
-      using const_reverse_iterator  = ; 
+      using const_reverse_iterator  = ;
 
     /* Constructors before C++11 */
     vector ();
