@@ -2,6 +2,10 @@
 # define ITERATOR_TAGS_HPP
 # pragma once
 
+#define CONTAINERS_DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&) = delete; \
+  TypeName& operator=(const TypeName&) = delete
+
 namespace ft {
 
   /**
