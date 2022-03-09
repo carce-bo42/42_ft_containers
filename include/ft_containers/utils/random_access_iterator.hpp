@@ -147,7 +147,7 @@ namespace ft {
   bool operator<=(const random_access_iterator<U>& lhs,
                   const random_access_iterator<V>& rhs)
   {
-    return lhs.base() <= rhs.base;
+    return lhs.base() <= rhs.base();
   }
 
 } /* namespace ft */
