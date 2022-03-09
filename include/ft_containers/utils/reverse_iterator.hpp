@@ -8,6 +8,9 @@
 /* 
  * See
  * - https://en.cppreference.com/w/cpp/iterator/reverse_iterator
+ * 
+ * Cool explanation of reverse_iterator functionality:
+ * - https://stackoverflow.com/questions/16609041/c-stl-what-does-base-do
  */
 
 namespace ft {
@@ -16,13 +19,12 @@ namespace ft {
   class reverse_iterator {
 
     public :
-    
-      using iterator_type       = Iter;
-      using iterator_category   = typename ft::iterator_traits<Iter>::iterator_category;
-      using value_type          = typename ft::iterator_traits<Iter>::value_type;
-      using difference_type     = typename ft::iterator_traits<Iter>::difference_type;
-      using pointer             = typename ft::iterator_traits<Iter>::pointer;
-      using reference           = typename ft::iterator_traits<Iter>::reference;
+    using iterator_type     = Iter;
+    using iterator_category = typename ft::iterator_traits<Iter>::iterator_category;
+    using value_type        = typename ft::iterator_traits<Iter>::value_type;
+    using difference_type   = typename ft::iterator_traits<Iter>::difference_type;
+    using pointer           = typename ft::iterator_traits<Iter>::pointer;
+    using reference         = typename ft::iterator_traits<Iter>::reference;
     
     private :
 
