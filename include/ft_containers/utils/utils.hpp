@@ -1,8 +1,6 @@
 #ifndef CONTAINER_UTILS_HPP
 # define CONTAINER_UTILS_HPP
 
-#include <stdexcept>
-
 namespace ft {
 
   /* 

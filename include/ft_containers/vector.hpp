@@ -4,7 +4,6 @@
 
 #include <memory> /* std::allocator, std::allocator_traits. */
 #include <cstddef> /* std::size_t, std::ptrdiff_t */
-#include <vector>
 
 /*
  * INFO : REFS
