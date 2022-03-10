@@ -6,6 +6,8 @@
 namespace ft {
 
   /* 
+   * enable_if  
+   *
    * STL says :
    * Define a member typedef type only if a boolean constant is true.
    * 
@@ -31,7 +33,10 @@ namespace ft {
   struct enable_if<true, T>
   { typedef T type; };
 
+
   /*
+   * is_integral 
+   *
    * See:
    * https://en.cppreference.com/w/cpp/types/is_integral
    * 
