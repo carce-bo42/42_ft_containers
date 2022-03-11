@@ -1,5 +1,5 @@
-#ifndef ITERATOR_TRAITS_HPP
-# define ITERATOR_TRAITS_HPP
+#ifndef CONTAINERS_ITERATOR_TRAITS_HPP
+# define CONTAINERS_ITERATOR_TRAITS_HPP
 
 #include <cstddef> /* std::ptrdiff_t */
 
@@ -67,4 +67,4 @@ namespace ft {
   struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 }
 
-#endif /* ITERATOR_TRAITS_HPP */
+#endif /* CONTAINERS_ITERATOR_TRAITS_HPP */

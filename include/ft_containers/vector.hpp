@@ -1,5 +1,5 @@
-#ifndef VECTOR_42_HPP
-# define VECTOR_42_HPP
+#ifndef CONTAINERS_VECTOR_HPP
+# define CONTAINERS_VECTOR_HPP
 #pragma once
 
 #include <memory> /* std::allocator, std::allocator_traits. */
@@ -37,4 +37,4 @@ namespace ft {
   }; /* class vector */
 } /* namespace ft */
 
-#endif /* VECTOR_42_HPP */
+#endif /* CONTAINERS_VECTOR_HPP */
