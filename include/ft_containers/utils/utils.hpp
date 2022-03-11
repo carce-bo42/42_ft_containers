@@ -1,6 +1,8 @@
 #ifndef CONTAINER_UTILS_HPP
 # define CONTAINER_UTILS_HPP
 
+#include <iterator>
+
 namespace ft {
 
   /* 
@@ -86,6 +88,106 @@ namespace ft {
 
   template <>
   struct is_integral<unsigned long long> { bool value = true; };
+
+
+  /* lexicographical_compare
+   * https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare
+   *
+   * checks wether the first range [ first1, last1 ] is 
+   * lexicographically less than the second range [ first2, last2].
+   * 
+   * InputIt refers, quite cleverly, to Input Iterator.
+   * This means the class to be used has to at least
+   * have operators ->, *, !=,  ++, and the typedefs
+   * reference and value_type.
+   * Rules :
+   *  + Two ranges are compared element by element.
+   *  + The first mismatching element defines which range is
+   *    lexicographically less or greater than the other.
+   *  + If one range is a prefix of another, the shorter range
+   *    is lexicographically less than the other.
+   *  + If two ranges have equivalent elements and are of the same
+   *    length, then the ranges are lexicographically equal.
+   *  + An empty range is lexicographically less than any non-empty range.
+   *  + Two empty ranges are lexicographically equal.
+   *
+   */
+  template< class InputIt1, class InputIt2 >
+  bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
+                                InputIt2 first2, InputIt2 last2 )
+  {
+    while (first1 != last1) {
+      if (first2 == last2 || *first1 < *first2 ) {
+        break ;
+      } else if (*first1 > *first2) {
+        return true;
+      }
+      ++first1;
+      ++first2;
+    }
+    return (first1 == last1) && (first2 != last2);
+  }
+
+  /* Cpp reference says :
+   * comp	-	comparison function object (i.e. an object that
+   * satisfies the requirements of Compare) which returns
+   * ​true if the first argument is less than the second.
+   */
+  template< class InputIt1, class InputIt2, class Compare >
+  bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
+                                InputIt2 first2, InputIt2 last2,
+                                Compare comp )
+  {
+    while (first1 != last1) {
+      if (first2 == last2 || comp(*first1, *first2)) {
+        break ;
+      } else if (comp(*first2, *first1)) {
+        return true;
+      }
+      ++first1;
+      ++first2;
+    }
+    return (first1 == last1) && (first2 != last2);
+  }
+
+  /*
+   * equal
+   * 
+   * returns true if range [ first1, last1 ] is equal
+   * to [ first2, first2- first1 + last1 ]. This function
+   * is more interesting than it seems :
+   * 
+   *  f1         f2                          l1
+   *  | ---------|---------------------------| 
+   *  
+   *  d = f2 - f1           
+   *  <--------->
+   * 
+   * Then :
+   *            [ first1, last1 ]
+   * <--------------------------------------> 
+   * 
+   *                 [first2, first2 + last1 - first1 ]
+   *            <---------------------------><----d---->
+   * 
+   * So this function is, in a sense, trying to check wether
+   * these two segments of data are equivalent. There's also
+   * a very cool example of use to check wether a word is or 
+   * not a palyndrome.
+   */
+  template< class InputIt1, class InputIt2 >
+  bool equal( InputIt1 first1, InputIt1 last1,
+              InputIt2 first2 )
+  {
+    while (first1 != last1) {
+      if (*first1 != *first2) {
+        return false;
+      }
+      ++first1;
+      ++first2;
+    }
+    return true;
+  }
 
 } /* namespace ft */
 
