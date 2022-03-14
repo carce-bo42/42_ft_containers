@@ -187,6 +187,31 @@ namespace ft {
     return true;
   }
 
+  /* From
+   * https://stackoverflow.com/questions/13675203/implementation-safe-nullptr
+   */
+  const class nullptr_t {
+      public:
+
+          /* Return 0 for any class pointer */
+          template<typename T>
+          operator T*() const {
+              return 0;
+          }
+
+          /* Return 0 for any member pointer */
+          template<typename T, typename U>
+          operator T U::*() const {
+              return 0;
+          }
+
+      private:
+
+          /* Not allowed to get the address */
+          void operator&() const;
+
+  } nullptr_t = {};
+
 } /* namespace ft */
 
 #endif /* CONTAINERS_UTILS_HPP */
