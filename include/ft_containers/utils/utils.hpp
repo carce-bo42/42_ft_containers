@@ -1,6 +1,8 @@
 #ifndef CONTAINERS_UTILS_HPP
 # define CONTAINERS_UTILS_HPP
 
+#include "iterator_traits.hpp"
+
 namespace ft {
 
   /* 
@@ -211,6 +213,20 @@ namespace ft {
           void operator&() const;
 
   } nullptr_t = {};
+
+  /* distance implementation */
+  template<class It>
+  typename ft::iterator_traits<It>::difference_type
+      distance(It first, It last,
+                typename enable_if<is_integral<It>::value, It>::type = It)
+  {
+      typename ft::iterator_traits<It>::difference_type result = 0;
+      while (first != last) {
+          ++first;
+          ++result;
+      }
+      return result;
+  }
 
 } /* namespace ft */
 

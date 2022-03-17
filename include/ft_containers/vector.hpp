@@ -6,6 +6,7 @@
 #include <cstddef> /* std::size_t, std::ptrdiff_t */
 #include <vector>
 #include <limits>
+#include "limits.h"
 
 #include "ft_containers/utils/utils.hpp"
 
@@ -53,7 +54,33 @@ namespace ft {
       allocator_type  _alloc;   /* shortcut */
       pointer         _d_start; /* where the non-empty data begins */
       pointer         _d_end;   /* where the empty data begins */
-      size_type       _capacity;    /* allocated objects */
+      size_type       _capacity;  /* allocated objects */
+
+    /* 
+     * Function that returns the smallest size_type number higher than 
+     * new_capacity that is a power of two.
+     * 
+     * Check out: 
+     * https://stackoverflow.com/questions/364985/algorithm-for-finding-the-smallest-power-of-two-thats-greater-or-equal-to-a-giv
+     * 
+     * __builtin_clz Counts Leading Zero bits on a variable, its 
+     * a gcc builtin, check:
+     * https://stackoverflow.com/questions/9353973/implementation-of-builtin-clz 
+     * 
+     * this function is to never be called with new_capacity == 0.
+     * The -1 at the argument in __builtin_clz is to return new_capacity
+     * in case the number is already a power of 2.
+     */
+    size_type compute_new_capacity( size_type new_capacity ) {
+      /*using uint as size_type (terrorist or 32-bit user) */
+      if (sizeof(size_type) == 4) 
+        return 1 << ((sizeof(size_type)*CHAR_BIT)
+                        - __builtin_clz(new_capacity-1));
+      /* using ulong as size_type (functional member of society or 64-bit user) */
+      else
+        return 1UL << ((sizeof(size_type)*CHAR_BIT)
+                        - __builtin_clz(new_capacity-1));
+    }
 
     public:
 
@@ -68,25 +95,28 @@ namespace ft {
       _capacity(0)
     {}
     
-  	explicit vector (const allocator_type& alloc = allocator_type())
+    explicit vector ( const allocator_type& alloc = allocator_type() )
     :
       _alloc(alloc),
       _capacity(0)
     {
-      _d_start = _alloc.allocate(0);
+      _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
     }
     
     /* Constructs the container with count copies of elements
      * with value value.
      */
-    explicit vector(size_type count, const T& value = T(),
-                    const Allocator& alloc = Allocator())
+    explicit vector( size_type count, const T& value = T(),
+                    const Allocator& alloc = Allocator() )
     :
       _alloc(alloc),
-      _capacity(count)
     {
-      _d_start = _alloc.allocate(count);
+      if (count != 0)
+        _capacity = compute_new_capacity(count);
+      else
+        _capacity = 0;
+      _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
       while (count--) {
         _alloc.construct(_d_end, value);
@@ -112,14 +142,16 @@ namespace ft {
      * https://en.cppreference.com/w/cpp/memory/allocator/construct
      */
     template< class InputIt >
-    vector(InputIt first, InputIt last,
+    vector( InputIt first, InputIt last,
           const Allocator& alloc = Allocator(),
           typename enable_if<is_integral<InputIt>::value,
-                            InputIt>::type = InputIt)
+                            InputIt>::type = InputIt )
     :
       _alloc(alloc),
-      _capacity(std::distance(first, last))
+      _capacity(distance(first, last))
     {
+      if (_capacity != 0)
+        _capacity = compute_new_capacity(_capacity);
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
       while (first != last) {
@@ -177,6 +209,116 @@ namespace ft {
       }
     }
 
+    /* Replaces the contents of the container. 
+     * Replaces the contents with count copies of value value.
+     */
+    void assign( size_type count, const T& value ) {
+      clear();
+      if (count > _capacity) {
+        _alloc.deallocate(_d_start, _capacity);
+        _capacity = compute_new_capacity(count);
+        _alloc.allocate(_capacity);
+      }
+      while (count) {
+        _alloc.construct(_d_end, value);
+        ++_d_end;
+        --count;
+      }
+    }
+
+    /* Replaces the contents of the container. 
+     * Replaces the contents with copies of those in the range
+     * [first, last). The behavior is undefined if either
+     * argument is an iterator into *this.
+     * Once again this only makes sense if the iterator
+     * is of an integral type.
+     */
+    template< class InputIt >
+    void assign( InputIt first, InputIt last,
+                 typename enable_if<is_integral<InputIt>::value,
+                 InputIt>::type = InputIt )
+    {
+      clear();
+      if (distance(first, last) > _capacity) {
+        _alloc.deallocate(_d_start, _capacity);
+        _capacity = compute_new_capacity(count);
+        _alloc.allocate(_capacity);
+      }
+      while (first != last) {
+        _alloc.construct(*first);
+        ++first;
+        ++_d_end;
+      }
+    }
+
+    allocator_type get_allocator() const {
+      return _alloc;
+    }
+
+    /* ------------------------------------------
+     * Element access 
+     */
+
+    reference at( size_type pos ) {
+      return this[pos];
+    }
+
+    const_reference at( size_type pos ) const {
+      return this[pos];
+    }
+
+    reference operator[]( size_type pos ) {
+      if (pos >= size()) {
+        throw std::out_of_range;
+      }
+      return _d_start[pos];
+    }
+
+    const_reference operator[]( size_type pos ) const {
+      if (pos >= size()) {
+        throw std::out_of_range;
+      }
+      return _d_start[pos];
+    }
+
+    /* returns first element */
+    reference front() {
+      return _d_start[0];
+    }
+
+    const_reference front() const {
+      return _d_start[0];
+    }
+
+    /* returns last element */
+    reference back() {
+      return _d_start[_d_end - _d_start - 1];
+    }
+
+    const_reference back() const {
+      return _d_start[_d_end - _d_start - 1]
+    }
+
+    /* returns pointer to the underlying array serving as element
+     * storage.
+     */
+    pointer data() {
+      return _d_start;
+    }
+
+    const_pointer data() const {
+      return _d_start;
+    }
+
+    /* ------------------------------------------
+     * Iterators 
+     */
+
+    
+
+
+
+
 
 
 
@@ -191,7 +333,7 @@ namespace ft {
 
     /*
      * Returns the number of elements in the container,
-     * i.e. std::distance(begin(), end()).
+     * i.e. ft::distance(begin(), end()).
      */
     size_type size() const {
       return _d_end - _d_start;
