@@ -28,6 +28,25 @@
  * On why size_type and difference_type are always the same (I use this a lot) :
  * https://www.codeguru.com/cplusplus/about-size_t-and-ptrdiff_t/#:~:text=The%20size%20of%20size_t%20and,of%20pointers%20and%20pointer%20arithmetic.
  * 
+ * Explanation for the
+ *     typename enable_if<is_integral<T>::value, T>::type = T :
+ * This function is only to be used in case the type is integral.
+ * enable_if<cond, T> accepts a boolean that, in case it is true,
+ * gives a value of T to its inner variable type.
+ * It is essentially saying that "If this T is an integral
+ * type, enable_if should have an inside type of T". So
+ * forcing here that enable_if< ... >::type = T is like 
+ * saying "I only want this to be looked into in case the enable_if
+ * type is T", which only happens if indeed the T is
+ * an integral type.
+ * Edit : 
+ * So the syntax for C++98 is
+ *     typename enable_if<!is_integral<T>::value, T>::type* = 0,
+ * which is basically, taking into account the logic explained earlier,
+ * negating that a pointer to enable_if<...>::type does not exist.
+ * Which means if a pointer to enable_if<...>::type exists, is then
+ * not 0, so T is integral. 
+ * the pointer 
  */
 
 namespace ft {
@@ -51,10 +70,10 @@ namespace ft {
 
     private:
 
-      allocator_type  _alloc;   /* shortcut */
-      pointer         _d_start; /* where the non-empty data begins */
-      pointer         _d_end;   /* where the empty data begins */
-      size_type       _capacity;  /* allocated objects */
+      allocator_type  _alloc;   // shortcut
+      pointer         _d_start; // where the non-empty data begins
+      pointer         _d_end;   // where the empty data begins
+      size_type       _capacity;  // allocated objects
 
     /* 
      * Function that returns the smallest size_type number higher than 
@@ -71,7 +90,7 @@ namespace ft {
      * The -1 at the argument in __builtin_clz is to return new_capacity
      * in case the number is already a power of 2.
      */
-    size_type compute_new_capacity( size_type new_capacity ) {
+    static size_type compute_new_capacity( size_type new_capacity ) {
       /*using uint as size_type (terrorist or 32-bit user) */
       if (sizeof(size_type) == 4) 
         return 1 << ((sizeof(size_type)*CHAR_BIT)
@@ -110,7 +129,7 @@ namespace ft {
     explicit vector( size_type count, const T& value = T(),
                     const Allocator& alloc = Allocator() )
     :
-      _alloc(alloc),
+      _alloc(alloc)
     {
       if (count != 0)
         _capacity = compute_new_capacity(count);
@@ -127,16 +146,6 @@ namespace ft {
     /* Constructs the container with the contents of the
      * range [ first, last ).
      *
-     * Explanation for the last argument :
-     * This function is only to be used in case the type is integral.
-     * enable_if<cond, T> accepts a boolean that, in case it is true,
-     * gives a value of T to its inner variable type.
-     * It is essentially saying that "If this InputIt is an integral
-     * type, enable_if should have an inside type of InputIt". So
-     * forcing here that enable_if< ... >::type = InputIt is like 
-     * saying "I only want this to be looked into in case the enable_if
-     * type is InputIt", which only happens if indeed the InputIt is
-     * an integral type.
      * See:
      * https://en.cppreference.com/w/cpp/memory/allocator/allocate
      * https://en.cppreference.com/w/cpp/memory/allocator/construct
@@ -144,8 +153,8 @@ namespace ft {
     template< class InputIt >
     vector( InputIt first, InputIt last,
           const Allocator& alloc = Allocator(),
-          typename enable_if<is_integral<InputIt>::value,
-                            InputIt>::type = InputIt )
+          typename enable_if<!is_integral<InputIt>::value,
+                             InputIt>::type* = 0 )
     :
       _alloc(alloc),
       _capacity(distance(first, last))
@@ -235,8 +244,8 @@ namespace ft {
      */
     template< class InputIt >
     void assign( InputIt first, InputIt last,
-                 typename enable_if<is_integral<InputIt>::value,
-                 InputIt>::type = InputIt )
+                 typename enable_if<!is_integral<InputIt>::value,
+                                    InputIt>::type* = 0 )
     {
       clear();
       if (distance(first, last) > _capacity) {

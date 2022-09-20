@@ -218,7 +218,7 @@ namespace ft {
   template<class It>
   typename ft::iterator_traits<It>::difference_type
       distance(It first, It last,
-                typename enable_if<is_integral<It>::value, It>::type = It)
+                typename enable_if<!is_integral<It>::value, It>::type* = 0)
   {
       typename ft::iterator_traits<It>::difference_type result = 0;
       while (first != last) {
