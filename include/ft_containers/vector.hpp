@@ -92,13 +92,14 @@ namespace ft {
      */
     static size_type compute_new_capacity( size_type new_capacity ) {
       /*using uint as size_type (terrorist or 32-bit user) */
-      if (sizeof(size_type) == 4) 
+      if (sizeof(size_type) == 4) {
         return 1 << ((sizeof(size_type)*CHAR_BIT)
                         - __builtin_clz(new_capacity-1));
       /* using ulong as size_type (functional member of society or 64-bit user) */
-      else
+      } else {
         return 1UL << ((sizeof(size_type)*CHAR_BIT)
                         - __builtin_clz(new_capacity-1));
+      }
     }
 
     public:
@@ -131,10 +132,11 @@ namespace ft {
     :
       _alloc(alloc)
     {
-      if (count != 0)
+      if (count != 0) {
         _capacity = compute_new_capacity(count);
-      else
+      } else {
         _capacity = 0;
+      }
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
       while (count--) {
@@ -159,8 +161,9 @@ namespace ft {
       _alloc(alloc),
       _capacity(distance(first, last))
     {
-      if (_capacity != 0)
+      if (_capacity != 0) {
         _capacity = compute_new_capacity(_capacity);
+      }
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
       while (first != last) {
@@ -370,9 +373,29 @@ namespace ft {
      * reallocation) to a value that's greater or equal to new_cap.
      * If new_cap is greater than the current capacity(), new
      * storage is allocated, otherwise the function does nothing.
+     * See :
+     * https://en.cppreference.com/w/cpp/container/vector/reserve
      */
     void reserve( size_type new_cap ) {
-      ;
+      if (new_cap > max_size()) {
+        throw std::length_error;
+      }
+      if (new_cap <= _capacity) {
+        return ;
+      }
+      // save current content on aux
+      vector aux(*this);
+      // free then assign and allocate new capacity
+      clear();
+      _capacity = compute_new_capacity(new_cap);
+      _alloc.allocate(_capacity);
+      // copy contents back
+      size_type current = 0;
+      while (_d_end != _d_start + aux.size()) {
+        _alloc.construct(_d_end, aux[current]);
+        ++_d_end;
+        ++current;
+      }
     } 
 
 
