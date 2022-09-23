@@ -16,18 +16,21 @@
  * explicit keyword :
  * https://stackoverflow.com/questions/121162/what-does-the-explicit-keyword-mean
  * 
- * allocator : https://www.youtube.com/watch?v=HcESuwmlHEY
- *             https://www.youtube.com/watch?v=v-qePUHf8iU
- *             https://en.cppreference.com/w/cpp/memory/allocator
- *             https://stackoverflow.com/questions/59539057/c-does-it-lead-to-double-free-when-destroy-element-in-allocatorstring
- *             https://stackoverflow.com/questions/53610332/allocating-zero-objects-with-stdallocatorallocate0-in-c
+ * allocator : 
+ * https://www.youtube.com/watch?v=HcESuwmlHEY
+ * https://www.youtube.com/watch?v=v-qePUHf8iU
+ * https://en.cppreference.com/w/cpp/memory/allocator
+ * https://stackoverflow.com/questions/59539057
+ * https://stackoverflow.com/questions/53610332
  *                 
- * vector : https://en.cppreference.com/w/cpp/container/vector/vector
+ * vector :
+ * https://en.cppreference.com/w/cpp/container/vector/vector
  * 
- * extra : https://www.youtube.com/watch?v=LIb3L4vKZ7U
+ * extra :
+ * https://www.youtube.com/watch?v=LIb3L4vKZ7U
  * 
- * On why size_type and difference_type are always the same (I use this a lot) :
- * https://www.codeguru.com/cplusplus/about-size_t-and-ptrdiff_t/#:~:text=The%20size%20of%20size_t%20and,of%20pointers%20and%20pointer%20arithmetic.
+ * On why size_type and difference_type are always the same (I use this a lot):
+ * https://www.codeguru.com/cplusplus/about-size_t-and-ptrdiff_t/
  * 
  * Explanation for the
  *     typename enable_if<is_integral<T>::value, T>::type = T :
@@ -56,19 +59,19 @@ namespace ft {
   class vector {
 
     public:
-    typedef T                                                      value_type;
-    typedef Allocator                                              allocator_type;
-    typedef typename Allocator::pointer                            pointer;
-    typedef typename Allocator::const_pointer                      const_pointer;
-    typedef typename Allocator::reference                          reference;
-    typedef typename Allocator::const_reference                    const_reference;
-    typedef typename Allocator::size_type                          size_type;
-    typedef typename Allocator::difference_type                    difference_type;
+    typedef T                                             value_type;
+    typedef Allocator                                     allocator_type;
+    typedef typename Allocator::pointer                   pointer;
+    typedef typename Allocator::const_pointer             const_pointer;
+    typedef typename Allocator::reference                 reference;
+    typedef typename Allocator::const_reference           const_reference;
+    typedef typename Allocator::size_type                 size_type;
+    typedef typename Allocator::difference_type           difference_type;
     /*
-    typedef typename ft::vector_iterator<pointer>                  iterator;
-    typedef typename ft::vector_iterator<const_pointer>            const_iterator;
-    typedef typename ft::reverse_iterator<iterator>                reverse_iterator;
-    typedef typename ft::reverse_iterator<const_iterator>          const_reverse_iterator;
+    typedef typename ft::vector_iterator<pointer>         iterator;
+    typedef typename ft::vector_iterator<const_pointer>   const_iterator;
+    typedef typename ft::reverse_iterator<iterator>       reverse_iterator;
+    typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
     */
 
     private:
@@ -83,22 +86,22 @@ namespace ft {
      * new_capacity that is a power of two.
      * 
      * Check out: 
-     * https://stackoverflow.com/questions/364985/algorithm-for-finding-the-smallest-power-of-two-thats-greater-or-equal-to-a-giv
+     * https://stackoverflow.com/questions/364985
      * 
      * __builtin_clz Counts Leading Zero bits on a variable, its 
      * a gcc builtin, check:
-     * https://stackoverflow.com/questions/9353973/implementation-of-builtin-clz 
+     * https://stackoverflow.com/questions/9353973
      * 
      * this function is to never be called with new_capacity == 0.
      * The -1 at the argument in __builtin_clz is to return new_capacity
      * in case the number is already a power of 2.
      */
     static size_type compute_new_capacity( size_type new_capacity ) {
-      /*using uint as size_type (terrorist or 32-bit user) */
+      // using uint as size_type (32-bit)
       if (sizeof(size_type) == 4) {
         return 1 << ((sizeof(size_type)*CHAR_BIT)
                         - __builtin_clz(new_capacity-1));
-      /* using ulong as size_type (functional member of society or 64-bit user) */
+      // using ulong as size_type (64-bit)
       } else {
         return 1UL << ((sizeof(size_type)*CHAR_BIT)
                         - __builtin_clz(new_capacity-1));

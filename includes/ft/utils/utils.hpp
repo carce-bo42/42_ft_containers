@@ -214,7 +214,10 @@ namespace ft {
 
   } nullptr_t = {};
 
-  /* distance implementation */
+  /* distance implementation
+   * Abstracion of what normal distance (when speaking about
+   * numbers) is.
+   */
   template<class It>
   typename ft::iterator_traits<It>::difference_type
       distance(It first, It last,
