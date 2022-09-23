@@ -2,7 +2,7 @@
 # define REVERSE_ITERATOR_HPP
 # pragma once
 
-#include "ft_containers/utils/iterator_traits.hpp"
+#include "ft/utils/iterator_traits.hpp"
 
 /* 
  * See
@@ -18,13 +18,14 @@ namespace ft {
   class reverse_iterator {
 
     public :
-    using iterator_type     = Iter;
-    using iterator_category = typename ft::iterator_traits<Iter>::iterator_category;
-    using value_type        = typename ft::iterator_traits<Iter>::value_type;
-    using difference_type   = typename ft::iterator_traits<Iter>::difference_type;
-    using pointer           = typename ft::iterator_traits<Iter>::pointer;
-    using reference         = typename ft::iterator_traits<Iter>::reference;
-    
+
+    typedef Iter                                                  iterator_type;
+    typedef typename ft::iterator_traits<Iter>::iterator_category iterator_category;
+    typedef typename ft::iterator_traits<Iter>::value_type        value_type;
+    typedef typename ft::iterator_traits<Iter>::difference_type   difference_type;
+    typedef typename ft::iterator_traits<Iter>::pointer           pointer;
+    typedef typename ft::iterator_traits<Iter>::reference         reference;
+
     private :
 
       iterator_type _ptr;

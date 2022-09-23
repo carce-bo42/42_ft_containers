@@ -4,11 +4,12 @@
 
 #include <memory> /* std::allocator, std::allocator_traits. */
 #include <cstddef> /* std::size_t, std::ptrdiff_t */
-#include <vector>
+#include <stdexcept>
 #include <limits>
 #include "limits.h"
 
-#include "ft_containers/utils/utils.hpp"
+#include "ft/utils/utils.hpp"
+#include "ft/utils/reverse_iterator.hpp"
 
 /*
  * INFO : REFS
@@ -51,22 +52,26 @@
 
 namespace ft {
 
-  template < class T, typename Allocator = std::allocator<T> >
-  class vector {
+  template <
+    class T,
+    class Allocator = std::allocator<T>
+  > class vector {
 
     public:
-    using allocator_type         = Allocator;
-    using value_type             = typename allocator_type::value_type;
-    using pointer                = typename allocator_type::pointer;
-    using const_pointer          = typename allocator_type::const_pointer;
-    using reference              = typename allocator_type::reference;
-    using const_reference        = typename allocator_type::const_reference;
-    using size_type              = typename allocator_type::size_type;
-    using difference_type        = typename allocator_type::difference_type;
-    using iterator               = ft::random_access_iterator<pointer>;
-    using const_iterator         = ft::random_access_iterator<const_pointer>;
-    using reverse_iterator       = ft::reverse_iterator<iterator>;
-    using const_reverse_iterator = ft::reverse_iterator<const_iterator>;
+    typedef T                                                      value_type;
+    typedef Allocator                                              allocator_type;
+    typedef typename Allocator::pointer                            pointer;
+    typedef typename Allocator::const_pointer                      const_pointer;
+    typedef typename Allocator::reference                          reference;
+    typedef typename Allocator::const_reference                    const_reference;
+    typedef typename Allocator::size_type                          size_type;
+    typedef typename Allocator::difference_type                    difference_type;
+    /*
+    typedef typename ft::vector_iterator<pointer>                  iterator;
+    typedef typename ft::vector_iterator<const_pointer>            const_iterator;
+    typedef typename ft::reverse_iterator<iterator>                reverse_iterator;
+    typedef typename ft::reverse_iterator<const_iterator>          const_reverse_iterator;
+    */
 
     private:
 
@@ -204,8 +209,6 @@ namespace ft {
         /* destroy all elements constructed and deallocate */
         clear();
         _alloc.deallocate(_d_start, _capacity);
-        /* Change allocators !!!!! (important) */
-        _alloc = other._alloc;
         /* allocate and construct all new elements */
         _d_start = _alloc.allocate(other._capacity);
         _d_end = _d_start;
@@ -251,9 +254,10 @@ namespace ft {
                                     InputIt>::type* = 0 )
     {
       clear();
-      if (distance(first, last) > _capacity) {
+      size_type diff = distance(first, last);
+      if (diff > _capacity) {
         _alloc.deallocate(_d_start, _capacity);
-        _capacity = compute_new_capacity(count);
+        _capacity = compute_new_capacity(diff);
         _alloc.allocate(_capacity);
       }
       while (first != last) {
@@ -281,14 +285,14 @@ namespace ft {
 
     reference operator[]( size_type pos ) {
       if (pos >= size()) {
-        throw std::out_of_range;
+        throw std::out_of_range();
       }
       return _d_start[pos];
     }
 
     const_reference operator[]( size_type pos ) const {
       if (pos >= size()) {
-        throw std::out_of_range;
+        throw std::out_of_range();
       }
       return _d_start[pos];
     }
@@ -308,7 +312,7 @@ namespace ft {
     }
 
     const_reference back() const {
-      return _d_start[_d_end - _d_start - 1]
+      return _d_start[_d_end - _d_start - 1];
     }
 
     /* returns pointer to the underlying array serving as element
@@ -378,7 +382,7 @@ namespace ft {
      */
     void reserve( size_type new_cap ) {
       if (new_cap > max_size()) {
-        throw std::length_error;
+        throw std::length_error();
       }
       if (new_cap <= _capacity) {
         return ;

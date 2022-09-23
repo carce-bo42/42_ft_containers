@@ -4,37 +4,46 @@
 #include <cstddef> /* std::ptrdiff_t */
 
 namespace ft {
+  
+  struct input_iterator_tag { };
+  struct output_iterator_tag { };
+  struct forward_iterator_tag : public input_iterator_tag { };
+  struct bidirectional_iterator_tag : public forward_iterator_tag { };
+  struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 
   /* ------------------- Iterator typedef structs ----------------- */
 
   template < class Iter >
     struct iterator_traits {
 
-      using difference_type   = typename Iter::difference_type;
-      using value_type        = typename Iter::value_type;
-      using pointer           = typename Iter::pointer;
-      using reference         = typename Iter::reference;
-      using iterator_category = typename Iter::iterator_category;
+      typedef typename Iter::difference_type   difference_type;
+      typedef typename Iter::value_type        value_type;
+      typedef typename Iter::pointer           pointer;
+      typedef typename Iter::reference         reference;
+      typedef typename Iter::iterator_category iterator_category;
+
     };
 
   template < class T >
     struct iterator_traits<T*> {
 
-      using difference_type   = std::ptrdiff_t;
-      using value_type        = T;
-      using pointer           = T*;
-      using reference         = T&;
-      using iterator_category = ft::random_access_iterator_tag;
+      typedef std::ptrdiff_t                 difference_type;
+      typedef T                              value_type;
+      typedef T*                             pointer;
+      typedef T&                             reference;
+      typedef ft::random_access_iterator_tag iterator_category;
+
     };
 
   template <class T>
     struct iterator_traits< const T* > {
 
-      using difference_type     = std::ptrdiff_t;
-      using value_type          = T;
-      using pointer             = const T*;
-      using reference           = const T&;
-      using iterator_category   = ft::random_access_iterator_tag;
+      typedef std::ptrdiff_t                 difference_type;
+      typedef T                              value_type;
+      typedef const T*                       pointer;
+      typedef const T&                       reference;
+      typedef ft::random_access_iterator_tag iterator_category;
+
     };
 
   /* ---------------------------------------------------------------*/
@@ -59,12 +68,6 @@ namespace ft {
    * https://www.geeksforgeeks.org/input-iterators-in-cpp/
    * 
    */
-
-  struct input_iterator_tag { };
-  struct output_iterator_tag { };
-  struct forward_iterator_tag : public input_iterator_tag { };
-  struct bidirectional_iterator_tag : public forward_iterator_tag { };
-  struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 }
 
 #endif /* CONTAINERS_ITERATOR_TRAITS_HPP */

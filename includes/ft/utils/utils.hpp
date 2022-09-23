@@ -1,7 +1,7 @@
 #ifndef CONTAINERS_UTILS_HPP
 # define CONTAINERS_UTILS_HPP
 
-#include "iterator_traits.hpp"
+#include "ft/utils/iterator_traits.hpp"
 
 namespace ft {
 
@@ -33,7 +33,6 @@ namespace ft {
   struct enable_if<true, T>
   { typedef T type; };
 
-
   /*
    * is_integral 
    *
@@ -45,50 +44,37 @@ namespace ft {
    */
   template <typename T>
   struct is_integral
-  { bool value = false; };
+  { static bool const value = false; };
 
   template <>
-  struct is_integral<bool> { bool value = true; };
+  struct is_integral<bool> { static bool const value = true; };
 
   template <>
-  struct is_integral<char> { bool value = true; };
+  struct is_integral<char> { static bool const value = true; };
 
   template <>
-  struct is_integral<unsigned char> { bool value = true; };
+  struct is_integral<unsigned char> { static bool const value = true; };
 
   template <>
-  struct is_integral<wchar_t> { bool value = true; };
+  struct is_integral<wchar_t> { static bool const value = true; };
 
   template <>
-  struct is_integral<char16_t> { bool value = true; };
+  struct is_integral<short> { static bool const value = true; };
 
   template <>
-  struct is_integral<char32_t> { bool value = true; };
+  struct is_integral<unsigned short> { static bool const value = true; };
 
   template <>
-  struct is_integral<short> { bool value = true; };
+  struct is_integral<int> { static bool const value = true; };
 
   template <>
-  struct is_integral<unsigned short> { bool value = true; };
+  struct is_integral<unsigned int> { static bool const value = true; };
 
   template <>
-  struct is_integral<int> { bool value = true; };
+  struct is_integral<long> { static bool const value = true; };
 
   template <>
-  struct is_integral<unsigned int> { bool value = true; };
-
-  template <>
-  struct is_integral<long> { bool value = true; };
-
-  template <>
-  struct is_integral<unsigned long> { bool value = true; };
-
-  template <>
-  struct is_integral<long long> { bool value = true; };
-
-  template <>
-  struct is_integral<unsigned long long> { bool value = true; };
-
+  struct is_integral<unsigned long> { static bool const value = true; };
 
   /* lexicographical_compare
    * https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare
