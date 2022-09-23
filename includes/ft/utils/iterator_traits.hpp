@@ -4,6 +4,27 @@
 #include <cstddef> /* std::ptrdiff_t */
 
 namespace ft {
+
+  /**
+   *  Directly from stl_iterator_base_types.h :
+   *  
+   *  @defgroup iterator_tags Iterator Tags
+   *  These are empty types, used to distinguish different iterators. The
+   *  distinction is not made by what they contain, but simply by what they
+   *  are.  Different underlying algorithms can then be used based on the
+   *  different operations supported by different iterator types.
+   * 
+   * Useful refs :
+   * https://stackoverflow.com/questions/4688177/how-does-iterator-category-in-c-work
+   * https://eel.is/c++draft/iterator.requirements
+   * 
+   * Output iterators definition :
+   * https://www.geeksforgeeks.org/output-iterators-cpp/
+   * 
+   * Input iterators definition :
+   * https://www.geeksforgeeks.org/input-iterators-in-cpp/
+   * 
+   */
   
   struct input_iterator_tag { };
   struct output_iterator_tag { };
@@ -47,27 +68,6 @@ namespace ft {
     };
 
   /* ---------------------------------------------------------------*/
-
-  /**
-   *  Directly from stl_iterator_base_types.h :
-   *  
-   *  @defgroup iterator_tags Iterator Tags
-   *  These are empty types, used to distinguish different iterators. The
-   *  distinction is not made by what they contain, but simply by what they
-   *  are.  Different underlying algorithms can then be used based on the
-   *  different operations supported by different iterator types.
-   * 
-   * Useful refs :
-   * https://stackoverflow.com/questions/4688177/how-does-iterator-category-in-c-work
-   * https://eel.is/c++draft/iterator.requirements
-   * 
-   * Output iterators definition :
-   * https://www.geeksforgeeks.org/output-iterators-cpp/
-   * 
-   * Input iterators definition :
-   * https://www.geeksforgeeks.org/input-iterators-in-cpp/
-   * 
-   */
 }
 
 #endif /* CONTAINERS_ITERATOR_TRAITS_HPP */
