@@ -140,26 +140,40 @@ namespace ft {
    * equal
    * 
    * returns true if range [ first1, last1 ] is equal
-   * to [ first2, first2- first1 + last1 ]. This function
+   * to [ first2, first2 - first1 + last1 ]. This function
    * is more interesting than it seems :
    * 
-   *  f1         f2                          l1
-   *  | ---------|---------------------------| 
-   *  
-   *  d = f2 - f1           
-   *  <--------->
+   * f1, f2, l1 represent iterator positions. But this iterators
+   * point to a type. Assume it is char (int is confusing because
+   * theres no concept of distance here, just equivalence).
+   * If I go from it1 to last1, is the data the same as if I go from
+   * it2 to last1 + it1 ? (rememver iterators are ALWAYS pointers so
+   * they can be summed up).
    * 
-   * Then :
-   *            [ first1, last1 ]
-   * <--------------------------------------> 
+   * Case where it is :
    * 
-   *                 [first2, first2 + last1 - first1 ]
-   *            <---------------------------><----d---->
+   *         it1       it2                    last1
+   *         |          |                       |
+   * data = abcabcabcabcabcabcabcabcabcabcabcabcabcabcabc...
+   *       [abcabcabcabcabcabcabcabcabcabcabcabc]
+   *       <------------ [it1, last1] --------->
+   *                   [abcabcabcabcabcabcabcabcabcabcabc]
+   *                   <--- [it2, it2 + last1 - it1] -->
    * 
+   * NOTICE how if it2 was moved 1 iterator position to the
+   * right or left, then the segments would NOT be the equal.
+   * 
+   * Case where it is not:
+   * 
+   *         it1       it2          last1
+   *         |          |            |
+   * data = abcdefghijklmnopqrstuvwxyz
+   *        
    * So this function is, in a sense, trying to check wether
    * these two segments of data are equivalent. There's also
    * a very cool example of use to check wether a word is or 
-   * not a palyndrome.
+   * not a palyndrome using reverse iterators:
+   * https://en.cppreference.com/w/cpp/algorithm/equal
    */
   template< class InputIt1, class InputIt2 >
   bool equal( InputIt1 first1, InputIt1 last1,

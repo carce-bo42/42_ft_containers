@@ -52,10 +52,8 @@
 
 namespace ft {
 
-  template <
-    class T,
-    class Allocator = std::allocator<T>
-  > class vector {
+  template < class T, class Allocator = std::allocator<T> >
+  class vector {
 
     public:
     typedef T                                                      value_type;
@@ -198,6 +196,10 @@ namespace ft {
      * The destructors of the elements are called and the used
      * storage is deallocated. Note, that if the elements are
      * pointers, the pointed-to objects are not destroyed.
+     * 
+     * Note: Because this vector is strictly defined to use
+     * Allocator = std::allocator, there is no need to change
+     * the allocator.
      */
     ~vector() {
       clear();
