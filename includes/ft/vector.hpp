@@ -92,11 +92,14 @@ namespace ft {
      * a gcc builtin, check:
      * https://stackoverflow.com/questions/9353973
      * 
-     * this function is to never be called with new_capacity == 0.
      * The -1 at the argument in __builtin_clz is to return new_capacity
      * in case the number is already a power of 2.
      */
     static size_type compute_new_capacity( size_type new_capacity ) {
+
+      if (!new_capacity) {
+        return 0;
+      }
       // using uint as size_type (32-bit)
       if (sizeof(size_type) == 4) {
         return 1 << ((sizeof(size_type)*CHAR_BIT)
@@ -124,11 +127,10 @@ namespace ft {
     explicit vector ( const allocator_type& alloc = allocator_type() )
     :
       _alloc(alloc),
+      _d_start(0),
+      _d_end(0),
       _capacity(0)
-    {
-      _d_start = _alloc.allocate(_capacity);
-      _d_end = _d_start;
-    }
+    {}
     
     /* Constructs the container with count copies of elements
      * with value value.
@@ -136,18 +138,18 @@ namespace ft {
     explicit vector( size_type count, const T& value = T(),
                     const Allocator& alloc = Allocator() )
     :
-      _alloc(alloc)
+      _alloc(alloc),
+      _d_start(0),
+      _d_end(0),
+      _capacity(compute_new_capacity(count))
     {
-      if (count != 0) {
-        _capacity = compute_new_capacity(count);
-      } else {
-        _capacity = 0;
-      }
-      _d_start = _alloc.allocate(_capacity);
-      _d_end = _d_start;
-      while (count--) {
-        _alloc.construct(_d_end, value);
-        ++_d_end;
+      if (_capacity) {
+        _d_start = _alloc.allocate(_capacity);
+        _d_end = _d_start;
+        while (count--) {
+          _alloc.construct(_d_end, value);
+          ++_d_end;
+        }
       }
     }
 
@@ -165,32 +167,38 @@ namespace ft {
                              InputIt>::type* = 0 )
     :
       _alloc(alloc),
-      _capacity(distance(first, last))
+      _d_start(0),
+      _d_end(0),
+      _capacity(compute_new_capacity(distance(first, last)))
     {
-      if (_capacity != 0) {
-        _capacity = compute_new_capacity(_capacity);
-      }
-      _d_start = _alloc.allocate(_capacity);
-      _d_end = _d_start;
-      while (first != last) {
-        _alloc.construct(_d_end, *first);
-        ++_d_end;
-        ++first;
+      if (_capacity) {
+        _d_start = _alloc.allocate(_capacity);
+        _d_end = _d_start;
+        while (first != last) {
+          _alloc.construct(_d_end, *first);
+          ++_d_end;
+          ++first;
+        }
       }
     }
 
     vector( const vector& other )
     :
-      _alloc(other.alloc)
+      _alloc(other.alloc),
+      _d_start(0),
+      _d_end(0),
+      _capacity(other._capacity)
     {
-      _d_start = _alloc.allocate(other._capacity);
-      _d_end = _d_start;
-      _capacity = other._d_end - other._d_start;
-      size_type current = 0;
-      while (_d_end != _d_start + _capacity) {
-        _alloc.construct(_d_end, other[current]);
-        ++_d_end;
-        ++current;
+      if (_capacity) {
+        _d_start = _alloc.allocate(other._capacity);
+        _d_end = _d_start;
+        _capacity = other._d_end - other._d_start;
+        size_type current = 0;
+        while (_d_end != _d_start + _capacity) {
+          _alloc.construct(_d_end, other[current]);
+          ++_d_end;
+          ++current;
+        }
       }
     }
 
