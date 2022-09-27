@@ -202,7 +202,7 @@ namespace ft {
       }
     }
 
-    /*
+    /*d
      * Destructs the vector.
      * The destructors of the elements are called and the used
      * storage is deallocated. Note, that if the elements are
@@ -432,9 +432,35 @@ namespace ft {
      */
     void clear() {
       while (_d_end != _d_start) {
-        _d_end--;
+        --_d_end;
         _alloc.destroy(_d_end);
       }
+    }
+
+    void push_back( const T& value ) {
+      if (size() == _capacity) {
+        reserve(size() + 1);
+      }
+      _alloc.construct(_d_end, value);
+      ++_d_end;
+    }
+
+    /*
+     * inserts value before pos. 
+     */
+    iterator insert( const_iterator pos, const T& value ) {
+      if (_capacity == size()) {
+        
+      }
+    }
+
+    iterator insert( const_iterator pos, size_type count, const T& value ) {
+
+    }
+
+    template< class InputIt >
+    iterator insert( const_iterator pos, InputIt first, InputIt last ) {
+
     }
   
   }; /* class vector */
