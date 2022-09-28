@@ -44,6 +44,13 @@ namespace ft {
         _ptr(it.base())
       {}
 
+      random_access_iterator &operator=(const random_access_iterator& rhs) {
+        if(*this != rhs) {
+          this->_ptr = rhs.base();
+        }
+        return *this;
+      }
+
       virtual ~random_access_iterator() {}
 
       /* A more friendly class to access the internal pointer,
@@ -79,7 +86,7 @@ namespace ft {
       random_access_iterator operator++(int) {
         random_access_iterator _tmp = *this;
         ++_ptr;
-        return _tmp;        
+        return _tmp;
       }
 
       random_access_iterator operator--(int) {

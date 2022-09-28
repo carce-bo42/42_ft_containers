@@ -10,6 +10,10 @@
 
 #include "ft/utils/utils.hpp"
 #include "ft/utils/reverse_iterator.hpp"
+#include "ft/utils/random_access_iterator.hpp"
+
+// debug
+#include <iostream>
 
 /*
  * INFO : REFS
@@ -51,6 +55,18 @@
  * Which means if a pointer to enable_if<...>::type exists, is then
  * not 0, so T is integral. 
  * the pointer 
+ * 
+ * 
+ * How capacity works in vectors :
+ * https://stackoverflow.com/questions/3167272/
+ * https://stackoverflow.com/questions/24846348/
+ * https://news.ycombinator.com/item?id=20872696
+ * 
+ * Summary: 
+ * The vector MUST double its size to fulfill amortized constant
+ * time insertion and deletion at the end. BUT the initial capacity
+ * is implementation dependent.
+ * 
  */
 
 namespace ft {
@@ -59,20 +75,19 @@ namespace ft {
   class vector {
 
     public:
-    typedef T                                             value_type;
-    typedef Allocator                                     allocator_type;
-    typedef typename Allocator::pointer                   pointer;
-    typedef typename Allocator::const_pointer             const_pointer;
-    typedef typename Allocator::reference                 reference;
-    typedef typename Allocator::const_reference           const_reference;
-    typedef typename Allocator::size_type                 size_type;
-    typedef typename Allocator::difference_type           difference_type;
-    /*
-    typedef typename ft::vector_iterator<pointer>         iterator;
-    typedef typename ft::vector_iterator<const_pointer>   const_iterator;
-    typedef typename ft::reverse_iterator<iterator>       reverse_iterator;
-    typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
-    */
+    typedef T                                            value_type;
+    typedef Allocator                                    allocator_type;
+    typedef typename Allocator::pointer                  pointer;
+    typedef typename Allocator::const_pointer            const_pointer;
+    typedef typename Allocator::reference                reference;
+    typedef typename Allocator::const_reference          const_reference;
+    typedef typename Allocator::size_type                size_type;
+    typedef typename Allocator::difference_type          difference_type;
+    
+    typedef ft::random_access_iterator<value_type>       iterator;
+    typedef ft::random_access_iterator<const value_type> const_iterator;
+    typedef ft::reverse_iterator<iterator>               reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>         const_reverse_iterator;
 
     private:
 
@@ -94,8 +109,11 @@ namespace ft {
      * 
      * The -1 at the argument in __builtin_clz is to return new_capacity
      * in case the number is already a power of 2.
+     * 
+     * Only for constructor. This way we optimize multiplication by 2
+     * by just shifting.
      */
-    static size_type compute_new_capacity( size_type new_capacity ) {
+    static size_type get_first_capacity( size_type new_capacity ) {
 
       if (!new_capacity) {
         return 0;
@@ -109,6 +127,49 @@ namespace ft {
         return 1UL << ((sizeof(size_type)*CHAR_BIT)
                         - __builtin_clz(new_capacity-1));
       }
+    }
+    
+    /*
+     * This function is assumed to never be called when
+     * new_capacity = 0 or new_capacity < _capacity.
+     * Doubles the current capacity until its greater than
+     * new_capacity.
+     * Does it have to deal with size_type overflow ?
+     */
+    size_type get_new_capacity( size_type new_capacity) {
+      if (!new_capacity || _capacity > new_capacity) {
+        return _capacity;
+      }
+      while (new_capacity < _capacity) {
+          new_capacity *= 2;
+      }
+      return new_capacity;
+    }
+
+    /* 
+     * Creates a memory hole inside the vector. Used for 
+     * insertion.
+     *
+     */
+    void create_mem_hole_at( size_type pos, size_type hole_size ) {
+      
+      ft::vector<T> new_v;
+      size_type new_size = size() + hole_size;
+      size_type hole_start = hole_size <= pos ? pos - hole_size : 0;
+      
+      new_v.reserve(new_size);
+      /*
+       * Two iterations :
+       * 1. values before hole
+       * 2. values after hole.
+       */
+      for (size_type i = hole_start; i < pos; i++) {
+        new_v[i] = (*this)[i];
+      }
+      for (size_type i = pos + 1; i < new_size; i++) {
+        new_v[i] = (*this)[i];
+      }
+      (*this) = new_v;
     }
 
     public:
@@ -141,9 +202,11 @@ namespace ft {
       _alloc(alloc),
       _d_start(0),
       _d_end(0),
-      _capacity(compute_new_capacity(count))
+      _capacity(0)
     {
+      _capacity = get_first_capacity(count);
       if (_capacity) {
+        std::cout << "capacity before allocate : " << _capacity << std::endl;
         _d_start = _alloc.allocate(_capacity);
         _d_end = _d_start;
         while (count--) {
@@ -169,8 +232,9 @@ namespace ft {
       _alloc(alloc),
       _d_start(0),
       _d_end(0),
-      _capacity(compute_new_capacity(distance(first, last)))
+      _capacity(0)
     {
+      _capacity = get_first_capacity(distance(first, last));
       if (_capacity) {
         _d_start = _alloc.allocate(_capacity);
         _d_end = _d_start;
@@ -244,7 +308,7 @@ namespace ft {
       clear();
       if (count > _capacity) {
         _alloc.deallocate(_d_start, _capacity);
-        _capacity = compute_new_capacity(count);
+        _capacity = get_new_capacity(count);
         _alloc.allocate(_capacity);
       }
       while (count) {
@@ -270,13 +334,12 @@ namespace ft {
       size_type diff = distance(first, last);
       if (diff > _capacity) {
         _alloc.deallocate(_d_start, _capacity);
-        _capacity = compute_new_capacity(diff);
+        _capacity = get_new_capacity(diff);
         _alloc.allocate(_capacity);
       }
       while (first != last) {
-        _alloc.construct(*first);
+        push_back(*first);
         ++first;
-        ++_d_end;
       }
     }
 
@@ -404,7 +467,7 @@ namespace ft {
       vector aux(*this);
       // free then assign and allocate new capacity
       clear();
-      _capacity = compute_new_capacity(new_cap);
+      _capacity = get_new_capacity(new_cap);
       _alloc.allocate(_capacity);
       // copy contents back
       size_type current = 0;
@@ -446,21 +509,41 @@ namespace ft {
     }
 
     /*
-     * inserts value before pos. 
+     * inserts value before pos.
      */
     iterator insert( const_iterator pos, const T& value ) {
-      if (_capacity == size()) {
-        
-      }
+
+      difference_type value_pos = pos.base() - _d_start;
+      create_mem_hole_at(value_pos, 1);
+      _alloc.construct(_d_start + value_pos, value);
+      return _d_start + value_pos; 
     }
 
+    /*
+     * Inserts count values before pos.
+     */
     iterator insert( const_iterator pos, size_type count, const T& value ) {
-
+      difference_type value_pos = pos.base() - _d_start;
+      create_mem_hole_at(value_pos, count);
+      for (; count > 0; count--) {
+        _alloc.construct(_d_start + value_pos, value);
+        --value_pos;
+      }
+      return _d_start + value_pos;
     }
 
     template< class InputIt >
-    iterator insert( const_iterator pos, InputIt first, InputIt last ) {
-
+    iterator insert( const_iterator pos, InputIt first, InputIt last,
+                     typename enable_if<!is_integral<InputIt>::value,
+                                        InputIt>::type* = 0 )
+    {
+      difference_type value_pos = pos.base() - _d_start;
+      create_mem_hole_at(value_pos, ft::distance(first, last));
+      for (; first != last; first++) {
+        _alloc.construct(_d_start + value_pos, *first);
+        --value_pos;
+      }
+      return _d_start + value_pos;
     }
   
   }; /* class vector */
