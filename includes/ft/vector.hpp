@@ -206,7 +206,6 @@ namespace ft {
     {
       _capacity = get_first_capacity(count);
       if (_capacity) {
-        std::cout << "capacity before allocate : " << _capacity << std::endl;
         _d_start = _alloc.allocate(_capacity);
         _d_end = _d_start;
         while (count--) {
