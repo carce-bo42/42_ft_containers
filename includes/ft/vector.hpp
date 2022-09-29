@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <limits>
 #include "limits.h"
+#include "../../test/debug.hpp" 
 
 #include "ft/utils/utils.hpp"
 #include "ft/utils/reverse_iterator.hpp"
@@ -160,8 +161,12 @@ namespace ft {
      */
     void create_mem_hole_at( size_type pos, size_type hole_size ) {
       
+      std::cout << "hole size : " << hole_size << std::endl;
+      std::cout << "pos : " << pos << std::endl;
       size_type new_size = size() + hole_size;
-      size_type hole_start = pos - (hole_size - 1);
+      size_type hole_start = pos > (hole_size - 1)
+                             ? pos - (hole_size - 1)
+                             : 0;
       ft::vector<T> new_v(new_size);
 
       /*
@@ -169,10 +174,14 @@ namespace ft {
        * 1. values before hole
        * 2. values after hole.
        */
+      
+      std::cout << "hole start : " << hole_start << std::endl;
       for (size_type i = 0; i < hole_start; i++) {
         new_v[i] = (*this)[i];
       }
       for (size_type i = pos; i < size(); i++) {
+        std::cout << "                 i : " << i  << std::endl;
+        std::cout << "hole_start + i + 1 : " << hole_start + i  << std::endl;
         new_v[i + 1] = (*this)[i];
       }
       (*this) = new_v;
@@ -529,6 +538,7 @@ namespace ft {
      * inserts value before pos.
      */
     iterator insert( const_iterator pos, const T& value ) {
+
       difference_type value_pos = pos.base() - _d_start;
       create_mem_hole_at(value_pos, 1);
       _alloc.construct(_d_start + value_pos, value);
@@ -541,10 +551,12 @@ namespace ft {
     iterator insert( const_iterator pos, size_type count, const T& value ) {
       difference_type value_pos = pos.base() - _d_start;
       create_mem_hole_at(value_pos, count);
+      print_vector(*this);
       for (; count > 0; count--) {
+        std::cout << "count value : " << count << std::endl;
         _alloc.construct(_d_start + value_pos, value);
         --value_pos;
-      }
+      } 
       return _d_start + value_pos;
     }
 

@@ -46,6 +46,7 @@ template < typename U,
                       class T >
 void print_vector(T<>& vec) {
   size_t i = 0;
+  std::cout << std::endl;
   for (typename T<>::iterator it = vec.begin();
       it != vec.end(); it++)
   {
@@ -63,5 +64,7 @@ void print_vector(ft::vector<T> vec) {
     std::cout << "vector[" << i++ << "] = " << *it << std::endl;
   }
 }*/
+
+// TODO: ASSERT_VECTOR_EQUALITY
 
 #endif
