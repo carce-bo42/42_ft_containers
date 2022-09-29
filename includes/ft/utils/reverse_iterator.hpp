@@ -33,20 +33,20 @@ namespace ft {
     public :
 
     reverse_iterator()
-      :
-        _ptr()
-      {}
+    :
+      _ptr()
+    {}
 
     explicit reverse_iterator(iterator_type x)
-      :
-        _ptr(x)
-      {}
+    :
+      _ptr(x)
+    {}
 
     template <class U>
     reverse_iterator(const reverse_iterator<U>& other)
-      : 
-        _ptr(other.base())
-      {}
+    : 
+      _ptr(other.base())
+    {}
     
     virtual ~reverse_iterator() {}
 

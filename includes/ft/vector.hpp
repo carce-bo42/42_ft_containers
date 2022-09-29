@@ -84,8 +84,8 @@ namespace ft {
     typedef typename Allocator::size_type                size_type;
     typedef typename Allocator::difference_type          difference_type;
     
-    typedef ft::random_access_iterator<value_type>       iterator;
-    typedef ft::random_access_iterator<const value_type> const_iterator;
+    typedef ft::random_access_iterator<pointer>          iterator;
+    typedef ft::random_access_iterator<const_pointer>    const_iterator;
     typedef ft::reverse_iterator<iterator>               reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>         const_reverse_iterator;
 
@@ -113,7 +113,7 @@ namespace ft {
      * Only for constructor. This way we optimize multiplication by 2
      * by just shifting.
      */
-    static size_type get_first_capacity( size_type new_capacity ) {
+    static value_type get_first_capacity( size_type new_capacity ) {
 
       if (!new_capacity) {
         return 0;
@@ -121,11 +121,11 @@ namespace ft {
       // using uint as size_type (32-bit)
       if (sizeof(size_type) == 4) {
         return 1 << ((sizeof(size_type)*CHAR_BIT)
-                        - __builtin_clz(new_capacity-1));
+                        - __builtin_clzl(new_capacity-1));
       // using ulong as size_type (64-bit)
       } else {
         return 1UL << ((sizeof(size_type)*CHAR_BIT)
-                        - __builtin_clz(new_capacity-1));
+                        - __builtin_clzl(new_capacity-1));
       }
     }
     
@@ -247,7 +247,7 @@ namespace ft {
 
     vector( const vector& other )
     :
-      _alloc(other.alloc),
+      _alloc(other._alloc),
       _d_start(0),
       _d_end(0),
       _capacity(other._capacity)
@@ -298,6 +298,7 @@ namespace ft {
         /* finally assign correct size */
         _capacity = other._capacity;
       }
+      return *this;
     }
 
     /* Replaces the contents of the container. 
@@ -349,7 +350,7 @@ namespace ft {
     /* ------------------------------------------
      * Element access 
      */
-
+    
     reference at( size_type pos ) {
       return this[pos];
     }
@@ -360,14 +361,14 @@ namespace ft {
 
     reference operator[]( size_type pos ) {
       if (pos >= size()) {
-        throw std::out_of_range();
+        throw std::out_of_range("42");
       }
       return _d_start[pos];
     }
 
     const_reference operator[]( size_type pos ) const {
       if (pos >= size()) {
-        throw std::out_of_range();
+        throw std::out_of_range("42");
       }
       return _d_start[pos];
     }
@@ -405,17 +406,60 @@ namespace ft {
      * Iterators 
      */
 
-    
+    /*
+     * Begin :
+     * Returns an iterator to the first element of the vector.
+     * If the vector is empty, the returned iterator will be equal to end().
+     */
+    iterator begin() {
+      return iterator(_d_start);
+    }
 
+    const_iterator begin() const {
+      return const_iterator(_d_start);
+    }
 
+    /*
+     * End :
+     * Returns an iterator to the element following the last element
+     * of the vector. This element acts as a placeholder; attempting
+     * to access it results in undefined behavior.
+     */
+    iterator end() {
+      return iterator(_d_end);
+    }
 
+    const_iterator end() const {
+      return const_iterator(_d_end);
+    }
 
+    /*
+     * Returns a reverse iterator to the first element of the reversed vector.
+     * It corresponds to the last element of the non-reversed vector.
+     * If the vector is empty, the returned iterator is equal to rend().
+     */
+    reverse_iterator rbegin() {
+      return reverse_iterator(end());
+    }
 
+    const_reverse_iterator rbegin() const {
+      return const_reverse_iterator(end());
+    }
 
+    /*
+     * Returns a reverse iterator to the element following the last element
+     * of the reversed vector. It corresponds to the element preceding the
+     * first element of the non-reversed vector. 
+     * This element acts as a placeholder, attempting to access it results
+     * in undefined behavior.
+     */
+    reverse_iterator rend() {
+      return reverse_iterator(begin());
+    }
 
-
-
-
+    const_reverse_iterator rend() const {
+      return const_reverse_iterator(begin());
+    }
 
     /* Checks if the container has no elements. */
     bool empty() const {
@@ -439,14 +483,6 @@ namespace ft {
     }
 
     /*
-     * Returns the number of elements that the container has
-     * currently allocated space for.
-     */
-    size_type capacity() const {
-      return _capacity;
-    }
-
-    /*
      * Increase the capacity of the vector (the total number of
      * elements that the vector can hold without requiring
      * reallocation) to a value that's greater or equal to new_cap.
@@ -457,7 +493,7 @@ namespace ft {
      */
     void reserve( size_type new_cap ) {
       if (new_cap > max_size()) {
-        throw std::length_error();
+        throw std::length_error("42");
       }
       if (new_cap <= _capacity) {
         return ;
@@ -475,18 +511,15 @@ namespace ft {
         ++_d_end;
         ++current;
       }
-    } 
+    }
 
-
-
-
-
-
-
-
-
-
-
+    /*
+     * Returns the number of elements that the container has
+     * currently allocated space for.
+     */
+    size_type capacity() const {
+      return _capacity;
+    }
 
     /*
      * Erases all elements from the container.
@@ -497,14 +530,6 @@ namespace ft {
         --_d_end;
         _alloc.destroy(_d_end);
       }
-    }
-
-    void push_back( const T& value ) {
-      if (size() == _capacity) {
-        reserve(size() + 1);
-      }
-      _alloc.construct(_d_end, value);
-      ++_d_end;
     }
 
     /*
@@ -531,6 +556,10 @@ namespace ft {
       return _d_start + value_pos;
     }
 
+    /*
+     * Inserts values from first to last starting before pos and
+     * going backwards
+     */
     template< class InputIt >
     iterator insert( const_iterator pos, InputIt first, InputIt last,
                      typename enable_if<!is_integral<InputIt>::value,
@@ -543,6 +572,28 @@ namespace ft {
         --value_pos;
       }
       return _d_start + value_pos;
+    }
+
+    /*
+    iterator erase( iterator pos ) {
+
+    }
+
+    iterator erase( iterator first, iterator last ) {
+
+    }*/
+
+
+
+
+
+
+    void push_back( const T& value ) {
+      if (size() == _capacity) {
+        reserve(size() + 1);
+      }
+      _alloc.construct(_d_end, value);
+      ++_d_end;
     }
   
   }; /* class vector */
