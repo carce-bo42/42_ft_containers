@@ -114,6 +114,13 @@ namespace ft {
      * by just shifting.
      */
     static value_type get_first_capacity( size_type new_capacity ) {
+      
+      return new_capacity; // create_mem_hole_at doesnt work without this.
+                           // construct must be called in order for T 
+                           // assignment operator to work. So having
+                           // vector(int) generate more than int allocated
+                           // bytes is a problem because it ends up with
+                           // T() initialized entries that are valid.
 
       if (!new_capacity) {
         return 0;
@@ -153,21 +160,20 @@ namespace ft {
      */
     void create_mem_hole_at( size_type pos, size_type hole_size ) {
       
-      ft::vector<T> new_v;
       size_type new_size = size() + hole_size;
-      size_type hole_start = hole_size <= pos ? pos - hole_size : 0;
-      
-      new_v.reserve(new_size);
+      size_type hole_start = pos - (hole_size - 1);
+      ft::vector<T> new_v(new_size);
+
       /*
        * Two iterations :
        * 1. values before hole
        * 2. values after hole.
        */
-      for (size_type i = hole_start; i < pos; i++) {
+      for (size_type i = 0; i < hole_start; i++) {
         new_v[i] = (*this)[i];
       }
-      for (size_type i = pos + 1; i < new_size; i++) {
-        new_v[i] = (*this)[i];
+      for (size_type i = pos; i < size(); i++) {
+        new_v[i + 1] = (*this)[i];
       }
       (*this) = new_v;
     }
@@ -180,14 +186,6 @@ namespace ft {
     vector ()
     :
       _alloc(allocator_type()),
-      _d_start(0),
-      _d_end(0),
-      _capacity(0)
-    {}
-    
-    explicit vector ( const allocator_type& alloc = allocator_type() )
-    :
-      _alloc(alloc),
       _d_start(0),
       _d_end(0),
       _capacity(0)
@@ -285,18 +283,16 @@ namespace ft {
         /* destroy all elements constructed and deallocate */
         clear();
         _alloc.deallocate(_d_start, _capacity);
+        _capacity = other.capacity();
         /* allocate and construct all new elements */
-        _d_start = _alloc.allocate(other._capacity);
+        _d_start = _alloc.allocate(_capacity);
         _d_end = _d_start;
-        _capacity = other._d_end - other._d_start;
         size_type current = 0;
         while (_d_end != _d_start + _capacity) {
           _alloc.construct(_d_end, other[current]);
           ++_d_end;
           ++current;
         }
-        /* finally assign correct size */
-        _capacity = other._capacity;
       }
       return *this;
     }
@@ -307,13 +303,10 @@ namespace ft {
     void assign( size_type count, const T& value ) {
       clear();
       if (count > _capacity) {
-        _alloc.deallocate(_d_start, _capacity);
-        _capacity = get_new_capacity(count);
-        _alloc.allocate(_capacity);
+        reserve(count);
       }
       while (count) {
-        _alloc.construct(_d_end, value);
-        ++_d_end;
+        push_back(value);
         --count;
       }
     }
@@ -331,11 +324,9 @@ namespace ft {
                                     InputIt>::type* = 0 )
     {
       clear();
-      size_type diff = distance(first, last);
+      difference_type diff = distance(first, last);
       if (diff > _capacity) {
-        _alloc.deallocate(_d_start, _capacity);
-        _capacity = get_new_capacity(diff);
-        _alloc.allocate(_capacity);
+        reserve(diff);
       }
       while (first != last) {
         push_back(*first);
@@ -352,24 +343,24 @@ namespace ft {
      */
     
     reference at( size_type pos ) {
+      if (!(pos < size())) {
+        throw std::out_of_range("ft::vector::at( size_type )");
+      }
       return this[pos];
     }
 
     const_reference at( size_type pos ) const {
+      if (!(pos < size())) {
+        throw std::out_of_range("ft::vector::at( size_type ) const");
+      }
       return this[pos];
     }
 
     reference operator[]( size_type pos ) {
-      if (pos >= size()) {
-        throw std::out_of_range("42");
-      }
       return _d_start[pos];
     }
 
     const_reference operator[]( size_type pos ) const {
-      if (pos >= size()) {
-        throw std::out_of_range("42");
-      }
       return _d_start[pos];
     }
 
@@ -502,8 +493,10 @@ namespace ft {
       vector aux(*this);
       // free then assign and allocate new capacity
       clear();
+      _alloc.deallocate(_d_start, _capacity);
       _capacity = get_new_capacity(new_cap);
-      _alloc.allocate(_capacity);
+      _d_start = _alloc.allocate(_capacity);
+      _d_end = _d_start;
       // copy contents back
       size_type current = 0;
       while (_d_end != _d_start + aux.size()) {
@@ -536,7 +529,6 @@ namespace ft {
      * inserts value before pos.
      */
     iterator insert( const_iterator pos, const T& value ) {
-
       difference_type value_pos = pos.base() - _d_start;
       create_mem_hole_at(value_pos, 1);
       _alloc.construct(_d_start + value_pos, value);
@@ -582,10 +574,6 @@ namespace ft {
     iterator erase( iterator first, iterator last ) {
 
     }*/
-
-
-
-
 
 
     void push_back( const T& value ) {

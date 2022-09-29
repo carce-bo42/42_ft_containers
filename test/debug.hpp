@@ -46,7 +46,6 @@ template < typename U,
                       class T >
 void print_vector(T<>& vec) {
   size_t i = 0;
-  std::cout << "1" << std::endl;
   for (typename T<>::iterator it = vec.begin();
       it != vec.end(); it++)
   {
@@ -58,7 +57,6 @@ void print_vector(T<>& vec) {
 /*template < typename T >
 void print_vector(ft::vector<T> vec) {
   size_t i = 0;
-  std::cout << "2" << std::endl;
   for (typename ft::vector<T>::iterator it = vec.begin();
       it != vec.end(); it++)
   { 

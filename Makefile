@@ -1,4 +1,4 @@
-NAME		=	test_containers
+NAME		=	containers_test
 SRCS		=	test/main.cpp
 
 CXX			=	g++ 
