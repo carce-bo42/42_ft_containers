@@ -19,12 +19,16 @@
  * The compiler writes :
  * "error : default template arguments may not be
  * used in function templates without ‘-std=c++11’ or ‘-std=gnu++11’"
+ * when using ft::vector<T> as the argument.
  */
 
-// This are my solutions, kept because they look funny
-// First one is commented because it apparently is the 
-// same as the second one
-/*
+/* This are my solutions, the three of them work, but apparently,
+ * 1 and 2 are equivalent and the compiler complains. (3) would 
+ * compile with 1 or 2 set, but it is chosen before them but
+ * is not fun because it is too specific.
+ */
+
+/* (1)
 template < typename U, template <typename, typename> class T >
 void print_vector(T<U, std::allocator<U> >& vec) {
   size_t i = 0;
@@ -35,8 +39,7 @@ void print_vector(T<U, std::allocator<U> >& vec) {
   }
 }*/
 
-// I leave this one because it feels the weirdest and works
-// with print_vector<int>() and print_vector().
+// (2)
 template < typename U,
            template < typename V = U,
                       typename Allocator = std::allocator<U> >
@@ -51,9 +54,7 @@ void print_vector(T<>& vec) {
   }
 }
 
-/*
- * This is the one to use if you want to keep sanity from leaving
- */
+// (3)
 /*template < typename T >
 void print_vector(ft::vector<T> vec) {
   size_t i = 0;
