@@ -177,6 +177,7 @@ namespace ft {
       
       std::cout << "hole start : " << hole_start << std::endl;
       for (size_type i = 0; i < hole_start; i++) {
+        std::cout << "                 i : " << i  << std::endl;
         new_v[i] = (*this)[i];
       }
       for (size_type i = pos; i < size(); i++) {
