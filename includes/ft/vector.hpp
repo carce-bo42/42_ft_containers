@@ -148,44 +148,44 @@ namespace ft {
       if (!new_capacity || _capacity > new_capacity) {
         return _capacity;
       }
-      while (new_capacity < _capacity) {
-          new_capacity *= 2;
+      while (new_capacity > _capacity) {
+        _capacity *= 2;
       }
-      return new_capacity;
+      return _capacity;
     }
 
     /* 
      * Creates a memory hole inside the vector. Used for 
      * insertion.
-     *
      */
     void create_mem_hole_at( size_type pos, size_type hole_size ) {
       
-      std::cout << "hole size : " << hole_size << std::endl;
-      std::cout << "pos : " << pos << std::endl;
       size_type new_size = size() + hole_size;
-      size_type hole_start = pos > (hole_size - 1)
-                             ? pos - (hole_size - 1)
-                             : 0;
-      ft::vector<T> new_v(new_size);
 
-      /*
-       * Two iterations :
-       * 1. values before hole
-       * 2. values after hole.
-       */
-      
-      std::cout << "hole start : " << hole_start << std::endl;
-      for (size_type i = 0; i < hole_start; i++) {
-        std::cout << "                 i : " << i  << std::endl;
-        new_v[i] = (*this)[i];
+      if (new_size > _capacity) {
+        ft::vector<T> new_v(get_first_capacity(new_size));
+          /*
+          * Two iterations :
+          * 1. values before hole
+          * 2. values after hole.
+          */
+        for (size_type i = 0; i < pos; i++) {
+          new_v[i] = (*this)[i];
+        }
+        for (size_type i = pos; i < size(); i++) {
+          new_v[i + hole_size] = (*this)[i];
+        }
+        (*this) = new_v;
+      } else {
+        /* shift end contents hole_size positions positions,
+         * starting from the end to pos
+         */
+        for (size_type i = new_size - 1; i >= pos + hole_size; i--) {
+          _alloc.construct(_d_start + i, _d_start[i - hole_size]);
+          _alloc.destroy(_d_start + i - hole_size);
+        }
+        _d_end += hole_size;
       }
-      for (size_type i = pos; i < size(); i++) {
-        std::cout << "                 i : " << i  << std::endl;
-        std::cout << "hole_start + i + 1 : " << hole_start + i  << std::endl;
-        new_v[i + 1] = (*this)[i];
-      }
-      (*this) = new_v;
     }
 
     public:
@@ -248,7 +248,7 @@ namespace ft {
         while (first != last) {
           _alloc.construct(_d_end, *first);
           ++_d_end;
-          ++first;
+          ++first;  
         }
       }
     }
@@ -552,12 +552,9 @@ namespace ft {
     iterator insert( const_iterator pos, size_type count, const T& value ) {
       difference_type value_pos = pos.base() - _d_start;
       create_mem_hole_at(value_pos, count);
-      print_vector(*this);
-      for (; count > 0; count--) {
-        std::cout << "count value : " << count << std::endl;
-        _alloc.construct(_d_start + value_pos, value);
-        --value_pos;
-      } 
+      for ( ; count > 0; count--) {
+        _alloc.construct(_d_start + value_pos + count - 1, value);
+      }
       return _d_start + value_pos;
     }
 
@@ -572,9 +569,9 @@ namespace ft {
     {
       difference_type value_pos = pos.base() - _d_start;
       create_mem_hole_at(value_pos, ft::distance(first, last));
-      for (; first != last; first++) {
-        _alloc.construct(_d_start + value_pos, *first);
-        --value_pos;
+      for (size_type i = value_pos; first != last; first++) {
+        _alloc.construct(_d_start + i, *first);
+        i++;
       }
       return _d_start + value_pos;
     }
