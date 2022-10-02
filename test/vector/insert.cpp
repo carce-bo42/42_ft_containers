@@ -44,8 +44,6 @@ int insert_single_test() {
   // iterator invalidated !.
   std_vec.insert(std_vec.begin(), 21);
   if (!After_Insert_Check(std_vec, ft_vec)) {
-    std::cout << "ft_vec " << ft_vec.capacity()
-              << " std_vec " << std_vec.capacity() << std::endl;
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -128,8 +126,6 @@ int insert_single_test() {
     std_vec.insert(it, 21);
   }
   if (!After_Insert_Check(std_vec, ft_vec)) {
-    std::cout << "ft_vec " << ft_vec.capacity()
-              << " std_vec " << std_vec.capacity() << std::endl;
     return TEST_ERROR(KO_INSERT);
   }
   //print_vector(vec);
@@ -154,8 +150,6 @@ int insert_single_test() {
     std_vec.insert(it, 21);
   }
   if (!After_Insert_Check(std_vec, ft_vec)) {
-    std::cout << "ft_vec " << ft_vec.capacity()
-              << " std_vec " << std_vec.capacity() << std::endl;
     return TEST_ERROR(KO_INSERT);
   }
 }
