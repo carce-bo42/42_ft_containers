@@ -19,8 +19,8 @@ inline int Test_Error(int result, int line, const char* file) {
 
 template <typename T>
 inline bool After_Insert_Check(std::vector<T> v, ft::vector<T> u) {
-  return !ft::equal(u.begin(), u.end(), v.begin())
-          || u.capacity() != v.capacity();
+  return ft::equal(u.begin(), u.end(), v.begin())
+         && u.capacity() == v.capacity();
 }
 
 
