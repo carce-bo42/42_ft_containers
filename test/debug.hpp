@@ -24,7 +24,7 @@
 
 /* This are my solutions, the three of them work, but apparently,
  * 1 and 2 are equivalent and the compiler complains. (3) would 
- * compile with 1 or 2 set, but it is chosen before them but
+ * compile with 1 or 2 set, but it is chosen before them and
  * is not fun because it is too specific.
  */
 
