@@ -23,7 +23,6 @@ inline bool After_Insert_Check(std::vector<T> v, ft::vector<T> u) {
          && u.capacity() == v.capacity();
 }
 
-
 int insert_single_test() {
 {
   ft::vector<int> ft_vec(3, 4); // 4 4 4 
@@ -140,6 +139,34 @@ int insert_single_test() {
     it--;
     std_vec.insert(it, 21);
   }
+  if (!After_Insert_Check(std_vec, ft_vec)) {
+    return TEST_ERROR(KO_INSERT);
+  }
+}
+{ // insert with iterators.
+  ft::vector<int> ft_vec(10, 3); // 3 3 3 3 3 3 3 3 3 3
+  ft::vector<int> ft_vec_input;
+
+  ft_vec_input.push_back(9);
+  ft_vec_input.push_back(8);
+  ft_vec_input.push_back(7);
+
+  ft::vector<int>::iterator it = ft_vec.end();
+  --it;
+  ft_vec.insert(it, ft_vec_input.begin(), ft_vec_input.end());
+
+  std::vector<int> std_vec(10, 3); // 3 3 3 3 3 3 3 3 3 3
+  std::vector<int> std_vec_input;
+
+  std_vec_input.push_back(9);
+  std_vec_input.push_back(8);
+  std_vec_input.push_back(7);
+
+  std::vector<int>::iterator it_ = std_vec.end();
+  --it_;
+  std_vec.insert(it_, std_vec_input.begin(), std_vec_input.end());
+
+  //print_vector(ft_vec);
   if (!After_Insert_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
