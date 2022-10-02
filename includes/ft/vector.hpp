@@ -504,7 +504,7 @@ namespace ft {
       // free then assign and allocate new capacity
       clear();
       _alloc.deallocate(_d_start, _capacity);
-      _capacity = get_new_capacity(new_cap);
+      _capacity = get_first_capacity(new_cap);
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
       // copy contents back

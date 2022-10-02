@@ -14,7 +14,9 @@ int main() {
   printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
 }
-  insert_single_test();
+  if (insert_single_test() != 0) {
+    return 1;
+  }
 
   return 0;
 }
