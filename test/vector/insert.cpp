@@ -61,9 +61,6 @@ int insert_single_test() {
     std_vec.insert(it, 21);
   }
   if (!After_Insert_Check(std_vec, ft_vec)) {
-    std::cout << "ft_vec capacity :" << ft_vec.capacity()
-              << " std_vec capacity :" << std_vec.capacity()
-              << std::endl;
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -78,9 +75,6 @@ int insert_single_test() {
   for(; it_ != std_vec.end(); it_++) {}
   std_vec.insert(it_, 10, 21);
   if (!After_Insert_Check(std_vec, ft_vec)) {
-    std::cout << "ft_vec capacity :" << ft_vec.capacity()
-              << " std_vec capacity :" << std_vec.capacity()
-              << std::endl;
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -101,9 +95,6 @@ int insert_single_test() {
     std_vec.insert(it, 21);
   }
   if (!After_Insert_Check(std_vec, ft_vec)) {
-    std::cout << "ft_vec capacity :" << ft_vec.capacity()
-              << " std_vec capacity :" << std_vec.capacity()
-              << std::endl;
     return TEST_ERROR(KO_INSERT);
   }
 }
