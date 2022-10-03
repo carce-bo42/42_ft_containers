@@ -699,7 +699,7 @@ namespace ft {
                                        y.begin(), y.end());
   }
 
-  // if a <= b == true, then a > b false.
+  // (x <= y) == !(x > y).
   template< class T, class Alloc >
   bool operator<=( const ft::vector<T,Alloc>& x,
                    const ft::vector<T,Alloc>& y )
@@ -714,6 +714,7 @@ namespace ft {
     return y < x;
   }
 
+  // (x >= y) == !(x < y)
   template< class T, class Alloc >
   bool operator>=( const ft::vector<T,Alloc>& x,
                    const ft::vector<T,Alloc>& y )
