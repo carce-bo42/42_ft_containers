@@ -5,6 +5,12 @@
 #include <iostream>
 #include "vector/vector_test.hpp"
 
+int Test_Error(int result, int line, const char* file) {
+  std::cout << "ERROR at line " << line << " from test "
+            << file << std::endl;
+  return result;
+}
+
 int main() {
 {
   int a = 4;
@@ -14,7 +20,10 @@ int main() {
   printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
 }
-  if (insert_single_test() != 0) {
+  if (insert_single_test() != 0
+      || erase_range_single_test() != 0
+      || erase_pos_single_test() != 0)
+  {
     return 1;
   }
 

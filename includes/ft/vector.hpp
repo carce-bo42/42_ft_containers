@@ -184,7 +184,7 @@ namespace ft {
           _alloc.construct(_d_start + i, _d_start[i - hole_size]);
           _alloc.destroy(_d_start + i - hole_size);
         }
-        _d_end += hole_size;
+        _d_end += hole_size; // resize
       }
     }
 
@@ -539,7 +539,6 @@ namespace ft {
      * inserts value before pos.
      */
     iterator insert( const_iterator pos, const T& value ) {
-
       difference_type value_pos = pos.base() - _d_start;
       create_mem_hole_at(value_pos, 1);
       _alloc.construct(_d_start + value_pos, value);
@@ -577,13 +576,44 @@ namespace ft {
     }
 
     /*
+     * Removes the element at position pos.
+     * Experimentally, capacity does never change with an erase call.
+     */
     iterator erase( iterator pos ) {
+      difference_type value_pos = pos.base() - _d_start;
+      size_type current_size = size();
 
+      // erase element at position 
+      _alloc.destroy(_d_start + value_pos);
+      // shift all elements after pos
+      for (size_type i = value_pos; i < current_size - 1; i++) {
+        _alloc.construct(_d_start + i, _d_start[i + 1]);
+        _alloc.destroy(_d_start + i + 1);
+      }
+      --_d_end; // resize
+      return _d_start + value_pos;
     }
 
+    /*
+     * Removes elements in range [first, last).
+     */
     iterator erase( iterator first, iterator last ) {
+      difference_type start = first.base() - _d_start;
+      size_type erase_size = ft::distance(first, last);
 
-    }*/
+      // erase all elements from [first, last)
+      for (size_type i = start; first != last; first++) {
+        _alloc.destroy(_d_start + i);
+        ++i;
+      }
+      // shift all elements after pos erase_size positions
+      for (size_type i = start; i < size() - erase_size; i++) {
+        _alloc.construct(_d_start + i, _d_start[i + erase_size]);
+        _alloc.destroy(_d_start + i + erase_size);
+      }
+      _d_end -= erase_size;
+      return _d_start + start;
+    }
 
 
     void push_back( const T& value ) {

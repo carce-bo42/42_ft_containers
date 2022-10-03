@@ -2,23 +2,16 @@
 #include <vector>
 #include <iostream>
 #include "ft/utils/utils.hpp"
+#include "../debug.hpp"
 
 typedef enum {
   OK = 0,
-  KO_INSERT = 1
+  KO_INSERT = 1,
+  KO_ERASE = 2
 } VECTOR_TEST_RESULT;
 
-#define TEST_ERROR(result) \
-        Test_Error(result, __LINE__, __FILE__);
-
-inline int Test_Error(int result, int line, const char* file) {
-  std::cout << "ERROR at line " << line << " from test "
-            << file << std::endl;
-  return result;
-}
-
 template <typename T>
-inline bool After_Insert_Check(std::vector<T> v, ft::vector<T> u) {
+inline bool Vector_Equality_Check(std::vector<T> v, ft::vector<T> u) {
   return ft::equal(u.begin(), u.end(), v.begin())
          && u.capacity() == v.capacity();
 }
@@ -38,7 +31,7 @@ int insert_single_test() {
   // shoudl be now 4 12 4 4 3
   // iterator invalidated !.
   std_vec.insert(std_vec.begin(), 21);
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -53,7 +46,7 @@ int insert_single_test() {
     std::vector<int>::iterator it = std_vec.begin();
     std_vec.insert(it + std_vec.size(), 21);
   }
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -63,7 +56,7 @@ int insert_single_test() {
   //print_vector(ft_vec);  
   std::vector<int> std_vec(4, 5); // 5 5 5 5 
   std_vec.insert(std_vec.begin() + std_vec.size(), 10, 21);
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -77,7 +70,7 @@ int insert_single_test() {
   for (int i = 0; i < 10; i++) {
     std_vec.insert(std_vec.begin() + std_vec.size() - 1, 21);
   }
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -93,7 +86,7 @@ int insert_single_test() {
   for (int i = 0; i < 194; i++) {
     std_vec.insert(std_vec.begin() + std_vec.size() - 1, 21);
   }
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
   //print_vector(vec);
@@ -111,7 +104,7 @@ int insert_single_test() {
   for (int i = 0; i < 194; i++) {
     std_vec.insert(std_vec.begin() + std_vec.size() - 1, 21);
   }
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
 }
@@ -135,9 +128,62 @@ int insert_single_test() {
   std_vec.insert(std_vec.end() - 1, std_vec_input.begin(), std_vec_input.end());
 
   //print_vector(ft_vec);
-  if (!After_Insert_Check(std_vec, ft_vec)) {
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
     return TEST_ERROR(KO_INSERT);
   }
 }
+  return OK;
+}
+
+/*
+ * Tests erase with an iterator range for vectors
+ * with size between 1 and 100, and erase intervals from 1 to size.
+ */
+int erase_range_single_test() {
+
+  for (int vector_size = 1; vector_size < 100; vector_size++) {
+    for (int erase_end = 0; erase_end < vector_size; erase_end++) {
+      ft::vector<int> ft_vec;
+      for (int i = 0; i < vector_size; i++) {
+        ft_vec.push_back(i);
+      }
+      ft_vec.erase(ft_vec.begin(), ft_vec.end() - erase_end);
+
+      std::vector<int> std_vec;
+
+      for (int i = 0; i < vector_size; i++) {
+        std_vec.push_back(i);
+      }
+      std_vec.erase(std_vec.begin(), std_vec.end() - erase_end);
+
+      if (!Vector_Equality_Check(std_vec, ft_vec)) {
+        return TEST_ERROR(KO_ERASE);
+      }
+    }
+  }
+  return OK;
+}
+
+int erase_pos_single_test() {
+  for (int vector_size = 1; vector_size < 100; vector_size++) {
+    for (int erase_pos = 0; erase_pos < vector_size; erase_pos++) {
+      ft::vector<int> ft_vec;
+      for (int i = 0; i < vector_size; i++) {
+        ft_vec.push_back(i);
+      }
+      ft_vec.erase(ft_vec.begin() + erase_pos);
+
+      std::vector<int> std_vec;
+
+      for (int i = 0; i < vector_size; i++) {
+        std_vec.push_back(i);
+      }
+      std_vec.erase(std_vec.begin() + erase_pos);
+
+      if (!Vector_Equality_Check(std_vec, ft_vec)) {
+        return TEST_ERROR(KO_ERASE);
+      }
+    }
+  }
   return OK;
 }

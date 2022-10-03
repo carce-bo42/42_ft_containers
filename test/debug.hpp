@@ -1,10 +1,15 @@
 #ifndef CONTAINERS_DEBUG_HPP
 # define CONTAINERS_DEBUG_HPP
+# pragma once
 
 #include "ft/vector.hpp"
 #include <iostream>
 #include <memory>
 
+int Test_Error(int result, int line, const char* file);
+
+#define TEST_ERROR(result) \
+        Test_Error(result, __LINE__, __FILE__);
 
 /*
  * Since ft::vector<T> is in reality 
