@@ -231,6 +231,13 @@ namespace ft {
       return result;
   }
 
+	template< typename T>
+	void swap( T& x, T& y) {
+    T tmp(x);
+    x = y;
+    y = tmp;
+	}
+
 } /* namespace ft */
 
 #endif /* CONTAINERS_UTILS_HPP */

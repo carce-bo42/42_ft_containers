@@ -622,7 +622,6 @@ namespace ft {
       return _d_start + start;
     }
 
-
     void push_back( const T& value ) {
       if (size() == _capacity) {
         reserve(size() + 1);
@@ -630,8 +629,105 @@ namespace ft {
       _alloc.construct(_d_end, value);
       ++_d_end;
     }
-  
+
+    void pop_back() {
+      if (size()) {
+        --_d_end;
+        _alloc.destroy(_d_end);
+      }
+    }
+
+    /*
+     * Forces size to be count. Adds new empty elements 
+     * or removes elements stored.
+     */
+    void resize( size_type count, T value = T() ) {
+      if (count == size()) {
+        return ;
+      } else if (count < size()) {
+        for (size_type i = count; i < size(); i++) {
+          _alloc.deallocate(_d_start + i);
+        }
+        _d_end -= size() - count;
+      } else {
+        if (count >= _capacity) {
+          reserve(count);
+        }
+        for (size_type i = size(); i < count; i++) {
+          _alloc.allocate(_d_start + i, value);
+        }
+        _d_end += count - size();
+      }
+    }
+
+    /*
+     * Literally swap everything with some other vector.
+     * Without swapping memory addresses of each vector, i.e.
+     * vector* before_swap == vector* after_swap
+     */
+    void swap( vector& other ) {
+      if (this != &other) {
+        ft::swap(_alloc, other._alloc);
+        ft::swap(_d_start, other._d_start);
+        ft::swap(_d_end, other._d_end);
+        ft::swap(_capacity, other._capacity);
+      }
+    }
+
   }; /* class vector */
+
+  template< class T, class Alloc >
+  bool operator==( const ft::vector<T,Alloc>& x,
+                   const ft::vector<T,Alloc>& y )
+  {
+    return x.size() == y.size()
+            && ft::equal(x.begin(), x.end(), y.begin());
+  }
+
+  template< class T, class Alloc >
+  bool operator!=( const ft::vector<T,Alloc>& x,
+                   const ft::vector<T,Alloc>& y )
+  {
+    return !(x == y);
+  }
+
+  template< class T, class Alloc >
+  bool operator<( const ft::vector<T,Alloc>& x,
+                  const ft::vector<T,Alloc>& y )
+  {
+    return ft::lexicographical_compare(x.begin(), x.end(),
+                                       y.begin(), y.end());
+  }
+
+  // if a <= b == true, then a > b false.
+  template< class T, class Alloc >
+  bool operator<=( const ft::vector<T,Alloc>& x,
+                   const ft::vector<T,Alloc>& y )
+  {
+    return !(x > y);
+  }
+
+  template< class T, class Alloc >
+  bool operator>( const ft::vector<T,Alloc>& x,
+                  const ft::vector<T,Alloc>& y )
+  {
+    return y < x;
+  }
+
+  template< class T, class Alloc >
+  bool operator>=( const ft::vector<T,Alloc>& x,
+                   const ft::vector<T,Alloc>& y )
+  {
+    return !(x < y);
+  }
+
+  template< class T, class Alloc >
+  void swap( ft::vector<T,Alloc>& x,
+             ft::vector<T,Alloc>& y )
+  {
+    ft::swap(x, y);
+  }
+
 } /* namespace ft */
 
 #endif /* CONTAINERS_VECTOR_HPP */
