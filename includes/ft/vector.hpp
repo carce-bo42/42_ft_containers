@@ -540,7 +540,8 @@ namespace ft {
     }
 
     /*
-     * inserts value before pos.
+     * inserts value at pos. It does not
+     * replace the current value.
      */
     iterator insert( const_iterator pos, const T& value ) {
       difference_type value_pos = pos.base() - _d_start;
@@ -550,7 +551,7 @@ namespace ft {
     }
 
     /*
-     * Inserts count values before pos.
+     * Inserts count values at pos.
      */
     iterator insert( const_iterator pos, size_type count, const T& value ) {
       difference_type value_pos = pos.base() - _d_start;
@@ -562,8 +563,7 @@ namespace ft {
     }
 
     /*
-     * Inserts values from first to last starting before pos and
-     * going backwards
+     * Inserts values from first to last starting at pos.
      */
     template< class InputIt >
     iterator insert( const_iterator pos, InputIt first, InputIt last,
@@ -621,7 +621,12 @@ namespace ft {
       _d_end -= erase_size;
       return _d_start + start;
     }
-
+    
+    /* 
+     * Creates a new element at the last position
+     * available on the vector.
+     * Changes capacity if necessary.
+     */
     void push_back( const T& value ) {
       if (size() == _capacity) {
         reserve(size() + 1);
@@ -629,7 +634,11 @@ namespace ft {
       _alloc.construct(_d_end, value);
       ++_d_end;
     }
-
+    
+    /* 
+     * Destroys the last element from the vector.
+     * Never changes capacity.
+     */
     void pop_back() {
       if (size()) {
         --_d_end;
