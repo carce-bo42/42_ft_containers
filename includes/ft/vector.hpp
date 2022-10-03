@@ -160,6 +160,10 @@ namespace ft {
      */
     void create_mem_hole_at( size_type pos, size_type hole_size ) {
       
+      if (hole_size == 0) {
+        return ;
+      }
+
       size_type new_size = size() + hole_size;
 
       if (new_size > _capacity) {
@@ -606,10 +610,13 @@ namespace ft {
         _alloc.destroy(_d_start + i);
         ++i;
       }
-      // shift all elements after pos erase_size positions
-      for (size_type i = start; i < size() - erase_size; i++) {
-        _alloc.construct(_d_start + i, _d_start[i + erase_size]);
-        _alloc.destroy(_d_start + i + erase_size);
+      // protect from first == last
+      if (erase_size != 0) {
+        // shift all elements after pos erase_size positions
+        for (size_type i = start; i < size() - erase_size; i++) {
+          _alloc.construct(_d_start + i, _d_start[i + erase_size]);
+          _alloc.destroy(_d_start + i + erase_size);
+        }
       }
       _d_end -= erase_size;
       return _d_start + start;

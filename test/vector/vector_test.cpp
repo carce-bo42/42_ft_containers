@@ -60,11 +60,37 @@ int insert_point_single_test() {
   return OK;
 }
 
+/* 
+ * inserts vectors of size 1 to 3 full of 1's into vectors
+ * of size 0 to 25 at any position possible.
+ * This test also helps check if insert is protected against
+ * 0 length insertions for insert(const iterator, size_type, const T&).
+ */
+int insert_range_value_single_test() {
+  for (int vector_size = 0; vector_size < 25; vector_size++) {
+    for (int insert_point = 0; insert_point < vector_size + 1; insert_point++) {
+      for (int insert_length = 0; insert_length < 3; insert_length++) {
+      
+        ft::vector<TEST_TYPE> ft_vec(vector_size, 0);
+        ft_vec.insert(ft_vec.begin() + insert_point, insert_length, 1); 
+
+        std::vector<TEST_TYPE> std_vec(vector_size, 0);
+        std_vec.insert(std_vec.begin() + insert_point, insert_length, 1);
+
+        if (!Vector_Equality_Check(std_vec, ft_vec)) {
+          return TEST_ERROR(KO_ERASE);
+        }
+      }
+    }
+  }
+  return OK;
+}
+
 /*
  * Inserts vector 0 1 2 3 .. 20 into vectors of
  * size from 0 to 25 at all possible positions.
  */
-int insert_range_single_test() {
+int insert_range_iterators_single_test() {
   std::vector<TEST_TYPE> std_vec_input;
   for (int i = 0; i < 20; i++) {
       std_vec_input.push_back(i);
@@ -74,11 +100,11 @@ int insert_range_single_test() {
       ft_vec_input.push_back(i);
   }
   for (int vector_size = 0; vector_size < 25; vector_size++) {
-    for (int insert_point = 0; insert_point < vector_size; insert_point++) {
+    for (int insert_point = 0; insert_point < vector_size + 1; insert_point++) {
       
       ft::vector<TEST_TYPE> ft_vec;
       for (int i = 0; i < vector_size; i++) {
-        ft_vec.push_back(i);
+        ft_vec.push_back(i);  
       }
       ft_vec.insert(ft_vec.begin() + insert_point,
                    ft_vec_input.begin(), ft_vec_input.end());
