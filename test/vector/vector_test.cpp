@@ -13,7 +13,8 @@ typedef enum {
 template <typename T>
 inline bool Vector_Equality_Check(std::vector<T> v, ft::vector<T> u) {
   return ft::equal(u.begin(), u.end(), v.begin())
-         && u.capacity() == v.capacity();
+         && u.capacity() == v.capacity()
+         && u.size() == v.size();
 }
 
 int insert_single_test() {
