@@ -20,7 +20,8 @@ int main() {
   printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
 }
-  if (insert_single_test() != 0
+  if (insert_point_single_test() != 0
+      || insert_range_single_test() != 0
       || erase_range_single_test() != 0
       || erase_pos_single_test() != 0)
   {
