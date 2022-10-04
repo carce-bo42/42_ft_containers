@@ -1,4 +1,5 @@
 #include "ft/vector.hpp"
+#include "ft/stack.hpp"
 #include "debug.hpp"
 #include <vector>
 #include <stdio.h>
@@ -40,6 +41,8 @@ int main() {
   if (vector_test() != 0) {
     return 1;
   }
+
+  ft::stack<int> stack_lol;
 
   return 0;
 }
