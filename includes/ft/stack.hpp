@@ -8,7 +8,8 @@
  * This class is simple, this reference was enough to implement it :
  * https://en.cppreference.com/w/cpp/container/stack
  * It is a vector wrapper, with very limited methods that consist
- * on calling the underlying vector methods.
+ * on calling the underlying container methods.
+ * List, vector and dequeue are suitable to be the underlying container.
  */
 
 namespace ft {
