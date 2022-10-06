@@ -8,11 +8,13 @@
 namespace ft {
 
 template < typename Key,
-           typename Val, // Val = Pair<Key, T> T typename
+           typename Val, // Val is some implementation of a pair of values.
            typename KeyOfVal, // In stl, this is used presumably to generalize
                               // Val to any structure containing Key. With this
                               // functor you are supposed to operate on Val
                               // types to extract Keys.
+                              // I like how this also hints how there must
+                              // be a Key inside Val (Key Of Val).
            typename Compare = std::less<Key>, // functor
            typename Alloc = std::allocator<Val> > 
 class rb_tree {
