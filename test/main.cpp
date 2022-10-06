@@ -6,6 +6,8 @@
 #include <iostream>
 #include "vector/vector_test.hpp"
 
+#include "ft/RBT/red_black_tree.hpp"
+
 int Test_Error(int result, int line, const char* file) {
   std::cout << "ERROR at line " << line << " from test "
             << file << std::endl;

@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <functional>
-#include "ft/red_black_tree/node.hpp"
+#include "ft/RBT/red_black_tree_node.hpp"
 
 namespace ft {
 
@@ -19,9 +19,8 @@ class rb_tree {
 
   protected:
   
-  typedef typename rb_tree_node<T>::node_ptr       node_ptr;
-  typedef typename rb_tree_node<T>::const_node_ptr const_node_ptr;
-  typedef typename rb_tree_node<T>::node_color     node_color;
+  typedef rb_tree_node<Val>*       node_ptr;
+  typedef const rb_tree_node<Val>* const_node_ptr;
 
   private:
 

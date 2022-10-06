@@ -14,10 +14,10 @@ enum rb_tree_node_color { red = false, black = true };
 template <typename T>
 struct rb_tree_node {
 
-  typedef rb_tree_node<T>*       node_ptr;
-  typedef const rb_tree_node<T>* const_node_ptr;
-  typedef rb_tree_node_color     node_color;
   typedef T                      value_type;
+  typedef rb_tree_node*          node_ptr;
+  typedef const rb_tree_node*    const_node_ptr;
+  typedef rb_tree_node_color     node_color;
   
   node_ptr   parent; // needed for balancing
   node_ptr   left;
@@ -27,15 +27,6 @@ struct rb_tree_node {
 
   // empty constructor
   rb_tree_node(const T& value = T())
-  :
-    parent(),
-    left(),
-    right(),
-    color(black),
-    data(value)
-  {}
-
-  rb_tree_node(const T& value)
   :
     parent(),
     left(),
