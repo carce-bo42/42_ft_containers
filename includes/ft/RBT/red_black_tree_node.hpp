@@ -2,14 +2,21 @@
 # define CONTAINERS_RBT_NODE_HPP
 
 namespace ft {
-/*
- * abstraction of the color of a node.
- */
-enum rb_tree_node_color { red = false, black = true };
 
-enum rb_tree_node_orientation { right_child = false, left_child = true };
+enum rb_tree_node_color {
+  red = false,
+  black = true
+};
 
-enum rb_tree_node_nillness { nil = true, not_nil = false };
+enum rb_tree_node_orientation {
+  right_child = false,
+  left_child = true
+};
+
+enum rb_tree_node_nillness {
+  nil = true,
+  not_nil = false
+};
 
 // This will allow to separate what is importnant for 
 // balancing from the rest of the node information.
@@ -36,6 +43,15 @@ struct rb_tree_node_properties {
   {}
 };
 
+/* Red black trees must hold :
+ * (0) Nodes are either RED or BLACK (surprise)
+ * (1) Root and nil leaves are BLACK.
+ * (2) If a node is RED, its children are BLACK.
+ * (3) All paths from a node (not counting the starting
+ *     one) to its nil descendants contain the same number
+ *     of black nodes.
+ */
+
 
 /*
  * A node template from a red-black tree. T will
@@ -48,7 +64,11 @@ struct rb_tree_node {
   typedef rb_tree_node*           node_ptr;
   typedef const rb_tree_node*     const_node_ptr;
   typedef rb_tree_node_color      node_color;
+
   typedef rb_tree_node_properties node_properties;
+  typedef rb_tree_node_color       n_color;
+  typedef rb_tree_node_orientation n_orientation;
+  typedef rb_tree_node_nillness    nilness;
   
   node_ptr         parent; 
   node_ptr         left;
@@ -57,19 +77,21 @@ struct rb_tree_node {
   node_properties  properties;
 
   // empty constructor
-  rb_tree_node(const T& value = T())
+  rb_tree_node(n_orientation o, const T& value = T())
   :
     parent(),
     left(),
     right(),
     data(value),
-    properties()
+    properties(black, o, nil)
   {}
 
-  rb_tree_node(const T& value, const node_ptr parent)
+  rb_tree_node(const T& value, const node_ptr parent,
+               n_orientation o, color c)
   :
     parent(parent),
-    data(value)
+    data(value),
+    properties(c, o, not_nil)
   {}
 
   /*
