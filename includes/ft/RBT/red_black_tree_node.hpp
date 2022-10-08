@@ -132,6 +132,8 @@ struct rb_tree_node {
     properties.color ^= ~properties.color;
   }
 
+
+
 }; // struct rb_tree_node
 
 } // namespace
