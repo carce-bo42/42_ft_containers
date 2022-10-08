@@ -31,7 +31,7 @@ struct rb_tree_node_properties {
 
   n_color       color;
   n_orientation orientation;
-  nilness      nil;
+  nilness       nil;
 
   rb_tree_node_properties(n_color color,
                           n_orientation orientation,
@@ -41,6 +41,7 @@ struct rb_tree_node_properties {
     orientation(orientation),
     nil(nil)
   {}
+
 };
 
 /* Red black trees must hold :
@@ -87,7 +88,7 @@ struct rb_tree_node {
   {}
 
   rb_tree_node(const T& value, const node_ptr parent,
-               n_orientation o, color c)
+               n_orientation o, n_color c)
   :
     parent(parent),
     data(value),
@@ -99,15 +100,37 @@ struct rb_tree_node {
    * or at the left of the parent, so these methods are
    * necessary.
    */
-  /*
   bool is_left_child() {
-
-
+    return properties.orientation == left_child;
   }
 
   bool is_right_child() {
+    return properties.orientation == right_child;
+  }
 
-  }*/
+  bool is_nil() {
+    return properties.nil == nil;
+  }
+
+  void assign_right_child(node_ptr node) {
+    right = node;
+  }
+
+  void assign_left_child(node_ptr node) {
+    left = node;
+  }
+
+  void assign_parent(node_ptr node) {
+    parent = node;
+  }
+
+  /* 
+   * 0 ^ ~0 = 1
+   * 1 ^ ~1 = 0 
+   */
+  void change_color() {
+    properties.color ^= ~properties.color;
+  }
 
 }; // struct rb_tree_node
 
