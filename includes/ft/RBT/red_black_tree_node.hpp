@@ -27,19 +27,19 @@ struct rb_tree_node_properties {
   typedef rb_tree_node_properties  self;
   typedef rb_tree_node_color       n_color;
   typedef rb_tree_node_orientation n_orientation;
-  typedef rb_tree_node_nillness    nilness;
+  //typedef rb_tree_node_nillness    nilness;
 
   n_color       color;
   n_orientation orientation;
-  nilness       nil;
+  //nilness       nil;
 
   rb_tree_node_properties(n_color color,
-                          n_orientation orientation,
-                          nilness nil)
+                          n_orientation orientation)
+                          //nilness nil)
   :
     color(color),
-    orientation(orientation),
-    nil(nil)
+    orientation(orientation)
+    //nil(nil)
   {}
 
 };
@@ -84,7 +84,7 @@ struct rb_tree_node {
     left(),
     right(),
     data(value),
-    properties(black, o, nil)
+    properties(black, o)
   {}
 
   rb_tree_node(const T& value, const node_ptr parent,
@@ -92,7 +92,7 @@ struct rb_tree_node {
   :
     parent(parent),
     data(value),
-    properties(c, o, not_nil)
+    properties(c, o)
   {}
 
   /*
@@ -106,10 +106,6 @@ struct rb_tree_node {
 
   bool is_right_child() {
     return properties.orientation == right_child;
-  }
-
-  bool is_nil() {
-    return properties.nil == nil;
   }
 
   void assign_right_child(node_ptr node) {

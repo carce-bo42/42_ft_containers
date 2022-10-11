@@ -7,6 +7,14 @@
 
 namespace ft {
 
+/* To understand the allocator template :
+ * https://gcc.gnu.org/bugzilla/attachment.cgi?id=34289
+ * PD: search for '__alloc_traits'. Check the definition of 'struct rebind'
+ * inside __alloc_traits, then search for 'struct rebind'.
+ * Find the one inside class allocator. The STL tree calls the template inside __alloc_traits,
+ * im calling the template inside std::allocator which is the same. 
+ */
+
 template < typename Key,
            typename Val, // Val is some implementation of a pair of values.
            typename KeyOfVal, // In stl, this is used presumably to generalize
@@ -23,13 +31,11 @@ class rb_tree {
   
   typedef rb_tree_node<Val>*       node_ptr;
   typedef const rb_tree_node<Val>* const_node_ptr;
-
-  private:
-
-  node_ptr root;
-  size_t   node_count;
-  // possibly missing some variables for now.
-  // balancing will be the last thing to do.
+  typedef rb_tree_node_color       n_color;
+  typedef rb_tree_node_orientation n_orientation;
+  // get another allocator.
+  typedef typename Alloc::
+          template rebind<rb_tree_node<Val> >::other node_alloc;
 
   public:
 
@@ -42,6 +48,13 @@ class rb_tree {
   typedef size_t            size_type;
   typedef ptrdiff_t         difference_type;
   typedef Alloc             allocator_type;
+
+  private:
+
+  node_ptr       root;
+  node_ptr       current; // for recursion
+  size_t         node_count;
+  allocator_type alloc;
 
 /*
  * red black tree interface  
@@ -68,6 +81,17 @@ class rb_tree {
  * rebalance() : will recieve a node and a problem to solve.
  *
  */
+
+  /*
+  node_ptr construct_node(const Val& value,
+                          const node_ptr parent,
+                          n_color color,
+                          n_orientation orientation)
+  {
+  }
+
+  void destroy_node(node_ptr node) {
+  }*/
 
 
 
