@@ -663,7 +663,7 @@ class vector {
         reserve(count);
       }
       for (size_type i = size(); i < count; i++) {
-        _alloc.allocate(_d_start + i, value);
+        _alloc.construct(_d_start + i, value);
       }
       _d_end += count - size();
     }
