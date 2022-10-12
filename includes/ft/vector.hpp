@@ -655,7 +655,7 @@ class vector {
       return ;
     } else if (count < size()) {
       for (size_type i = count; i < size(); i++) {
-        _alloc.deallocate(_d_start + i);
+        _alloc.destroy(_d_start + i);
       }
       _d_end -= size() - count;
     } else {
