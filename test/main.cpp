@@ -26,6 +26,32 @@ int vector_test() {
   return 0;
 }
 
+class Example {
+
+  public:
+
+  Example(int a, int b)
+  :
+    i(a),
+    j(b)
+  {}
+  ~Example() {
+    i = 0;
+    j = 0;
+  }
+
+  int i;
+  int j;
+
+  void print_numbers() {
+    std::cout << "i = " << i
+              << ", j = " << j
+              << std::endl;
+  }
+
+
+};
+
 int main() {
 {
   int a = 4;
@@ -43,8 +69,38 @@ int main() {
   if (vector_test() != 0) {
     return 1;
   }
+{
+  std::allocator<Example> alloc;
 
-  ft::stack<int> stack_lol;
+  Example* ptr = alloc.allocate(1);
 
+  // Correct way of calling construct with no simple constructor ?
+  alloc.construct(ptr, Example(3, 4));
+
+  ptr->print_numbers();
+
+  alloc.destroy(ptr);
+  ptr->print_numbers();
+
+  alloc.deallocate(ptr, 1);
+
+/*
+ * With nodes:
+ * 
+ * alloc = std::allocator<Node>
+ * node_ptr = alloc.allocate(1);
+ * alloc.construct(node_ptr, rb_tree_node(a, b, c, d)); (works)
+ * 
+ * We recieve an std::pair<Key, T>. 
+ * this std::pair is the value_type of the map.
+ * The correct way of creating a node, will be:
+ * node_ptr = node_allocator.allocate(1);
+ * node_allocator.construct(node_ptr, rb_tree_node(pair, parent,
+ *                                                 color, orientation)).
+ * This should work.
+ * 
+ * 
+ */
+}
   return 0;
 }
