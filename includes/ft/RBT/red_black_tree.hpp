@@ -5,6 +5,20 @@
 #include <functional>
 #include "ft/RBT/red_black_tree_node.hpp"
 
+
+// KeyOfVal functor for rb_tree
+template < typename Key,
+           typename Val /* = ft::pair<Key, typename T> */ >
+struct get_key {
+
+  typedef ft::rb_tree_node<Val> node_type;
+
+  Key operator()(const node_type& node) {
+    return node.data.first();
+  }
+
+};
+
 namespace ft {
 
 /* To understand the allocator template :
@@ -24,18 +38,19 @@ template < typename Key,
                               // I like how this also hints how there must
                               // be a Key inside Val (Key Of Val).
            typename Compare = std::less<Key>, // functor
-           typename Alloc = std::allocator<Val> > 
+           typename Alloc = std::allocator<Val> >
 class rb_tree {
 
   protected:
   
-  typedef rb_tree_node<Val>*       node_ptr;
-  typedef const rb_tree_node<Val>* const_node_ptr;
-  typedef rb_tree_node_color       n_color;
-  typedef rb_tree_node_orientation n_orientation;
+  typedef rb_tree_node<Val>                  node_type;
+  typedef node_type*                         node_ptr;
+  typedef const node_type*                   const_node_ptr;
+  typedef rb_tree_node_color                 n_color;
+  typedef rb_tree_node_orientation           n_orientation;
   // get another allocator.
   typedef typename Alloc::
-          template rebind<rb_tree_node<Val> >::other node_alloc;
+          template rebind<node_type >::other node_allocator;
 
   public:
 
@@ -54,7 +69,7 @@ class rb_tree {
   node_ptr       root;
   node_ptr       current; // for recursion
   size_t         node_count;
-  allocator_type alloc;
+  node_allocator node_alloc;
 
 /*
  * red black tree interface  
@@ -81,17 +96,23 @@ class rb_tree {
  * rebalance() : will recieve a node and a problem to solve.
  *
  */
+  public:
 
-  /*
   node_ptr construct_node(const Val& value,
                           const node_ptr parent,
-                          n_color color,
-                          n_orientation orientation)
+                          n_orientation orientation,
+                          n_color color )
   {
+    node_ptr new_node = node_alloc.allocate(1);
+    node_alloc.construct(new_node,
+                         node_type(value, parent, orientation, color));
+    return new_node;
   }
 
   void destroy_node(node_ptr node) {
-  }*/
+    node_alloc.destroy(node);
+    node_alloc.deallocate(node, 1);
+  }
 
 
 

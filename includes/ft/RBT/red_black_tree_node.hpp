@@ -1,6 +1,8 @@
 #ifndef CONTAINERS_RBT_NODE_HPP
 # define CONTAINERS_RBT_NODE_HPP
 
+#include <string.h>
+
 namespace ft {
 
 enum rb_tree_node_color {
@@ -95,16 +97,20 @@ struct rb_tree_node {
     properties(c, o)
   {}
 
+  ~rb_tree_node() {
+    memset((void*)this, 0, sizeof(*this));
+  }
+
   /*
    * Rotations depend on wether a child is at the right
    * or at the left of the parent, so these methods are
    * necessary.
    */
-  bool is_left_child() {
+  bool is_left_child() const {
     return properties.orientation == left_child;
   }
 
-  bool is_right_child() {
+  bool is_right_child() const {
     return properties.orientation == right_child;
   }
 
@@ -127,8 +133,6 @@ struct rb_tree_node {
   void change_color() {
     properties.color ^= ~properties.color;
   }
-
-
 
 }; // struct rb_tree_node
 

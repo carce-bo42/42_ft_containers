@@ -1,7 +1,7 @@
 #include "ft/vector.hpp"
-#include <vector>
 #include <iostream>
 #include "ft/utils/utils.hpp"
+#include <vector>
 #include "../debug.hpp"
 
 typedef enum {
@@ -27,10 +27,10 @@ int insert_point_single_test() {
   for (int vector_size = 0; vector_size < 25; vector_size++) {
     for (int insert_point = 0; insert_point < vector_size; insert_point++) {
       
-      ft::vector<TEST_TYPE> ft_vec(vector_size, 0);
+      ft::vector<TEST_TYPE> ft_vec(vector_size);
       ft_vec.insert(ft_vec.begin() + insert_point, 1);
 
-      std::vector<TEST_TYPE> std_vec(vector_size, 0);
+      std::vector<TEST_TYPE> std_vec(vector_size);
       std_vec.insert(std_vec.begin() + insert_point, 1);
 
       if (!Vector_Equality_Check(std_vec, ft_vec)) {

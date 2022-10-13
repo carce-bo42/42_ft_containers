@@ -75,7 +75,7 @@ int main() {
   Example* ptr = alloc.allocate(1);
 
   // Correct way of calling construct with no simple constructor ?
-  alloc.construct(ptr, Example(3, 4));
+  alloc.construct(ptr, Example(3, 4 ));
 
   ptr->print_numbers();
 
