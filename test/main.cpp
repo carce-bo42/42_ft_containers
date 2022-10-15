@@ -7,6 +7,8 @@
 #include "vector/vector_test.hpp"
 
 #include "ft/RBT/red_black_tree.hpp"
+#include "ft/RBT/red_black_tree_node.hpp"
+#include "ft/utils/pair.hpp"
 
 int Test_Error(int result, int line, const char* file) {
   std::cout << "ERROR at line " << line << " from test "
@@ -102,5 +104,21 @@ int main() {
  * 
  */
 }
+{
+  ft::rb_tree<int,
+              ft::pair<int, std::string>,
+              get_key<int,
+                      ft::pair<int, std::string> > > tree;
+  
+  ft::rb_tree_node<ft::pair<int, std::string> > *node =
+      tree.construct_node(ft::pair<int, std::string>(3, "hello"),
+                          NULL, left_child, black);
+  node->print_node_state();
+  node->change_color();
+  node->print_node_state();
+  
+}
+
+
   return 0;
 }

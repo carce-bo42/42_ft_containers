@@ -5,7 +5,6 @@
 #include <functional>
 #include "ft/RBT/red_black_tree_node.hpp"
 
-
 // KeyOfVal functor for rb_tree
 template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
@@ -113,6 +112,7 @@ class rb_tree {
     node_alloc.destroy(node);
     node_alloc.deallocate(node, 1);
   }
+  
 
 
 

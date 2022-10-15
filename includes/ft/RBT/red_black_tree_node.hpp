@@ -3,8 +3,6 @@
 
 #include <string.h>
 
-namespace ft {
-
 enum rb_tree_node_color {
   red = false,
   black = true
@@ -19,6 +17,8 @@ enum rb_tree_node_nillness {
   nil = true,
   not_nil = false
 };
+
+namespace ft {
 
 // This will allow to separate what is importnant for 
 // balancing from the rest of the node information.
@@ -93,6 +93,8 @@ struct rb_tree_node {
                n_orientation o, n_color c)
   :
     parent(parent),
+    left(),
+    right(),
     data(value),
     properties(c, o)
   {}
@@ -126,12 +128,22 @@ struct rb_tree_node {
     parent = node;
   }
 
-  /* 
-   * 0 ^ ~0 = 1
-   * 1 ^ ~1 = 0 
-   */
   void change_color() {
-    properties.color ^= ~properties.color;
+    properties.color = (n_color)!properties.color;
+  }
+
+  // debug:
+  void print_node_state() {
+    std::cout << std::endl;
+    std::cout << "parent : " << parent << std::endl;
+    std::cout << "left : " << left << std::endl;
+    std::cout << "right : " << right << std::endl;
+    std::cout << "data : (" << data.first << ", " << data.second << ")" 
+              << std::endl;
+    std::cout << "properties : ("
+              << (properties.color == black ? "black" : "red") << ", "
+              << (properties.orientation == left_child ? "left" : "right") << ")"
+              << std::endl;
   }
 
 }; // struct rb_tree_node
