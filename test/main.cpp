@@ -105,20 +105,24 @@ int main() {
  */
 }
 {
-  ft::rb_tree<int,
-              ft::pair<int, std::string>,
-              get_key<int,
-                      ft::pair<int, std::string> > > tree;
+  ft::rb_tree<
+    int,
+    ft::pair<int, std::string>,
+    get_key<int, ft::pair<int, std::string> > > tree;
   
   ft::rb_tree_node<ft::pair<int, std::string> > *node =
       tree.construct_node(ft::pair<int, std::string>(3, "hello"),
-                          NULL, left_child, black);
+                          NULL, root, black);
   node->print_node_state();
   node->change_color();
   node->print_node_state();
-  
-}
 
+  tree.pure_insert(node);
+  std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
+  std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
+
+
+}
 
   return 0;
 }

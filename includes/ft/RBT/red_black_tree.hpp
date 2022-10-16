@@ -12,8 +12,8 @@ struct get_key {
 
   typedef ft::rb_tree_node<Val> node_type;
 
-  Key operator()(const node_type& node) {
-    return node.data.first();
+  Key operator()(const node_type* node) {
+    return node->data.first;
   }
 
 };
@@ -69,12 +69,14 @@ class rb_tree {
   node_ptr       current; // for recursion
   size_t         node_count;
   node_allocator node_alloc;
+  Compare        key_cmp;
+  KeyOfVal       key_of_val;
 
 /*
  * red black tree interface  
  * 
  * get_node_from_key()
- * get_node_key()
+ * get_node_key is not implemented because get_key exists
  * get_node_data()
  * construct_node()
  * destroy_node()
@@ -97,6 +99,16 @@ class rb_tree {
  */
   public:
 
+  rb_tree()
+  :
+    root(),
+    current(),
+    node_count(0),
+    node_alloc()
+  {
+    current = root;
+  }
+
   node_ptr construct_node(const Val& value,
                           const node_ptr parent,
                           n_orientation orientation,
@@ -112,10 +124,60 @@ class rb_tree {
     node_alloc.destroy(node);
     node_alloc.deallocate(node, 1);
   }
-  
 
+  // returns either the node or NULL.
+  node_ptr get_node_from_key(Key key, node_ptr start) {
 
+    if (start != NULL) {
+      Key node_key = key_of_val(start);
+      if (node_key == key) {
+        node_ptr ret = start;
+        start = root;
+        return ret;
+      } else if (key_cmp(node_key, key)) { // if n_key < key
+        start = start->right;
+      } else {
+        start = start->left;
+      }
+      return get_node_from_key(key, start);
+    } else {
+      return NULL;
+    }
+  }
 
+  Val get_node_data(node_ptr node) {
+    return node->data;
+  }
+
+  Key get_maximum() {
+    if (!root) {
+      return Key(); // empty Key contructor
+    }
+    node_ptr aux = root;
+    while (aux->right) {
+      aux = aux->right;
+    }
+    return key_of_val(aux);
+  }
+
+  Key get_minimum() {
+    if (!root) {
+      return Key(); // empty Key contructor
+    }
+    node_ptr aux = root;
+    while (aux->left) {
+      aux = aux->left;
+    }
+    return key_of_val(aux);
+  }
+
+  void pure_insert(node_ptr new_node) {
+    if (!root) {
+      root = new_node;
+    } else {
+      // ...
+    }
+  }
 
 }; // class rbtree
 

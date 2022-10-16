@@ -9,8 +9,9 @@ enum rb_tree_node_color {
 };
 
 enum rb_tree_node_orientation {
-  right_child = false,
-  left_child = true
+  root = 0,
+  left_child,
+  right_child  
 };
 
 enum rb_tree_node_nillness {
@@ -114,6 +115,10 @@ struct rb_tree_node {
 
   bool is_right_child() const {
     return properties.orientation == right_child;
+  }
+
+  bool is_root() const  {
+    return properties.orientation == root;
   }
 
   void assign_right_child(node_ptr node) {
