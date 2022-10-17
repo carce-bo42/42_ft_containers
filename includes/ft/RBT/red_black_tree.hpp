@@ -171,6 +171,11 @@ class rb_tree {
     return key_of_val(aux);
   }
 
+  /*
+   * map insert methods return an iterator. 
+   * So iterators have to be done.
+   *
+   */
   void pure_insert(node_ptr new_node) {
     if (!root) {
       root = new_node;
