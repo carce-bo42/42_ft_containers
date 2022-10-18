@@ -3,6 +3,7 @@
 #include "debug.hpp"
 #include <vector>
 #include <stdio.h>
+#include <map>
 #include <iostream>
 #include "vector/vector_test.hpp"
 
@@ -121,6 +122,13 @@ int main() {
   std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
   std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
 
+  std::map<int, std::string> map;
+
+  map.insert(std::pair<int, std::string>(3, "hello)"));
+  map.insert(std::pair<int, std::string>(5, "hello)"));
+
+  std::map<int, std::string>::iterator it = map.begin();
+  std::cout << it->first << std::endl;
 
 }
 

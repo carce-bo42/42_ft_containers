@@ -22,7 +22,7 @@ class random_access_iterator {
   typedef typename ft::iterator_traits<T>::pointer         pointer;
   typedef typename ft::iterator_traits<T>::reference       reference;
   typedef typename ft::random_access_iterator_tag          iterator_category;
-    
+
   private :
 
     pointer   _ptr;

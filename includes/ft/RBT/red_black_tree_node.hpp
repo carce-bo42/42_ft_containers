@@ -74,7 +74,7 @@ struct rb_tree_node {
   typedef rb_tree_node_orientation n_orientation;
   typedef rb_tree_node_nillness    nilness;
   
-  node_ptr         parent; 
+  node_ptr         parent;
   node_ptr         left;
   node_ptr         right;
   value_type       data;

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ft/vector.hpp"
-#include <map>
 
 /*
  * This class is simple, this reference was enough to implement it :
