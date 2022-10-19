@@ -167,6 +167,8 @@ int main() {
 }
 
 }
-
+  ft::vector<int> vec(3, 4);
+  ft::vector<int>::iterator int_it = vec.begin();
+  //ft::vector<char>::iterator char_it(int_it);
   return 0;
 }

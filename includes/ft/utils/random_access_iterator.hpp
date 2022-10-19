@@ -38,8 +38,20 @@ class random_access_iterator {
     :
       _ptr(ptr)
     {}
+  
+    random_access_iterator(const random_access_iterator& it)
+    :
+      _ptr(it.base())
+    {}
 
-    template < typename U > 
+    /* Trick (before it didnt have = const T) :
+     * template keyword is here to allow vector to convert
+     * random_access_iterator<T*> to random_access_iterator<const T*>.
+     * And it is the only case it will convert from one time to another,
+     * since It.base() has the same type for rai<T*> as for rai<const T*>.
+     * Else ends up with substitution failure, which I dislike but accept.
+     */
+    template < typename U >
     random_access_iterator(const random_access_iterator<U>& it)
     :
       _ptr(it.base())
