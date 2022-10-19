@@ -82,7 +82,7 @@ class rb_tree_node_iterator {
           // repeat.
         }
         // asign node to the first right child which is not node
-        if (node->maybe_next->right != node) {
+        if (maybe_next->right != node) {
           node = maybe_next->right;
         } else {
           node = save; // case it is the maximum (we went up until the root)
