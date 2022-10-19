@@ -9,6 +9,7 @@
 
 #include "ft/RBT/red_black_tree.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
+#include "ft/RBT/red_black_tree_node_iterator.hpp"
 #include "ft/utils/pair.hpp"
 
 int Test_Error(int result, int line, const char* file) {
@@ -81,10 +82,8 @@ int main() {
   alloc.construct(ptr, Example(3, 4 ));
 
   ptr->print_numbers();
-
   alloc.destroy(ptr);
   ptr->print_numbers();
-
   alloc.deallocate(ptr, 1);
 
 /*
@@ -121,14 +120,51 @@ int main() {
   tree.pure_insert(node);
   std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
   std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
+  tree.destroy_node(node);
 
   std::map<int, std::string> map;
 
   map.insert(std::pair<int, std::string>(3, "hello)"));
   map.insert(std::pair<int, std::string>(5, "hello)"));
+  map.insert(std::pair<int, std::string>(4, "hello)"));
+  map.insert(std::pair<int, std::string>(2, "hello)"));
+  map.insert(std::pair<int, std::string>(1, "hello)"));
+  map.insert(std::pair<int, std::string>(0, "hello)"));
+  map.insert(std::pair<int, std::string>(11, "hello)"));
+  map.insert(std::pair<int, std::string>(13, "hello)"));
+  map.insert(std::pair<int, std::string>(-12, "hello)"));
+  map.insert(std::pair<int, std::string>(-9, "hello)"));
+  map.insert(std::pair<int, std::string>(-4, "hello)"));
+  map.insert(std::pair<int, std::string>(12, "hello)"));
+  map.insert(std::pair<int, std::string>(40, "hello)"));
+  map.insert(std::pair<int, std::string>(60, "hello)"));
+  map.insert(std::pair<int, std::string>(80, "hello)"));
 
-  std::map<int, std::string>::iterator it = map.begin();
+  //std::map<int, std::string>::iterator it = map.begin();
+  //std::cout << it->first << std::endl;
+
+  for (std::map<int, std::string>::iterator it = map.begin();
+       it != map.end(); it++)
+  {
+    std::cout << it->first << std::endl;
+  }
+
+{
+  std::cout << std::endl;
+  std::map<int, std::string>::iterator it = map.end();
+  it--;
   std::cout << it->first << std::endl;
+  it++;
+  std::cout << it->first << std::endl;
+  it++;
+  std::cout << it->first << std::endl;
+  it++;
+  std::cout << it->first << std::endl;
+  it++;
+  std::cout << it->first << std::endl;
+  it++;
+  std::cout << it->first << std::endl;
+}
 
 }
 
