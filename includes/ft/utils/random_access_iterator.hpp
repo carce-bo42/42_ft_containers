@@ -39,11 +39,6 @@ class random_access_iterator {
       _ptr(ptr)
     {}
   
-    random_access_iterator(const random_access_iterator& it)
-    :
-      _ptr(it.base())
-    {}
-
     /* Trick (before it didnt have = const T) :
      * template keyword is here to allow vector to convert
      * random_access_iterator<T*> to random_access_iterator<const T*>.
