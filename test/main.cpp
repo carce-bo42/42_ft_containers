@@ -71,9 +71,9 @@ int main() {
   printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
 }
-  /*if (vector_test() != 0) {
+  if (vector_test() != 0) {
     return 1;
-  }*/
+  }
 {
   std::allocator<Example> alloc;
 

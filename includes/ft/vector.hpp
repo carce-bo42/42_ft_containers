@@ -37,27 +37,6 @@
  * On why size_type and difference_type are always the same (I use this a lot):
  * https://www.codeguru.com/cplusplus/about-size_t-and-ptrdiff_t/
  * 
- * Explanation for the
- *     typename enable_if<is_integral<T>::value, T>::type = T :
- * This function is only to be used in case the type is integral.
- * enable_if<cond, T> accepts a boolean that, in case it is true,
- * gives a value of T to its inner variable type.
- * It is essentially saying that "If this T is an integral
- * type, enable_if should have an inside type of T". So
- * forcing here that enable_if< ... >::type = T is like 
- * saying "I only want this to be looked into in case the enable_if
- * type is T", which only happens if indeed the T is
- * an integral type.
- * Edit : 
- * So the syntax for C++98 is
- *     typename enable_if<!is_integral<T>::value, T>::type* = 0,
- * which is basically, taking into account the logic explained earlier,
- * negating that a pointer to enable_if<...>::type does not exist.
- * Which means if a pointer to enable_if<...>::type exists, is then
- * not 0, so T is integral. 
- * the pointer 
- * 
- * 
  * How capacity works in vectors :
  * https://stackoverflow.com/questions/3167272/
  * https://stackoverflow.com/questions/24846348/
@@ -237,8 +216,8 @@ class vector {
   template< class InputIt >
   vector( InputIt first, InputIt last,
         const Allocator& alloc = Allocator(),
-        typename enable_if<!is_integral<InputIt>::value,
-                            InputIt>::type* = 0 )
+        typename enable_if<is_integral<typename InputIt::value_type>::value,
+                           InputIt>::type = 0 )
   :
     _alloc(alloc),
     _d_start(0),
@@ -334,8 +313,8 @@ class vector {
     */
   template< class InputIt >
   void assign( InputIt first, InputIt last,
-                typename enable_if<!is_integral<InputIt>::value,
-                                  void>::type* = 0 )
+               typename enable_if<is_integral<typename InputIt::value_type>::value,
+                                  InputIt>::type* = 0 )
   {
     clear();
     difference_type diff = distance(first, last);
@@ -557,6 +536,7 @@ class vector {
     difference_type value_pos = pos.base() - _d_start;
     create_mem_hole_at(value_pos, count);
     for ( ; count > 0; count--) {
+
       _alloc.construct(_d_start + value_pos + count - 1, value);
     }
     return _d_start + value_pos;
@@ -567,8 +547,8 @@ class vector {
     */
   template< class InputIt >
   iterator insert( const_iterator pos, InputIt first, InputIt last,
-                    typename enable_if<!is_integral<InputIt>::value,
-                                      InputIt>::type* = 0 )
+        typename enable_if<is_integral<typename InputIt::value_type>::value,
+                          InputIt>::type = 0 )
   {
     difference_type value_pos = pos.base() - _d_start;
     create_mem_hole_at(value_pos, ft::distance(first, last));

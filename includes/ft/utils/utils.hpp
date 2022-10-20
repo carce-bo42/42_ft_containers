@@ -26,6 +26,15 @@ namespace ft {
   * This will only "activate" the function if the condition is true.
   * 
   */
+
+struct false_type {
+    static const bool value = false;
+};
+
+struct true_type {
+    static const bool value = true;
+};
+
 template < bool, typename T >
 struct enable_if
 {};
@@ -35,15 +44,13 @@ struct enable_if<true, T>
 { typedef T type; };
 
 template < typename T, typename V > 
-struct is_const_equivalent
-{ static bool const value = false; };
+struct is_const_equivalent : false_type {};
 
 template < typename T >
-struct is_const_equivalent<T, const T> { static bool const value = true; };
+struct is_const_equivalent<T, const T> : true_type {};
 
 template < typename T > 
-struct is_const_equivalent<const T, T> { static bool const value = true; };
-
+struct is_const_equivalent<const T, T> : true_type {};
 
 /*
   * is_integral 
@@ -55,38 +62,37 @@ struct is_const_equivalent<const T, T> { static bool const value = true; };
   * template SFINAE's.
   */
 template <typename T>
-struct is_integral
-{ static bool const value = false; };
+struct is_integral : false_type {};
 
 template <>
-struct is_integral<bool> { static bool const value = true; };
+struct is_integral<int> : true_type {};
 
 template <>
-struct is_integral<char> { static bool const value = true; };
+struct is_integral<bool> : true_type {};
 
 template <>
-struct is_integral<unsigned char> { static bool const value = true; };
+struct is_integral<char> : true_type {};
 
 template <>
-struct is_integral<wchar_t> { static bool const value = true; };
+struct is_integral<unsigned char> : true_type {};
 
 template <>
-struct is_integral<short> { static bool const value = true; };
+struct is_integral<wchar_t> : true_type {};
 
 template <>
-struct is_integral<unsigned short> { static bool const value = true; };
+struct is_integral<short> : true_type {};
 
 template <>
-struct is_integral<int> { static bool const value = true; };
+struct is_integral<unsigned short> : true_type {};
 
 template <>
-struct is_integral<unsigned int> { static bool const value = true; };
+struct is_integral<unsigned int> : true_type {};
 
 template <>
-struct is_integral<long> { static bool const value = true; };
+struct is_integral<long> : true_type {};
 
 template <>
-struct is_integral<unsigned long> { static bool const value = true; };
+struct is_integral<unsigned long> : true_type {};
 
 /* lexicographical_compare
   * https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare
@@ -233,7 +239,8 @@ const class nullptr_t {
 template<class It>
 typename ft::iterator_traits<It>::difference_type
     distance(It first, It last,
-              typename enable_if<!is_integral<It>::value, It>::type* = 0)
+        typename enable_if<is_integral<typename It::value_type>::value,
+                          It>::type = 0)
 {
     typename ft::iterator_traits<It>::difference_type result = 0;
     while (first != last) {
