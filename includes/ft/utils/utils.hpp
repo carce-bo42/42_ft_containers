@@ -50,16 +50,6 @@ template < typename T >
 struct is_same_type<T,T> : true_type {};
 
 /*
-template < typename T >
-struct is_const_equivalent<typename T::value_type,
-                           const typename T::value_type> : true_type {};
-
-template < typename T >
-struct is_const_equivalent<const typename T::value_type,
-                           typename T::value_type> : true_type {};
-*/
-
-/*
   * is_integral 
   *
   * See:
