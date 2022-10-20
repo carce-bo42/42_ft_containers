@@ -71,25 +71,18 @@ class rb_tree_node_iterator {
       while (node->left) {
         node = node->left;
       }
-    // else, go up until we are a node which
-    // is not its parents' right child
+    // else, go up until we are a node which is not its parents' right child
     } else {
       if (node->parent) {
         Node* maybe_next = node->parent;
-        // while the option (maybe next) has the node as right child
         while (maybe_next->right == node) {
-          // assign current node to parent.
           node = maybe_next;
-          // assign maybe_next to the parent of the current node
           if (maybe_next->parent) {
             maybe_next = maybe_next->parent;
           } else {
-            // we got to the root
-            break;
+            break; // we got to the root
           }
-          // repeat.
         }
-        // asign node to the first right child which is not node
         if (maybe_next->right != node) {
           node = maybe_next->right;
         } else {
@@ -107,7 +100,7 @@ class rb_tree_node_iterator {
     return t;
   }
 
-  /* This has perfect symmetry with the ++ case. Switch left for right.
+  /* This has perfect symmetry with the ++ case. Switch left/right.
   */
   rb_tree_node_iterator& operator--() {
     Node* save = node;
@@ -121,20 +114,14 @@ class rb_tree_node_iterator {
     } else {
       if (node->parent) {
         Node* maybe_next = node->parent;
-        // while the option (maybe next) has the node as left child
         while (maybe_next->left == node) {
-          // assign current node to parent.
           node = maybe_next;
-          // assign maybe_next to the parent of the current node
           if (maybe_next->parent) {
             maybe_next = maybe_next->parent;
           } else {
-            // we got to the root
-            break;
+            break; // we got to the root
           }
-          // repeat.
         }
-        // asign node to the first left child which is not node
         if (maybe_next->left != node) {
           node = maybe_next->left;
         } else {
@@ -147,7 +134,7 @@ class rb_tree_node_iterator {
 
   rb_tree_node_iterator& operator--(int) {
     rb_tree_node_iterator t = *this;
-    this->operator++();
+    this->operator--();
     return t;
   }
 

@@ -335,7 +335,7 @@ class vector {
   template< class InputIt >
   void assign( InputIt first, InputIt last,
                 typename enable_if<!is_integral<InputIt>::value,
-                                  InputIt>::type* = 0 )
+                                  void>::type* = 0 )
   {
     clear();
     difference_type diff = distance(first, last);

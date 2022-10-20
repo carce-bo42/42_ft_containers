@@ -30,9 +30,20 @@ template < bool, typename T >
 struct enable_if
 {};
 
-template <typename T>
+template < typename T >
 struct enable_if<true, T>
 { typedef T type; };
+
+template < typename T, typename V > 
+struct is_const_equivalent
+{ static bool const value = false; };
+
+template < typename T >
+struct is_const_equivalent<T, const T> { static bool const value = true; };
+
+template < typename T > 
+struct is_const_equivalent<const T, T> { static bool const value = true; };
+
 
 /*
   * is_integral 
@@ -216,9 +227,9 @@ const class nullptr_t {
 } nullptr_t = {};
 
 /* distance implementation
-  * Abstracion of what normal distance (when speaking about
-  * numbers) is.
-  */
+ * Abstracion of what normal distance (when speaking about
+ * numbers) is.
+ */
 template<class It>
 typename ft::iterator_traits<It>::difference_type
     distance(It first, It last,

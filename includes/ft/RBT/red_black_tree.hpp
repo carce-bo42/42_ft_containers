@@ -28,6 +28,12 @@ namespace ft {
  * im calling the template inside std::allocator which is the same. 
  */
 
+/*
+ * This implementation's rules :
+ * root is the only node which has !node->parent.
+ * A leaf of the tree will !have node->right && !node->left
+ */
+
 template < typename Key,
            typename Val, // Val is some implementation of a pair of values.
            typename KeyOfVal, // In stl, this is used presumably to generalize
@@ -66,7 +72,6 @@ class rb_tree {
   private:
 
   node_ptr       root;
-  node_ptr       current; // for recursion
   size_t         node_count;
   node_allocator node_alloc;
   Compare        key_cmp;
@@ -101,13 +106,26 @@ class rb_tree {
 
   rb_tree()
   :
-    root(),
-    current(),
+    root(0),
     node_count(0),
     node_alloc()
-  {
-    current = root;
+  {}
+
+  ~rb_tree() {
+    delete_subtree(root);
   }
+
+  private:
+
+  void delete_subtree(node_ptr node) {
+    if (node) {
+      delete_subtree(node->right);
+      delete_subtree(node->left);
+      destroy_node(node);
+    }
+  }
+
+  public:
 
   node_ptr construct_node(const Val& value,
                           const node_ptr parent,
@@ -120,6 +138,13 @@ class rb_tree {
     return new_node;
   }
 
+  /*
+   * This is a dangerous method to be public. These innocent lines will produce
+   * a use after free error when the tree destructor is called :
+   * n = construct_node(...)
+   * tree.pure_insert(n);
+   * destroy_node(n);
+   */
   void destroy_node(node_ptr node) {
     node_alloc.destroy(node);
     node_alloc.deallocate(node, 1);

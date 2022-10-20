@@ -11,6 +11,7 @@
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_node_iterator.hpp"
 #include "ft/utils/pair.hpp"
+#include "ft/utils/utils.hpp"
 
 int Test_Error(int result, int line, const char* file) {
   std::cout << "ERROR at line " << line << " from test "
@@ -70,9 +71,9 @@ int main() {
   printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
 }
-  if (vector_test() != 0) {
+  /*if (vector_test() != 0) {
     return 1;
-  }
+  }*/
 {
   std::allocator<Example> alloc;
 
@@ -120,10 +121,22 @@ int main() {
   tree.pure_insert(node);
   std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
   std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
-  tree.destroy_node(node);
 
   std::map<int, std::string> map;
 
+/*
+ * The following tree insertions creates this tree:
+ * 
+ *                      4
+ *                  /      \
+ *               /            \
+ *            /                  \
+ *           0                   13
+ *       /       \           /       \
+ *      -9        2         11       60
+ *    /   \     /   \     /   \     /   \
+ *  -12   -4   1    3    5    12  40    80
+ */
   map.insert(std::pair<int, std::string>(3, "hello)"));
   map.insert(std::pair<int, std::string>(5, "hello)"));
   map.insert(std::pair<int, std::string>(4, "hello)"));
@@ -139,36 +152,41 @@ int main() {
   map.insert(std::pair<int, std::string>(40, "hello)"));
   map.insert(std::pair<int, std::string>(60, "hello)"));
   map.insert(std::pair<int, std::string>(80, "hello)"));
-
-  //std::map<int, std::string>::iterator it = map.begin();
-  //std::cout << it->first << std::endl;
-
   for (std::map<int, std::string>::iterator it = map.begin();
        it != map.end(); it++)
   {
     std::cout << it->first << std::endl;
   }
-
+}
 {
-  std::cout << std::endl;
-  std::map<int, std::string>::iterator it = map.end();
-  it--;
-  std::cout << it->first << std::endl;
-  it++;
-  std::cout << it->first << std::endl;
-  it++;
-  std::cout << it->first << std::endl;
-  it++;
-  std::cout << it->first << std::endl;
-  it++;
-  std::cout << it->first << std::endl;
-  it++;
-  std::cout << it->first << std::endl;
-}
+  ft::rb_tree<
+    int,
+    ft::pair<int, std::string>,
+    get_key<int, ft::pair<int, std::string> > > tree;
 
+  // root.
+  ft::rb_tree_node<ft::pair<int, std::string> > *_root =
+      tree.construct_node(ft::pair<int, std::string>(4, "hello"),
+                          NULL, root, black);
+  // root right/left
+  ft::rb_tree_node<ft::pair<int, std::string> > *_root_r =
+      tree.construct_node(ft::pair<int, std::string>(13, "hello"),
+                          _root, right_child, black);
+  ft::rb_tree_node<ft::pair<int, std::string> > *_root_l =
+      tree.construct_node(ft::pair<int, std::string>(0, "hello"),
+                          _root, left_child, black);
+  _root->assign_left_child(_root_l);
+  _root->assign_right_child(_root_r);
+  tree.pure_insert(_root);
 }
+{
   ft::vector<int> vec(3, 4);
   ft::vector<int>::iterator int_it = vec.begin();
-  //ft::vector<char>::iterator char_it(int_it);
+
+  std::cout << ft::is_const_equivalent<int, const int>::value << std::endl;
+  std::cout << ft::is_const_equivalent<int, char>::value << std::endl;
+
+  //ft::vector<char>::iterator char_it(int_it); // Substitution failure
+}
   return 0;
 }

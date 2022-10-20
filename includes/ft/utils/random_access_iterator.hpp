@@ -45,9 +45,12 @@ class random_access_iterator {
      * And it is the only case it will convert from one time to another,
      * since It.base() has the same type for rai<T*> as for rai<const T*>.
      * Else ends up with substitution failure, which I dislike but accept.
+     * Edit: using is_const_equivalent this is soved.
      */
     template < typename U >
-    random_access_iterator(const random_access_iterator<U>& it)
+    random_access_iterator(const random_access_iterator<U>& it,
+                           typename ft::enable_if<!ft::is_const_equivalent<T, U>::value,
+                                                 void>::type* = 0 )
     :
       _ptr(it.base())
     {}
