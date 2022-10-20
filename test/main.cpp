@@ -183,9 +183,6 @@ int main() {
   ft::vector<int> vec(3, 4);
   ft::vector<int>::iterator int_it = vec.begin();
 
-  std::cout << ft::is_const_equivalent<int, const int>::value << std::endl;
-  std::cout << ft::is_const_equivalent<int, char>::value << std::endl;
-
   //ft::vector<char>::iterator char_it(int_it); // Substitution failure
 }
   return 0;

@@ -44,13 +44,20 @@ struct enable_if<true, T>
 { typedef T type; };
 
 template < typename T, typename V > 
-struct is_const_equivalent : false_type {};
+struct is_same_type : false_type {};
 
 template < typename T >
-struct is_const_equivalent<T, const T> : true_type {};
+struct is_same_type<T,T> : true_type {};
 
-template < typename T > 
-struct is_const_equivalent<const T, T> : true_type {};
+/*
+template < typename T >
+struct is_const_equivalent<typename T::value_type,
+                           const typename T::value_type> : true_type {};
+
+template < typename T >
+struct is_const_equivalent<const typename T::value_type,
+                           typename T::value_type> : true_type {};
+*/
 
 /*
   * is_integral 
