@@ -42,8 +42,13 @@ class reverse_iterator {
     _ptr(x)
   {}
 
-  template <class U>
-  reverse_iterator(const reverse_iterator<U>& other)
+  template <typename U>
+  reverse_iterator(const reverse_iterator<U>& other,
+                   typename ft::enable_if<
+                              ft::is_same_type<
+                       typename reverse_iterator<U>::value_type,
+                                value_type>::value,
+                              value_type>::type* = 0 )
   : 
     _ptr(other.base())
   {}
