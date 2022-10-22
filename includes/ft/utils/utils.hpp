@@ -7,25 +7,25 @@
 namespace ft {
 
 /* 
-  * enable_if  
-  *
-  * STL says :
-  * Define a member typedef type only if a boolean constant is true.
-  * 
-  * And this 35 minute video explains its usage :
-  * https://www.youtube.com/watch?v=Vkck4EU2lOU
-  * 
-  * My explanation:
-  * if you have a function that need a return type TYPE, but there's 
-  * two different possible implementations based on a condition,
-  * instead of implementing an overload for the function we
-  * can "S I M P L Y" define the return type as :
-  *  
-  * enable_if<condition, TYPE>::type func( ... ).
-  * 
-  * This will only "activate" the function if the condition is true.
-  * 
-  */
+ * enable_if
+ *
+ * STL says :
+ * Define a member typedef type only if a boolean constant is true.
+ * 
+ * And this 35 minute video explains its usage :
+ * https://www.youtube.com/watch?v=Vkck4EU2lOU
+ * 
+ * My explanation:
+ * if you have a function that need a return type TYPE, but there's
+ * two different possible implementations based on a condition,
+ * instead of implementing an overload for the function we
+ * can "S I M P L Y" define the return type as :
+ *  
+ * enable_if<condition, TYPE>::type func( ... ).
+ * 
+ * This will only "activate" the function if the condition is true.
+ * 
+ */
 
 struct false_type {
     static const bool value = false;

@@ -224,7 +224,7 @@ class vector {
     _d_end(0),
     _capacity(0)
   {
-    _capacity = get_first_capacity(distance(first, last));
+    _capacity = get_first_capacity(ft::distance(first, last));
     if (_capacity) {
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;

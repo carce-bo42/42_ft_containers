@@ -28,7 +28,7 @@ class reverse_iterator {
 
   private :
 
-    iterator_type _ptr;
+  iterator_type _ptr;
   
   public :
 
@@ -60,10 +60,10 @@ class reverse_iterator {
   }
 
   /* 
-    * From
-    * https://en.cppreference.com/w/cpp/iterator/reverse_iterator/operator*
-    * Return value : Reference or pointer to the element previous to current.
-    */
+   * From 
+   * https://en.cppreference.com/w/cpp/iterator/reverse_iterator/operator*
+   * Return value : Reference or pointer to the element previous to current.
+   */
   reference operator*() const {
     iterator_type _tmp = _ptr;
     return *(--_tmp) ;
