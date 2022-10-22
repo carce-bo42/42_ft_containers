@@ -83,9 +83,9 @@ struct rb_tree_node {
   // empty constructor
   rb_tree_node(n_orientation o, const T& value = T())
   :
-    parent(),
-    left(),
-    right(),
+    parent(0),
+    left(0),
+    right(0),
     data(value),
     properties(black, o)
   {}
@@ -94,8 +94,8 @@ struct rb_tree_node {
                n_orientation o, n_color c)
   :
     parent(parent),
-    left(),
-    right(),
+    left(0),
+    right(0),
     data(value),
     properties(c, o)
   {}

@@ -251,7 +251,7 @@ int main() {
 
   std::cout << std::endl;
   ft::rb_tree_iterator<ft::pair<int, std::string> > it(_root_lll);
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < 25; i++) {
     std::cout << it->first << std::endl;
     it++;
   }

@@ -79,14 +79,12 @@ class rb_tree_iterator {
           if (maybe_next->parent) {
             maybe_next = maybe_next->parent;
           } else {
-            break; // we got to the root
+            // case we got to the root
+            node = save;
+            return *this;
           }
         }
-        if (maybe_next->right != node) {
-          node = maybe_next;
-        } else {
-          node = save; // case it is the maximum (we went up until the root)
-        }
+        node = maybe_next;
       }
     }
     return *this;
@@ -118,14 +116,12 @@ class rb_tree_iterator {
           if (maybe_next->parent) {
             maybe_next = maybe_next->parent;
           } else {
-            break; // we got to the root
+            // case we got to the root
+            node = save;
+            return *this;
           }
         }
-        if (maybe_next->left != node) {
-          node = maybe_next;
-        } else {
-          node = save; // case it is the maximum (we went up until the root)
-        }
+        node = maybe_next;
       }
     }
     return *this;
