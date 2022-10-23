@@ -250,16 +250,40 @@ int main() {
   tree.pure_insert(_root);
 
   std::cout << std::endl;
+  // iterate from min to max
   ft::rb_tree_iterator<ft::pair<int, std::string> > it(_root_lll);
-  for (int i = 0; i < 25; i++) {
+  for (int i = 0; i < 16; i++) {
     std::cout << it->first << std::endl;
     it++;
   }
-
+  std::cout << std::endl;
+  ft::rb_tree_iterator<ft::pair<int, std::string> > it_(_root_rrr);
+  for (int i = 0; i < 16; i++) {
+    std::cout << it_->first << std::endl;;
+    it_--;
+  }
 }
 {
-  ft::vector<int> vec(3, 4);
-  ft::vector<int>::iterator int_it = vec.begin();
+  std::map<int, std::string> a;
+  std::map<int, std::string>::iterator i = a.begin();
+  std::map<int, std::string>::iterator j = a.end();
+  std::map<int, std::string>::reverse_iterator k = a.rbegin();
+  std::map<int, std::string>::reverse_iterator l = a.rend();
+  std::cout << " aaaaaaaaa " << i->first << std::endl;
+  if (j != i) {
+    std::cout << "begin != end in map of " << a.size() << " elements" << std::endl;
+  } else {
+    std::cout << "begin == end in map of " << a.size() << " elements" << std::endl;
+  } 
+  if (k != l) {
+    std::cout << "rbegin != rend in map of " << a.size() << " elements " << std::endl;
+  } else {
+    std::cout << "rbegin = rend in map of " << a.size() << " elements " << std::endl;
+  }
+
+  ft::vector<int> lol;
+  ft::vector<int>::iterator xd = lol.begin();
+  ft::vector<int>::reverse_iterator dx = lol.rend();
 
   //ft::vector<char>::iterator char_it(int_it); // Substitution failure
 }

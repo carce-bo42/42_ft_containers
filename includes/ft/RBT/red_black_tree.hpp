@@ -31,7 +31,7 @@ namespace ft {
 
 /*
  * This implementation's rules :
- * root is the only node which has !node->parent.
+ * _root is the only node which has !node->parent.
  * A leaf of the tree will !have node->right && !node->left
  */
 
@@ -74,7 +74,8 @@ class rb_tree {
 
   private:
 
-  node_ptr       root;
+  node_ptr       _root;
+  node_ptr       node_end;
   size_t         node_count;
   node_allocator node_alloc;
   Compare        key_cmp;
@@ -109,13 +110,21 @@ class rb_tree {
 
   rb_tree()
   :
-    root(0),
+    _root(0),
     node_count(0),
     node_alloc()
-  {}
+  {
+    // iterator end. It goes at the right of the max
+    // value and at the left of the min.
+    node_end = construct_node( Val(), 0, root, red);
+    /*
+    _root = node_end;
+    */
+  }
 
   ~rb_tree() {
-    delete_subtree(root);
+    delete_subtree(_root);
+    destroy_node(node_end);
   }
 
   private:
@@ -124,7 +133,9 @@ class rb_tree {
     if (node) {
       delete_subtree(node->right);
       delete_subtree(node->left);
-      destroy_node(node);
+      if (node != node_end) {
+        destroy_node(node);
+      }
     }
   }
 
@@ -160,7 +171,7 @@ class rb_tree {
       Key node_key = key_of_val(start);
       if (node_key == key) {
         node_ptr ret = start;
-        start = root;
+        start = _root;
         return ret;
       } else if (key_cmp(node_key, key)) { // if n_key < key
         start = start->right;
@@ -177,26 +188,26 @@ class rb_tree {
     return node->data;
   }
 
-  Key get_maximum() {
-    if (!root) {
-      return Key(); // empty Key contructor
+  node_ptr get_maximum() {
+    if (!_root) {
+      return node_ptr(); // empty Key contructor
     }
-    node_ptr aux = root;
+    node_ptr aux = _root;
     while (aux->right) {
       aux = aux->right;
     }
-    return key_of_val(aux);
+    return aux;
   }
 
-  Key get_minimum() {
-    if (!root) {
-      return Key(); // empty Key contructor
+  node_ptr get_minimum() {
+    if (!_root) {
+      return node_ptr(); // empty Key contructor
     }
-    node_ptr aux = root;
+    node_ptr aux = _root;
     while (aux->left) {
       aux = aux->left;
     }
-    return key_of_val(aux);
+    return aux;
   }
 
   /*
@@ -205,8 +216,13 @@ class rb_tree {
    *
    */
   void pure_insert(node_ptr new_node) {
-    if (!root) {
-      root = new_node;
+    if (!_root) {
+      _root = new_node;
+      /*
+      // assign iterator end (once insert is done, this breaks the test in main)
+      _root->assign_right_child(node_end);
+      _root->assign_left_child(node_end);
+      */
     } else {
       // ...
     }
