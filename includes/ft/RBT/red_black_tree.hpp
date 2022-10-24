@@ -232,23 +232,34 @@ class rb_tree {
         new_node->assign_left_child(node_end);
         _root = new_node;
       } else if (new_orientation == right_child) {
-        new_node->assign_parent(parent);
+        new_node->assign_parent(parent, right_child);
         new_node->assign_right_child(node_end);
         parent->assign_right_child(new_node);
       } else {
-        new_node->assign_parent(parent);
+        new_node->assign_parent(parent, left_child);
         new_node->assign_left_child(node_end);
         parent->assign_left_child(new_node);
       }
+      // return whatever
     }
+    // regular insertion
     if (!start) {
-      pure_insert(new_node, parent, start, new_orientation);
+      if (new_orientation == right_child) {
+        new_node->assign_parent(parent, right_child);
+        parent->assign_right_child(new_node);
+      } else {
+        new_node->assign_parent(parent, left_child);
+        parent->assign_left_child(left_child);
+      }
     }
     // true : start > new_node, else false (<=)
     if (key_cmp(key_of_val(start), key_of_val(new_node))) {
-      return find_insertion_point(new_node, start, start->left, left_child);
+      return find_and_insert(new_node, start, start->left, left_child);
+    } else if (key_of_val(start) == key_of_val(new_node)) {
+      // retunr bad value;
+      return ;
     } else {
-      return find_insertion_point(new_node, start, start->right, right_child);
+      return find_and_insert(new_node, start, start->right, right_child);
     }
   }
 

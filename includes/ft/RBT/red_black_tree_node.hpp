@@ -100,6 +100,17 @@ struct rb_tree_node {
     properties(c, o)
   {}
 
+  // default construction is as left child
+  rb_tree_node(const T& value, const node_ptr parent,
+               n_color c)
+  :
+    parent(parent),
+    left(0),
+    right(0),
+    data(value),
+    properties(c, left_child)
+  {}
+
   ~rb_tree_node() {
     memset((void*)this, 0, sizeof(*this));
   }
@@ -121,19 +132,24 @@ struct rb_tree_node {
     return properties.orientation == root;
   }
 
-  void assign_right_child(node_ptr node) {
+  inline void assign_right_child(node_ptr node) {
     right = node;
   }
 
-  void assign_left_child(node_ptr node) {
+  inline void assign_left_child(node_ptr node) {
     left = node;
   }
 
-  void assign_parent(node_ptr node) {
+  inline void assign_parent(node_ptr node) {
     parent = node;
   }
 
-  void change_color() {
+  inline void assign_parent(node_ptr node, n_orientation o) {
+    parent = node;
+    properties.orientation = o;
+  }
+
+  inline void change_color() {
     properties.color = (n_color)!properties.color;
   }
 
