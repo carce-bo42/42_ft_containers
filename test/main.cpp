@@ -108,8 +108,7 @@ int main() {
 {
   ft::rb_tree<
     int,
-    ft::pair<int, std::string>,
-    get_key<int, ft::pair<int, std::string> > > tree;
+    ft::pair<int, std::string> > tree;
   
   ft::rb_tree_node<ft::pair<int, std::string> > *node =
       tree.construct_node(ft::pair<int, std::string>(3, "hello"),
@@ -118,7 +117,7 @@ int main() {
   node->change_color();
   node->print_node_state();
 
-  tree.pure_insert(node);
+  tree.pure_insert(node, node, right_child);
   std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
   std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
 
@@ -161,8 +160,7 @@ int main() {
 {
   ft::rb_tree<
     int,
-    ft::pair<int, std::string>,
-    get_key<int, ft::pair<int, std::string> > > tree;
+    ft::pair<int, std::string> > tree;
 
   // root.
   ft::rb_tree_node<ft::pair<int, std::string> > *_root =
@@ -247,7 +245,7 @@ int main() {
   _root_rll->assign_parent(_root_rl);
   _root_rlr->assign_parent(_root_rl);
 
-  tree.pure_insert(_root);
+  tree.pure_insert(_root, _root, right_child);
 
   std::cout << std::endl;
   // iterate from min to max

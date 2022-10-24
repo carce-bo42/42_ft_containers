@@ -6,6 +6,8 @@
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
 
+namespace ft {
+
 // KeyOfVal functor for rb_tree
 template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
@@ -18,8 +20,6 @@ struct get_key {
   }
 
 };
-
-namespace ft {
 
 /* To understand the allocator template :
  * https://gcc.gnu.org/bugzilla/attachment.cgi?id=34289
@@ -37,7 +37,7 @@ namespace ft {
 
 template < typename Key,
            typename Val, // Val is some implementation of a pair of values.
-           typename KeyOfVal, // In stl, this is used presumably to generalize
+           typename KeyOfVal = ft::get_key<Key, Val>, // In stl, this is used presumably to generalize
                               // Val to any structure containing Key. With this
                               // functor you are supposed to operate on Val
                               // types to extract Keys.
@@ -75,6 +75,10 @@ class rb_tree {
   private:
 
   node_ptr       _root;
+  // node end is the dummy node used for end() and rend().
+  // it contains no parent, no childs, and is appended to
+  // the right of the max and to the left of the min. If
+  // the tree is empty, is equal to root.
   node_ptr       node_end;
   size_t         node_count;
   node_allocator node_alloc;
@@ -193,7 +197,7 @@ class rb_tree {
       return node_ptr(); // empty Key contructor
     }
     node_ptr aux = _root;
-    while (aux->right) {
+    while (aux->right != node_end) {
       aux = aux->right;
     }
     return aux;
@@ -204,27 +208,65 @@ class rb_tree {
       return node_ptr(); // empty Key contructor
     }
     node_ptr aux = _root;
-    while (aux->left) {
+    while (aux->left != node_end) {
       aux = aux->left;
     }
     return aux;
   }
 
+
+  void find_and_insert(node_ptr new_node,
+                       node_ptr parent,
+                       node_ptr start,
+                       n_orientation new_orientation)
+  {
+    /*
+     * Theres 3 cases where we can insert on an end. 
+     * - If we are inserting at right of parent (we are new max)
+     * - If we are inserting at left of parent (we are new min)
+     * - If we are inserting and parent does not exist. (first node)
+     */
+    if (start == node_end) {
+      if (node_count == 0) {
+        new_node->assign_right_child(node_end);
+        new_node->assign_left_child(node_end);
+        _root = new_node;
+      } else if (new_orientation == right_child) {
+        new_node->assign_parent(parent);
+        new_node->assign_right_child(node_end);
+        parent->assign_right_child(new_node);
+      } else {
+        new_node->assign_parent(parent);
+        new_node->assign_left_child(node_end);
+        parent->assign_left_child(new_node);
+      }
+    }
+    if (!start) {
+      pure_insert(new_node, parent, start, new_orientation);
+    }
+    // true : start > new_node, else false (<=)
+    if (key_cmp(key_of_val(start), key_of_val(new_node))) {
+      return find_insertion_point(new_node, start, start->left, left_child);
+    } else {
+      return find_insertion_point(new_node, start, start->right, right_child);
+    }
+  }
+
   /*
    * map insert methods return an iterator. 
    * So iterators have to be done.
-   *
    */
-  void pure_insert(node_ptr new_node) {
-    if (!_root) {
-      _root = new_node;
+  void pure_insert(node_ptr new_node, node_ptr start,
+                   n_orientation new_orient )
+  {
+    (void)new_orient;
+    if (!start) {
+      start = new_node;
       /*
       // assign iterator end (once insert is done, this breaks the test in main)
       _root->assign_right_child(node_end);
       _root->assign_left_child(node_end);
       */
-    } else {
-      // ...
     }
   }
 
