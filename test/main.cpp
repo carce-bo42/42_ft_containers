@@ -33,7 +33,8 @@ int vector_test() {
 }
 
 int rbtree_test() {
-  if (insert_hardcode() != 0)
+  if (insert_hardcode() != 0
+      || insert_no_fix() != 0)
   {
     return 1;
   }
@@ -71,13 +72,13 @@ int main() {
   int a = 4;
   std::vector<int> vec(10, a);
 
-  printf("%lu \n", vec.capacity());
-  printf("%lu \n", vec.size());
+  //printf("%lu \n", vec.capacity());
+  //printf("%lu \n", vec.size());
 
   vec.resize(123);
 
-  printf("%lu \n", vec.capacity());
-  printf("%lu \n", vec.size());
+  //printf("%lu \n", vec.capacity());
+  //printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
 }
   if (vector_test() != 0) {
@@ -125,50 +126,15 @@ int main() {
   ft::rb_tree_node<ft::pair<int, std::string> > *node =
       tree.construct_node(ft::pair<int, std::string>(3, "hello"),
                           NULL, root, black);
-  node->print_node_state();
+  //node->print_node_state();
   node->change_color();
-  node->print_node_state();
+  //node->print_node_state();
 
   tree.pure_insert(node, node, right_child);
-  std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
-  std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
-
-  std::map<int, std::string> map;
-
-/*
- * The following tree insertions creates this tree:
- * 
- *                      4
- *                  /      \
- *               /            \
- *            /                  \
- *           0                   13
- *       /       \           /       \
- *      -9        2         11       60
- *    /   \     /   \     /   \     /   \
- *  -12   -4   1    3    5    12  40    80
- */
-  map.insert(std::pair<int, std::string>(3, "hello)"));
-  map.insert(std::pair<int, std::string>(5, "hello)"));
-  map.insert(std::pair<int, std::string>(4, "hello)"));
-  map.insert(std::pair<int, std::string>(2, "hello)"));
-  map.insert(std::pair<int, std::string>(1, "hello)"));
-  map.insert(std::pair<int, std::string>(0, "hello)"));
-  map.insert(std::pair<int, std::string>(11, "hello)"));
-  map.insert(std::pair<int, std::string>(13, "hello)"));
-  map.insert(std::pair<int, std::string>(-12, "hello)"));
-  map.insert(std::pair<int, std::string>(-9, "hello)"));
-  map.insert(std::pair<int, std::string>(-4, "hello)"));
-  map.insert(std::pair<int, std::string>(12, "hello)"));
-  map.insert(std::pair<int, std::string>(40, "hello)"));
-  map.insert(std::pair<int, std::string>(60, "hello)"));
-  map.insert(std::pair<int, std::string>(80, "hello)"));
-  for (std::map<int, std::string>::iterator it = map.begin();
-       it != map.end(); it++)
-  {
-    std::cout << it->first << std::endl;
-  }
-}
+  // max/min is broken since iterators
+  //std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
+  //std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
+}/*
 {
   std::map<int, std::string> a;
   std::map<int, std::string>::iterator i = a.begin();
@@ -190,8 +156,7 @@ int main() {
   ft::vector<int> lol;
   ft::vector<int>::iterator xd = lol.begin();
   ft::vector<int>::reverse_iterator dx = lol.rend();
-
   //ft::vector<char>::iterator char_it(int_it); // Substitution failure
-}
+}*/
   return 0;
 }

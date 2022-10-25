@@ -80,16 +80,6 @@ struct rb_tree_node {
   value_type       data;
   node_properties  properties;
 
-  // empty constructor
-  rb_tree_node(n_orientation o, const T& value = T())
-  :
-    parent(0),
-    left(0),
-    right(0),
-    data(value),
-    properties(black, o)
-  {}
-
   rb_tree_node(const T& value, const node_ptr parent,
                n_orientation o, n_color c)
   :
@@ -100,11 +90,10 @@ struct rb_tree_node {
     properties(c, o)
   {}
 
-  // default construction is as left child
-  rb_tree_node(const T& value, const node_ptr parent,
-               n_color c)
+  // default construction is as left child, and red color.
+  rb_tree_node(const T& value, n_color c)
   :
-    parent(parent),
+    parent(0),
     left(0),
     right(0),
     data(value),
@@ -130,6 +119,10 @@ struct rb_tree_node {
 
   bool is_root() const  {
     return properties.orientation == root;
+  }
+
+  inline void make_root() {
+    properties.orientation = root;
   }
 
   inline void assign_right_child(node_ptr node) {

@@ -3,6 +3,7 @@
 
 #include "ft/utils/iterator_traits.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
+#include "ft/utils/utils.hpp"
 
 namespace ft {
 
@@ -11,8 +12,9 @@ namespace ft {
 template <typename Val, typename Node = rb_tree_node<Val> > 
 class rb_tree_iterator {
 
-  typedef Val&                  reference;
-  typedef Val*                  pointer;
+  typedef Val         value_type;
+  typedef value_type& reference;
+  typedef value_type* pointer;
 
   private:
 
@@ -23,7 +25,12 @@ class rb_tree_iterator {
   rb_tree_iterator() {}
 
   template < typename U >
-  rb_tree_iterator(const rb_tree_iterator<U>& it)
+  rb_tree_iterator(const rb_tree_iterator<U>& it,
+                   typename ft::enable_if<
+                            ft::is_same_type<
+                     typename rb_tree_iterator<U>::value_type,
+                              value_type>::value,
+                            value_type>::type* = 0 )
   :
     node(it.node)
   {}
@@ -32,6 +39,10 @@ class rb_tree_iterator {
   :
     node(start)
   {}
+
+  Node* base() const {
+    return node;
+  }
 
   rb_tree_iterator& operator=( const rb_tree_iterator& other) {
     if (this != other) {
@@ -134,6 +145,48 @@ class rb_tree_iterator {
   }
 
 };
+
+template <typename KeyX, typename KeyY, typename ValX, typename ValY>
+bool	operator==(const rb_tree_iterator<KeyX,ValX>& x,
+                  const rb_tree_iterator<KeyY,ValY>& y)
+{
+  return x.base() == y.base();
+}
+
+template <typename KeyX, typename KeyY, typename ValX, typename ValY>
+bool	operator!=(const rb_tree_iterator<KeyX,ValX>& x,
+                  const rb_tree_iterator<KeyY,ValY>& y)
+{
+  return x.base() != y.base();
+}
+
+template <typename KeyX, typename KeyY, typename ValX, typename ValY>
+bool		operator>(const rb_tree_iterator<KeyX,ValX>& x,
+                  const rb_tree_iterator<KeyY,ValY>& y)
+{
+  return x.base() > y.base();
+}
+
+template <typename KeyX, typename KeyY, typename ValX, typename ValY>
+bool operator<(const rb_tree_iterator<KeyX,ValX>& x,
+                const rb_tree_iterator<KeyY,ValY>& y)
+{
+  return x.base() < y.base();
+}
+
+template <typename KeyX, typename KeyY, typename ValX, typename ValY>
+bool operator>=(const rb_tree_iterator<KeyX,ValX>& x,
+                const rb_tree_iterator<KeyY,ValY>& y)
+{
+  return !(x.base() < y.base());
+}
+
+template <typename KeyX, typename KeyY, typename ValX, typename ValY>
+bool operator<=(const rb_tree_iterator<KeyX,ValX>& x,
+                const rb_tree_iterator<KeyY,ValY>& y)
+{
+  return !(x.base() > y.base());
+}
 
 } // namespace ft
 

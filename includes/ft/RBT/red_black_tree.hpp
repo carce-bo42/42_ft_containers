@@ -37,7 +37,8 @@ struct get_key {
 
 template < typename Key,
            typename Val, // Val is some implementation of a pair of values.
-           typename KeyOfVal = ft::get_key<Key, Val>, // In stl, this is used presumably to generalize
+           typename KeyOfVal = ft::get_key<Key, Val>,
+                              // In stl, this is used presumably to generalize
                               // Val to any structure containing Key. With this
                               // functor you are supposed to operate on Val
                               // types to extract Keys.
@@ -69,8 +70,8 @@ class rb_tree {
   typedef size_t                           size_type;
   typedef ptrdiff_t                        difference_type;
   typedef Alloc                            allocator_type;
-  typedef rb_tree_iterator<node_ptr>       iterator;
-  typedef rb_tree_iterator<const node_ptr> const_iterator;
+  typedef rb_tree_iterator<Val>            iterator;
+  typedef rb_tree_iterator<const Val>      const_iterator;
 
   private:
 
@@ -121,9 +122,7 @@ class rb_tree {
     // iterator end. It goes at the right of the max
     // value and at the left of the min.
     node_end = construct_node( Val(), 0, root, red);
-    /*
     _root = node_end;
-    */
   }
 
   ~rb_tree() {
@@ -156,6 +155,12 @@ class rb_tree {
     return new_node;
   }
 
+  node_ptr construct_node(const Val& value) {
+    node_ptr new_node = node_alloc.allocate(1);
+    node_alloc.construct(new_node, node_type(value, red));
+    return new_node;
+  }
+
   /*
    * This is a dangerous method to be public. These innocent lines will produce
    * a use after free error when the tree destructor is called :
@@ -166,30 +171,6 @@ class rb_tree {
   void destroy_node(node_ptr node) {
     node_alloc.destroy(node);
     node_alloc.deallocate(node, 1);
-  }
-
-  // returns either the node or NULL.
-  node_ptr get_node_from_key(Key key, node_ptr start) {
-
-    if (start != NULL) {
-      Key node_key = key_of_val(start);
-      if (node_key == key) {
-        node_ptr ret = start;
-        start = _root;
-        return ret;
-      } else if (key_cmp(node_key, key)) { // if n_key < key
-        start = start->right;
-      } else {
-        start = start->left;
-      }
-      return get_node_from_key(key, start);
-    } else {
-      return NULL;
-    }
-  }
-
-  Val get_node_data(node_ptr node) {
-    return node->data;
   }
 
   node_ptr get_maximum() {
@@ -214,6 +195,21 @@ class rb_tree {
     return aux;
   }
 
+  iterator begin() {
+    return iterator(get_minimum());
+  }
+
+  const_iterator begin() const {
+    return const_iterator(get_minimum());
+  }
+
+  iterator end() {
+    return iterator(node_end);
+  }
+
+  const_iterator end() const {
+    return const_iterator(node_end);
+  }
 
   void find_and_insert(node_ptr new_node,
                        node_ptr parent,
@@ -226,11 +222,15 @@ class rb_tree {
      * - If we are inserting at left of parent (we are new min)
      * - If we are inserting and parent does not exist. (first node)
      */
-    if (start == node_end) {
+    if (node_count == 0
+        || start == node_end)
+    {
       if (node_count == 0) {
         new_node->assign_right_child(node_end);
         new_node->assign_left_child(node_end);
+        new_node->make_root();
         _root = new_node;
+        // RETURN SOMETHING
       } else if (new_orientation == right_child) {
         new_node->assign_parent(parent, right_child);
         new_node->assign_right_child(node_end);
@@ -240,7 +240,8 @@ class rb_tree {
         new_node->assign_left_child(node_end);
         parent->assign_left_child(new_node);
       }
-      // return whatever
+      node_count += 1;
+      return ;
     }
     // regular insertion
     if (!start) {
@@ -249,36 +250,44 @@ class rb_tree {
         parent->assign_right_child(new_node);
       } else {
         new_node->assign_parent(parent, left_child);
-        parent->assign_left_child(left_child);
+        parent->assign_left_child(new_node);
       }
+      node_count += 1;
+      return ;
     }
-    // true : start > new_node, else false (<=)
-    if (key_cmp(key_of_val(start), key_of_val(new_node))) {
+    /*
+    std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
+    std::cout << "key_of_val(new_node) = " << key_of_val(new_node) << std::endl;
+    std::cout << "key_cmp(key_of_val(start), key_of_val(new_node)) = "
+              << key_cmp(key_of_val(start), key_of_val(new_node)) << std::endl;
+    */
+    if (key_cmp(key_of_val(new_node), key_of_val(start))) {
       return find_and_insert(new_node, start, start->left, left_child);
     } else if (key_of_val(start) == key_of_val(new_node)) {
-      // retunr bad value;
-      return ;
+      return ; // ToDo insert failure return
     } else {
       return find_and_insert(new_node, start, start->right, right_child);
     }
   }
 
-  /*
-   * map insert methods return an iterator. 
-   * So iterators have to be done.
-   */
+  void insert(const Val& value) {
+    node_ptr n = construct_node(value);
+    // ToDo control return value (duplicates)
+    find_and_insert(n, _root, _root, left_child);
+  }
+
   void pure_insert(node_ptr new_node, node_ptr start,
                    n_orientation new_orient )
   {
+    (void)start;
     (void)new_orient;
-    if (!start) {
-      start = new_node;
+    _root = new_node;
+    ++node_count;
       /*
       // assign iterator end (once insert is done, this breaks the test in main)
       _root->assign_right_child(node_end);
       _root->assign_left_child(node_end);
       */
-    }
   }
 
 }; // class rbtree

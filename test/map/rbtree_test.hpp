@@ -3,6 +3,6 @@
 #pragma once
 
 int insert_hardcode();
-
+int insert_no_fix();
 
 #endif
