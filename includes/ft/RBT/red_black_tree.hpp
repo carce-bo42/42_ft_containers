@@ -211,6 +211,69 @@ class rb_tree {
     return const_iterator(node_end);
   }
 
+  /* 
+   *        Parent                    Parent      
+   *          |                         |
+   *         to                       from
+   *     /       \       ===>      /        \
+   *    A       from             to         fR      
+   *  /   \     /  \           /   \
+   * AL   AR   fL  fR         A    fL
+   *                        /  \
+   *                      AL   AR
+   */
+  node_ptr rotate_left(node_ptr from, node_ptr to) {
+    if (to->is_left_child()) {
+      to->parent->assign_left_child(from);
+      from->assign_parent(to->parent, left_child);
+    } else if (to->is_right_child()) {
+      to->parent->assign_right_child(from);
+      from->assign_parent(to->parent, right_child);
+    } else {
+      // if root do nothing
+    }
+    node_ptr tmp = from->left;
+    from->assign_left_child(to);
+    to->assign_parent(from, left_child);
+    to->assign_right_child(tmp);
+    if (tmp) { // also valid for node_end
+      tmp->assign_parent(to, right_child);
+    }
+    return from;
+  }
+
+  /* 
+   *        Parent                    Parent      
+   *          |                         |
+   *         to                       from
+   *     /       \       ===>      /        \
+   *   from       A              fL         to
+   *  /   \     /  \                      /    \
+   * fL   fR   AL  AR                   fR      A
+   *                                          /   \
+   *                                         AL   AR
+   * DONE
+   */
+  node_ptr rotate_right(node_ptr from, node_ptr to) {
+    if (to->is_left_child()) {
+      to->parent->assign_left_child(from);
+      from->assign_parent(to->parent, left_child);
+    } else if (to->is_right_child()) {
+      to->parent->assign_right_child(from);
+      from->assign_parent(to->parent, right_child);
+    } else {
+      // if root do nothing
+    }
+    node_ptr tmp = from->right;
+    from->assign_right_child(to);
+    to->assign_parent(from, right_child);
+    to->assign_left_child(tmp);
+    if (tmp) { // also valid for node_end
+      tmp->assign_parent(to, left_child);
+    }
+    return from;
+  }
+
   void find_and_insert(node_ptr new_node,
                        node_ptr parent,
                        node_ptr start,
@@ -261,6 +324,7 @@ class rb_tree {
     std::cout << "key_cmp(key_of_val(start), key_of_val(new_node)) = "
               << key_cmp(key_of_val(start), key_of_val(new_node)) << std::endl;
     */
+    // seek new path
     if (key_cmp(key_of_val(new_node), key_of_val(start))) {
       return find_and_insert(new_node, start, start->left, left_child);
     } else if (key_of_val(start) == key_of_val(new_node)) {
