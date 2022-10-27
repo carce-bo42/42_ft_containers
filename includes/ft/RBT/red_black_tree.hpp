@@ -178,7 +178,15 @@ class rb_tree {
       return node_ptr(); // empty Key contructor
     }
     node_ptr aux = _root;
+    std::cout << "MAXIMUM SEARCH" << std::endl;
     while (aux->right != node_end) {
+    std::cout << "aux(" << iterator(aux)->first
+              << "), aux->right(" << iterator(aux->right)->first
+              << "), node_end(" << iterator(node_end)->first << ") : "
+              << aux
+              << ", " << aux->right
+              << ", " << node_end
+              << std::endl;
       aux = aux->right;
     }
     return aux;
@@ -189,7 +197,15 @@ class rb_tree {
       return node_ptr(); // empty Key contructor
     }
     node_ptr aux = _root;
+    std::cout << "MINIMUM SEARCH" << std::endl;
     while (aux->left != node_end) {
+    std::cout << "aux(" << iterator(aux)->first
+              << "), aux->left(" << iterator(aux->left)->first
+              << "), node_end(" << iterator(node_end)->first << ") : "
+              << aux
+              << ", " << aux->left
+              << ", " << node_end
+              << std::endl;
       aux = aux->left;
     }
     return aux;
@@ -231,13 +247,14 @@ class rb_tree {
       to->parent->assign_right_child(from);
       from->assign_parent(to->parent, right_child);
     } else {
-      // if root do nothing
+      from->assign_parent(node_end, root);
+      _root = from;
     }
     node_ptr tmp = from->left;
     from->assign_left_child(to);
     to->assign_parent(from, left_child);
     to->assign_right_child(tmp);
-    if (tmp) { // also valid for node_end
+    if (tmp && tmp != node_end) {
       tmp->assign_parent(to, right_child);
     }
     return from;
@@ -263,13 +280,15 @@ class rb_tree {
       to->parent->assign_right_child(from);
       from->assign_parent(to->parent, right_child);
     } else {
+      from->assign_parent(node_end, root);
+      _root = from;
       // if root do nothing
     }
     node_ptr tmp = from->right;
     from->assign_right_child(to);
     to->assign_parent(from, right_child);
     to->assign_left_child(tmp);
-    if (tmp) { // also valid for node_end
+    if (tmp && tmp != node_end) {
       tmp->assign_parent(to, left_child);
     }
     return from;
@@ -294,7 +313,6 @@ class rb_tree {
         new_node->assign_left_child(node_end);
         new_node->make_root();
         _root = new_node;
-        // RETURN SOMETHING
       } else if (new_orientation == right_child) {
         new_node->assign_parent(parent, right_child);
         new_node->assign_right_child(node_end);
@@ -320,10 +338,10 @@ class rb_tree {
       return true;
     }
     /*
-    std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
     std::cout << "key_of_val(new_node) = " << key_of_val(new_node) << std::endl;
-    std::cout << "key_cmp(key_of_val(start), key_of_val(new_node)) = "
-              << key_cmp(key_of_val(start), key_of_val(new_node)) << std::endl;
+    std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
+    std::cout << "key_cmp(key_of_val(new_node), key_of_val(start)) = "
+              << key_cmp(key_of_val(new_node), key_of_val(start)) << std::endl;
     */
     // seek new path
     if (key_cmp(key_of_val(new_node), key_of_val(start))) {
@@ -336,37 +354,48 @@ class rb_tree {
   }
 
   void rebalance_after_insertion(node_ptr n) {
-      if (n == _root) {
-        n->set_color(black);
-        return ;
-      } else if (n->parent == _root || n->parent->color() == black) {
-        n->parent->set_color(black); // 
-        return ;
-      // with the previous block we make sure there exists a grandparent
-      } else {
-        node_ptr uncle = n->uncle(); // grandparent's other child
-        if (uncle && uncle->color() == red) {
-          uncle->set_color(black);
-          n->parent->set_color(black);
-          uncle->parent->set_color(red);
-          return rebalance_after_insertion(uncle->parent);
-        } else if (!uncle || uncle->color() == black) {
-            if (n->orientation() != n->parent->orientation()) {
-              if (n->is_right_child()) {
-                rotate_left(n);
-              } else {
-                rotate_right(n);
-              }
-            }
-            // (n->orientation == n->parent->orientation) == true
-            if (n->is_left_child()) {
-              rotate_right(n->parent);
+    if (n == _root) {
+      n->set_color(black);
+      return ;
+    } else if (n->parent == _root || n->parent->color() == black) {
+      n->parent->set_color(black); //
+      return ;
+    // with the previous block we make sure there exists a grandparent
+    } else {
+      node_ptr uncle = n->uncle(); // grandparent's other child
+      //std::cout << "uncle : " << uncle << " node end " << node_end << std::endl;
+      std::cout << "n(" << iterator(n)->first
+                << "), uncle(" << iterator(uncle)->first << ")" << std::endl;
+      uncle->print_node_state();
+      if (uncle && uncle != node_end && uncle->color() == red) {
+        uncle->set_color(black);
+        n->parent->set_color(black);
+        uncle->parent->set_color(red);
+        return rebalance_after_insertion(uncle->parent);
+      } else if (!uncle || uncle == node_end || uncle->color() == black) {
+          if (n->orientation() != n->parent->orientation()) {
+            /*
+            std::cout << "n->orientation() " << n->orientation()
+                      << " n->parent->orientation() : " << n->parent->orientation()
+                      << std::endl;
+            std::cout << "root : " << _root
+                      << " n->parent : " << n->parent << std::endl;
+            */
+            if (n->is_right_child()) {
+              rotate_left(n);
             } else {
-              rotate_left(n->parent);
+              rotate_right(n);
             }
-            return rebalance_after_insertion(n);
-        }
+          }
+          // (n->orientation == n->parent->orientation) == true
+          if (n->is_left_child()) {
+            rotate_right(n->parent);
+          } else {
+            rotate_left(n->parent);
+          }
+          return rebalance_after_insertion(n);
       }
+    }
   }
 
   bool insert(const Val& value) {

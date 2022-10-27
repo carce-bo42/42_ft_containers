@@ -156,7 +156,8 @@ struct rb_tree_node {
       } else if (parent->is_right_child()) {
         return parent->parent->left;
       } else {
-        // do nothing
+        // if parent is root, node_end is both grandparent and uncle 
+        return parent->parent;
       }
     }
     return NULL;
