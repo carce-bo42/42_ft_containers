@@ -127,7 +127,7 @@ int main() {
       tree.construct_node(ft::pair<int, std::string>(3, "hello"),
                           NULL, root, black);
   //node->print_node_state();
-  node->change_color();
+  node->set_color(red);
   //node->print_node_state();
 
   tree.pure_insert(node, node, right_child);

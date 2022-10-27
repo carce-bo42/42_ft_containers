@@ -222,7 +222,8 @@ class rb_tree {
    *                        /  \
    *                      AL   AR
    */
-  node_ptr rotate_left(node_ptr from, node_ptr to) {
+  node_ptr rotate_left(node_ptr from) {
+    node_ptr to = from->parent;
     if (to->is_left_child()) {
       to->parent->assign_left_child(from);
       from->assign_parent(to->parent, left_child);
@@ -252,9 +253,9 @@ class rb_tree {
    * fL   fR   AL  AR                   fR      A
    *                                          /   \
    *                                         AL   AR
-   * DONE
    */
-  node_ptr rotate_right(node_ptr from, node_ptr to) {
+  node_ptr rotate_right(node_ptr from) {
+    node_ptr to = from->parent;
     if (to->is_left_child()) {
       to->parent->assign_left_child(from);
       from->assign_parent(to->parent, left_child);
@@ -274,12 +275,12 @@ class rb_tree {
     return from;
   }
 
-  void find_and_insert(node_ptr new_node,
+  bool find_and_insert(node_ptr new_node,
                        node_ptr parent,
                        node_ptr start,
                        n_orientation new_orientation)
   {
-    /*
+    /*  
      * Theres 3 cases where we can insert on an end. 
      * - If we are inserting at right of parent (we are new max)
      * - If we are inserting at left of parent (we are new min)
@@ -304,7 +305,7 @@ class rb_tree {
         parent->assign_left_child(new_node);
       }
       node_count += 1;
-      return ;
+      return true;
     }
     // regular insertion
     if (!start) {
@@ -316,7 +317,7 @@ class rb_tree {
         parent->assign_left_child(new_node);
       }
       node_count += 1;
-      return ;
+      return true;
     }
     /*
     std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
@@ -328,16 +329,55 @@ class rb_tree {
     if (key_cmp(key_of_val(new_node), key_of_val(start))) {
       return find_and_insert(new_node, start, start->left, left_child);
     } else if (key_of_val(start) == key_of_val(new_node)) {
-      return ; // ToDo insert failure return
+      return false;
     } else {
       return find_and_insert(new_node, start, start->right, right_child);
     }
   }
 
-  void insert(const Val& value) {
+  void rebalance_after_insertion(node_ptr n) {
+      if (n == _root) {
+        n->set_color(black);
+        return ;
+      } else if (n->parent == _root || n->parent->color() == black) {
+        n->parent->set_color(black); // 
+        return ;
+      // with the previous block we make sure there exists a grandparent
+      } else {
+        node_ptr uncle = n->uncle(); // grandparent's other child
+        if (uncle && uncle->color() == red) {
+          uncle->set_color(black);
+          n->parent->set_color(black);
+          uncle->parent->set_color(red);
+          return rebalance_after_insertion(uncle->parent);
+        } else if (!uncle || uncle->color() == black) {
+            if (n->orientation() != n->parent->orientation()) {
+              if (n->is_right_child()) {
+                rotate_left(n);
+              } else {
+                rotate_right(n);
+              }
+            }
+            // (n->orientation == n->parent->orientation) == true
+            if (n->is_left_child()) {
+              rotate_right(n->parent);
+            } else {
+              rotate_left(n->parent);
+            }
+            return rebalance_after_insertion(n);
+        }
+      }
+  }
+
+  bool insert(const Val& value) {
     node_ptr n = construct_node(value);
     // ToDo control return value (duplicates)
-    find_and_insert(n, _root, _root, left_child);
+    if (!find_and_insert(n, _root, _root, left_child)) {
+      destroy_node(n);
+      return false;
+    }
+    rebalance_after_insertion(n);
+    return true;
   }
 
   void pure_insert(node_ptr new_node, node_ptr start,

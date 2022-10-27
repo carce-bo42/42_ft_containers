@@ -32,19 +32,18 @@ struct rb_tree_node_properties {
   typedef rb_tree_node_orientation n_orientation;
   //typedef rb_tree_node_nillness    nilness;
 
-  n_color       color;
-  n_orientation orientation;
+  n_color       _color;
+  n_orientation _orientation;
   //nilness       nil;
 
-  rb_tree_node_properties(n_color color,
+  rb_tree_node_properties(n_color _color,
                           n_orientation orientation)
                           //nilness nil)
   :
-    color(color),
-    orientation(orientation)
+    _color(_color),
+    _orientation(orientation)
     //nil(nil)
   {}
-
 };
 
 /* Red black trees must hold :
@@ -90,7 +89,7 @@ struct rb_tree_node {
     properties(c, o)
   {}
 
-  // default construction is as left child, and red color.
+  // default construction is as left child, and red _color.
   rb_tree_node(const T& value, n_color c)
   :
     parent(0),
@@ -110,19 +109,23 @@ struct rb_tree_node {
    * necessary.
    */
   bool is_left_child() const {
-    return properties.orientation == left_child;
+    return properties._orientation == left_child;
   }
 
   bool is_right_child() const {
-    return properties.orientation == right_child;
+    return properties._orientation == right_child;
+  }
+
+  n_orientation orientation() const {
+    return properties._orientation;
   }
 
   bool is_root() const  {
-    return properties.orientation == root;
+    return properties._orientation == root;
   }
 
   inline void make_root() {
-    properties.orientation = root;
+    properties._orientation = root;
   }
 
   inline void assign_right_child(node_ptr node) {
@@ -139,11 +142,28 @@ struct rb_tree_node {
 
   inline void assign_parent(node_ptr node, n_orientation o) {
     parent = node;
-    properties.orientation = o;
+    properties._orientation = o;
   }
 
-  inline void change_color() {
-    properties.color = (n_color)!properties.color;
+  inline void set_color(n_color c) {
+    properties._color = c;
+  }
+
+  inline node_ptr uncle() {
+    if (parent) {
+      if (parent->is_left_child()) {
+        return parent->parent->right;
+      } else if (parent->is_right_child()) {
+        return parent->parent->left;
+      } else {
+        // do nothing
+      }
+    }
+    return NULL;
+  }
+
+  inline n_color color() const {
+    return properties._color;
   }
 
   // debug:
@@ -155,8 +175,8 @@ struct rb_tree_node {
     std::cout << "data : (" << data.first << ", " << data.second << ")" 
               << std::endl;
     std::cout << "properties : ("
-              << (properties.color == black ? "black" : "red") << ", "
-              << (properties.orientation == left_child ? "left" : "right") << ")"
+              << (properties._color == black ? "black" : "red") << ", "
+              << (properties._orientation == left_child ? "left" : "right") << ")"
               << std::endl;
   }
 
