@@ -263,10 +263,10 @@ int insert_with_fix_1() {
   int nbr_insertions = 100000;
 
   time_t ft_start = current_timestamp();
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, std::pair<int, std::string> > tree;
 
   for (int i = 0; i < nbr_insertions; i++) {
-    tree.insert(ft::pair<int, std::string>(i, "hello"));
+    tree.insert(std::pair<int, std::string>(i, "hello"));
   }
   time_t ft_end = current_timestamp();
   std::cout << "ft::rb_tree total_time for "

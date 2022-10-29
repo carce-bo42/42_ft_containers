@@ -1,5 +1,6 @@
 #ifndef CONTAINERS_RED_BLACK_TREE_HPP
 # define CONTAINERS_RED_BLACK_TREE_HPP
+#pragma once
 
 #include <memory>
 #include <functional>
@@ -13,12 +14,9 @@ template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
 struct get_key {
 
-  typedef ft::rb_tree_node<Val> node_type;
-
-  Key operator()(const node_type* node) {
+  Key operator()(const ft::rb_tree_node<Val>* node) {
     return node->data.first;
   }
-
 };
 
 /* To understand the allocator template :
@@ -69,14 +67,7 @@ class rb_tree {
   public:
 
   typedef Key                              key_type;
-  typedef Val                              value_type;
-  typedef value_type*                      pointer;
-  typedef const value_type*                const_pointer;
-  typedef value_type&                      reference;
-  typedef const value_type&                const_reference;
   typedef size_t                           size_type;
-  typedef ptrdiff_t                        difference_type;
-  typedef Alloc                            allocator_type;
   typedef rb_tree_iterator<Val>            iterator;
   typedef rb_tree_iterator<const Val>      const_iterator;
 
@@ -88,7 +79,7 @@ class rb_tree {
   // the right of the max and to the left of the min. If
   // the tree is empty, is equal to root.
   node_ptr       node_end;
-  size_t         node_count;
+  size_type      node_count;
   node_allocator node_alloc;
   Compare        key_cmp;
   KeyOfVal       key_of_val;
