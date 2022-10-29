@@ -194,31 +194,27 @@ int insert_no_fix() {
   tree.insert(ft::pair<int, std::string>(80, "hello"));
   */
 
- // To do: la busqueda de minimo da 13 -> 1 -> 0 lo que indica que 
- // el arbol es:
  /*                     13
   *                   1   60
   *                 0
-  * Algo está mal, aquí
   */
   tree.insert(ft::pair<int, std::string>(13, "hello"));
   tree.insert(ft::pair<int, std::string>(1, "hello"));
   tree.insert(ft::pair<int, std::string>(60, "hello"));
   tree.insert(ft::pair<int, std::string>(0, "hello"));
-  
-
-  //tree.insert(ft::pair<int, std::string>(-9, "hello"));
-  //tree.insert(ft::pair<int, std::string>(2, "hello"));
-  //tree.insert(ft::pair<int, std::string>(40, "hello"));
-  //tree.insert(ft::pair<int, std::string>(-12, "hello"));
-  //tree.insert(ft::pair<int, std::string>(-4, "hello"));
-  //tree.insert(ft::pair<int, std::string>(12, "hello"));
-  
-  //tree.insert(ft::pair<int, std::string>(3, "hello"));
-  //tree.insert(ft::pair<int, std::string>(11, "hello"));
-  //tree.insert(ft::pair<int, std::string>(5, "hello"));
-  //tree.insert(ft::pair<int, std::string>(4, "hello"));
-  //tree.insert(ft::pair<int, std::string>(80, "hello"));
+  tree.insert(ft::pair<int, std::string>(-9, "hello"));
+  tree.insert(ft::pair<int, std::string>(2, "hello"));
+  tree.insert(ft::pair<int, std::string>(40, "hello"));
+  tree.insert(ft::pair<int, std::string>(-12, "hello"));
+  tree.insert(ft::pair<int, std::string>(-4, "hello"));
+  tree.insert(ft::pair<int, std::string>(12, "hello"));
+  // until here i studied each insertion carefully. After I debugged
+  // this first 10 numbers, everything else worked.
+  tree.insert(ft::pair<int, std::string>(3, "hello"));
+  tree.insert(ft::pair<int, std::string>(11, "hello"));
+  tree.insert(ft::pair<int, std::string>(5, "hello"));
+  tree.insert(ft::pair<int, std::string>(4, "hello"));
+  tree.insert(ft::pair<int, std::string>(80, "hello"));
   for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
         it != tree.end(); it++)
   {
@@ -231,5 +227,39 @@ int insert_no_fix() {
     std::cout << it->first << std::endl;
   }
   return OK;
+}
 
+int empty_tree_iteration() {
+  ft::rb_tree<int, ft::pair<int, std::string> > tree; 
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
+        it != tree.end(); it++)
+  {
+    std::cout << it->first << std::endl;
+  }
+  std::cout << "----------------" << std::endl;
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it(tree.get_maximum());
+        it != tree.end(); it--)
+  {
+    std::cout << it->first << std::endl;
+  }
+  return OK;
+}
+
+
+int insert_with_fix_1() {
+
+  ft::rb_tree<int, ft::pair<int, std::string> > tree; 
+
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
+        it != tree.end(); it++)
+  {
+    std::cout << it->first << std::endl;
+  }
+  std::cout << "----------------" << std::endl;
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it(tree.get_maximum());
+        it != tree.end(); it--)
+  {
+    std::cout << it->first << std::endl;
+  }
+  return OK;
 }

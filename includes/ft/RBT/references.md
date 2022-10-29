@@ -25,6 +25,8 @@ Some algorithm details (mentions cases where parent is red and
 uncle does not exist/is root).
 https://tildesites.bowdoin.edu/~ltoma/teaching/cs231/fall16/Lectures/05-BST/rbtrees.pdf
 
+What should an rbtree of 4 nodes look like ?
+https://stackoverflow.com/questions/66280563/what-should-a-4-node-red-black-tree-look-like
 
 Functor less :
 
