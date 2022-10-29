@@ -140,7 +140,7 @@ class rb_tree {
     }
   }
 
-  void rotate(node_ptr n) {
+  inline void rotate(node_ptr n) {
     return n->is_left_child() ? rotate_right(n) : rotate_left(n);
   }
 
@@ -241,14 +241,7 @@ class rb_tree {
     // with the previous block we make sure there exists a grandparent
     } else {
       node_ptr uncle = n->uncle(); // grandparent's other child
-      //std::cout << "uncle : " << uncle << " node end " << node_end << std::endl;
       if (uncle && uncle != node_end && uncle->color == red) {
-        /*
-        std::cout << "n(" << iterator(n)->first
-                  << "), uncle(" << iterator(uncle)->first << ")";
-        uncle->print_node_state();
-        std::cout << std::endl;
-        */
         uncle->set_color(black);
         n->parent->set_color(black);
         uncle->parent->set_color(red);
@@ -257,34 +250,11 @@ class rb_tree {
           if ((n->is_right_child() && n->parent->is_left_child())
               || (n->is_left_child() && n->parent->is_right_child()))
           {
-            /*
-            std::cout << "n->orientation() " << n->orientation()
-                      << " n->parent->orientation() : " << n->parent->orientation()
-                      << std::endl;
-            std::cout << "root : " << _root
-                      << " n->parent : " << n->parent << std::endl;
-            */
             node_ptr ex_parent = n->parent;
             rotate(n);
-            /*
-            if (n->is_right_child()) {
-              std::cout << "about to rotate left n : " << std::endl;
-              n->print_node_state();
-              rotate_left(n);
-            } else {
-              rotate_right(n);
-            }*/
             return rebalance_after_insertion(ex_parent);
           }
-          // (n->orientation == n->parent->orientation) == true
-          /*
-          if (n->is_left_child()) {
-            rotate_right(n->parent);
-          } else {
-            .rotate_left(n->parent);
-          }
-          */
-         rotate(n->parent);
+          rotate(n->parent);
       }
     }
   }
