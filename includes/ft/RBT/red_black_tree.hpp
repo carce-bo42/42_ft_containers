@@ -407,20 +407,6 @@ class rb_tree {
       ++node_count;
       return true;
     }
-    // regular insertion
-    /*
-    if (!start) {
-      if (new_orientation == right_child) {
-        new_node->assign_parent(parent, right_child);
-        parent->assign_right_child(new_node);
-      } else {
-        new_node->assign_parent(parent, left_child);
-        parent->assign_left_child(new_node);
-      }
-      ++node_count;
-      return true;
-    }
-    */
     /*
     std::cout << "key_of_val(new_node) = " << key_of_val(new_node) << std::endl;
     std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
