@@ -39,7 +39,6 @@ struct rb_tree_node {
   {}
 
   ~rb_tree_node() {
-    memset((void*)this, 0, sizeof(*this));
   }
 
   /*
