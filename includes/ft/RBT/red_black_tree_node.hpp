@@ -8,42 +8,7 @@ enum rb_tree_node_color {
   black = true
 };
 
-enum rb_tree_node_orientation {
-  root = 0,
-  left_child,
-  right_child  
-};
-
-enum rb_tree_node_nillness {
-  nil = true,
-  not_nil = false
-};
-
 namespace ft {
-
-// This will allow to separate what is importnant for 
-// balancing from the rest of the node information.
-// allowing declarations of the type
-// node( ..., red, right_child, nil).
-struct rb_tree_node_properties {
-
-  typedef rb_tree_node_color       n_color;
-  typedef rb_tree_node_orientation n_orientation;
-  //typedef rb_tree_node_nillness    nilness;
-
-  n_color       _color;
-  n_orientation _orientation;
-  //nilness       nil;
-
-  rb_tree_node_properties(n_color _color,
-                          n_orientation orientation)
-                          //nilness nil)
-  :
-    _color(_color),
-    _orientation(orientation)
-    //nil(nil)
-  {}
-};
 
 /*
  * A node template from a red-black tree. T will
@@ -54,38 +19,23 @@ struct rb_tree_node {
 
   typedef T                       value_type;
   typedef rb_tree_node*           node_ptr;
-  typedef const rb_tree_node*     const_node_ptr;
-  typedef rb_tree_node_color      node_color;
 
-  typedef rb_tree_node_properties node_properties;
   typedef rb_tree_node_color       n_color;
-  typedef rb_tree_node_orientation n_orientation;
-  typedef rb_tree_node_nillness    nilness;
   
   node_ptr         parent;
   node_ptr         left;
   node_ptr         right;
   value_type       data;
-  node_properties  properties;
-
-  rb_tree_node(const T& value, const node_ptr parent,
-               n_orientation o, n_color c)
-  :
-    parent(parent),
-    left(0),
-    right(0),
-    data(value),
-    properties(c, o)
-  {}
+  n_color          color;
 
   // default construction is as left child, and red _color.
-  rb_tree_node(const T& value, n_color c)
+  rb_tree_node(const T& value)
   :
     parent(0),
     left(0),
     right(0),
     data(value),
-    properties(c, left_child)
+    color(red)
   {}
 
   ~rb_tree_node() {
@@ -97,24 +47,16 @@ struct rb_tree_node {
    * or at the left of the parent, so these methods are
    * necessary.
    */
-  bool is_left_child() const {
-    return properties._orientation == left_child;
+  bool is_left_child() {
+    return (parent->left == this);
   }
 
-  bool is_right_child() const {
-    return properties._orientation == right_child;
+  bool is_right_child() {
+    return (parent->right == this);
   }
 
-  n_orientation orientation() const {
-    return properties._orientation;
-  }
-
-  bool is_root() const  {
-    return properties._orientation == root;
-  }
-
-  inline void make_root() {
-    properties._orientation = root;
+  inline void make_root(node_ptr node_end) {
+    parent = node_end;
   }
 
   inline void assign_right_child(node_ptr node) {
@@ -129,31 +71,19 @@ struct rb_tree_node {
     parent = node;
   }
 
-  inline void assign_parent(node_ptr node, n_orientation o) {
-    parent = node;
-    properties._orientation = o;
-  }
-
   inline void set_color(n_color c) {
-    properties._color = c;
+    color = c;
   }
 
-  inline node_ptr uncle() {
-    if (parent) {
-      if (parent->is_left_child()) {
-        return parent->parent->right;
-      } else if (parent->is_right_child()) {
-        return parent->parent->left;
-      } else {
-        // if parent is root, node_end is both grandparent and uncle 
-        return parent->parent;
-      }
+  node_ptr uncle() const{
+    if (parent->is_left_child()) {
+      return parent->parent->right;
+    } else if (parent->is_right_child()) {
+      return parent->parent->left;
+    } else {
+      // if parent is root, node_end is both grandparent and uncle
+      return parent->parent;
     }
-    return NULL;
-  }
-
-  inline n_color color() const {
-    return properties._color;
   }
 
   // debug:
@@ -165,8 +95,8 @@ struct rb_tree_node {
     std::cout << "data : (" << data.first << ", " << data.second << ")" 
               << std::endl;
     std::cout << "properties : ("
-              << (properties._color == black ? "black" : "red") << ", "
-              << (properties._orientation == left_child ? "left" : "right") << ")"
+              << (color == black ? "black" : "red") << ", "
+              << (is_left_child() ? "left" : "right") << ")"
               << std::endl;
   }
 

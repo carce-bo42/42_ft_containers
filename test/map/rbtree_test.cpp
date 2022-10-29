@@ -10,9 +10,8 @@
 // from https://stackoverflow.com/questions/3756323/how-to-get-the-current-time-in-milliseconds-from-c-in-linux
 long current_timestamp() {
     struct timeval te; 
-    gettimeofday(&te, NULL); // get current time
-    long milliseconds = te.tv_sec*1000L + te.tv_usec/1000; // calculate milliseconds
-    // printf("milliseconds: %lld\n", milliseconds);
+    gettimeofday(&te, NULL);
+    long milliseconds = te.tv_sec*1000L + te.tv_usec/1000;
     return milliseconds;
 }
 
@@ -23,8 +22,9 @@ typedef enum {
 } RBTREE_TEST_RESULT;
 
 int insert_hardcode() {
-  //return OK;
-  std::map<int, std::string> map;
+  return OK;
+}
+  //std::map<int, std::string> map;
 
 /*
  * The following tree insertions creates this tree:
@@ -39,6 +39,7 @@ int insert_hardcode() {
  *    /   \     /   \     /   \     /   \
  *  -12   -4   1    3    5    12  40    80
  */
+/*
   map.insert(std::pair<int, std::string>(3, "hello)"));
   map.insert(std::pair<int, std::string>(5, "hello)"));
   map.insert(std::pair<int, std::string>(4, "hello)"));
@@ -166,6 +167,7 @@ int insert_hardcode() {
   }
   return OK;
 }
+*/
 
 /*
  * The following tree insertions creates this tree:
@@ -258,7 +260,7 @@ int empty_tree_iteration() {
 
 int insert_with_fix_1() {
 
-  int nbr_insertions = 1000000;
+  int nbr_insertions = 100000;
 
   time_t ft_start = current_timestamp();
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
@@ -269,7 +271,7 @@ int insert_with_fix_1() {
   time_t ft_end = current_timestamp();
   std::cout << "ft::rb_tree total_time for "
             << nbr_insertions << " insertions : "
-            << (float)((ft_end - ft_start)/1000.0f) << " s" << std::endl;
+            << (double)((ft_end - ft_start)/1000.0) << " s" << std::endl;
   
   time_t std_start = current_timestamp();
   std::map<int, std::string> map;
@@ -280,6 +282,6 @@ int insert_with_fix_1() {
   time_t std_end = current_timestamp();
   std::cout << "std::rb_tree total_time for "
             << nbr_insertions << " insertions : "
-            << (float)((std_end - std_start)/1000.0f) << " s" << std::endl;
+            << (double)((std_end - std_start)/1000.0) << " s" << std::endl;
   return OK;
 }

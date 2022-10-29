@@ -120,23 +120,7 @@ int main() {
  * 
  */
 }
-{
-  ft::rb_tree<
-    int,
-    ft::pair<int, std::string> > tree;
-  
-  ft::rb_tree_node<ft::pair<int, std::string> > *node =
-      tree.construct_node(ft::pair<int, std::string>(3, "hello"),
-                          NULL, root, black);
-  //node->print_node_state();
-  node->set_color(red);
-  //node->print_node_state();
-
-  tree.pure_insert(node, node, right_child);
-  // max/min is broken since iterators
-  //std::cout << "minimum : " << tree.get_minimum() <<  std::endl;
-  //std::cout << "maximum : " << tree.get_maximum() <<  std::endl;
-}/*
+/*
 {
   std::map<int, std::string> a;
   std::map<int, std::string>::iterator i = a.begin();

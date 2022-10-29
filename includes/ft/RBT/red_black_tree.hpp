@@ -62,7 +62,6 @@ class rb_tree {
   typedef node_type*                         node_ptr;
   typedef const node_type*                   const_node_ptr;
   typedef typename node_type::n_color        n_color;
-  typedef typename node_type::n_orientation  n_orientation;
   // get another allocator.
   typedef typename Alloc::
           template rebind<node_type >::other node_allocator;
@@ -129,7 +128,7 @@ class rb_tree {
   {
     // iterator end. It goes at the right of the max
     // value and at the left of the min. Starts being root.
-    node_end = construct_node( Val(), 0, root, red);
+    node_end = construct_node(Val());
     _root = node_end;
   }
 
@@ -151,42 +150,44 @@ class rb_tree {
   }
 
   void rotate(node_ptr n) {
-    if (n->is_left_child()) {
-      rotate_right(n);
-    } else {
-      rotate_left(n);
-    }
+    return n->is_left_child() ? rotate_right(n) : rotate_left(n);
   }
 
   void switch_colors(node_ptr x, node_ptr y) {
-    n_color color_tmp = x->color();
-    x->set_color(y->color());
+    n_color color_tmp = x->color;
+    x->set_color(y->color);
     y->set_color(color_tmp);
   }
 
   /* 
    * Rotation helper, does:
+   * 
+   * if new_child_parent_o == right_child
    *      X                  X
    *      |                 |
    *      p                 n
    *    /        === >       \
    *   n                      p
-   *  
-   * Carries out the symmetric case too
+   * else
+   *     X                  X
+   *     |                  |
+   *     p                  n
+   *      \      === >    /
+   *       n            p
    */
-  void switch_with_parent(node_ptr n, node_ptr parent,
-                          n_orientation new_child_parent_o) {
+  void switch_with_parent(node_ptr n, node_ptr parent)
+  {
     if (parent->is_left_child()) {
       parent->parent->assign_left_child(n);
-      n->assign_parent(parent->parent, left_child);
+      n->assign_parent(parent->parent);
     } else if (parent->is_right_child()) {
       parent->parent->assign_right_child(n);
-      n->assign_parent(parent->parent, right_child);
+      n->assign_parent(parent->parent);
     } else {
-      n->assign_parent(node_end, root);
+      n->make_root(node_end);
       _root = n;
     }
-    parent->assign_parent(n, new_child_parent_o);
+    parent->assign_parent(n);
   }
 
   /* 
@@ -200,20 +201,19 @@ class rb_tree {
    *                        /  \
    *                      AL   AR
    */
-  node_ptr rotate_left(node_ptr from) {
+  void rotate_left(node_ptr from) {
 
     node_ptr to = from->parent;
 
     switch_colors(from, to);
-    switch_with_parent(from, to, left_child);
+    switch_with_parent(from, to);
 
     node_ptr tmp = from->left;
     from->assign_left_child(to);
     to->assign_right_child(tmp);
     if (tmp && tmp != node_end) {
-      tmp->assign_parent(to, right_child);
+      tmp->assign_parent(from->left);
     }
-    return from;
   }
 
   /* 
@@ -227,34 +227,31 @@ class rb_tree {
    *                                          /   \
    *                                         AL   AR
    */
-  node_ptr rotate_right(node_ptr from) {
+  void rotate_right(node_ptr from) {
     
     node_ptr to = from->parent;
     
     switch_colors(from, to);
-    switch_with_parent(from, to, right_child);
+    switch_with_parent(from, to);
 
     node_ptr tmp = from->right;
     from->assign_right_child(to);
     to->assign_left_child(tmp);
     if (tmp && tmp != node_end) {
-      tmp->assign_parent(to, left_child);
+      tmp->assign_parent(from->right);
     }
-    return from;
   }
 
   void rebalance_after_insertion(node_ptr n) {
     if (n == _root) {
       n->set_color(black);
-      return ;
-    } else if (n->parent == _root || n->parent->color() == black) {
-      n->parent->set_color(black); //
-      return ;
+    } else if (n->parent == _root || n->parent->color == black) {
+      n->parent->set_color(black);
     // with the previous block we make sure there exists a grandparent
     } else {
       node_ptr uncle = n->uncle(); // grandparent's other child
       //std::cout << "uncle : " << uncle << " node end " << node_end << std::endl;
-      if (uncle && uncle != node_end && uncle->color() == red) {
+      if (uncle && uncle != node_end && uncle->color == red) {
         /*
         std::cout << "n(" << iterator(n)->first
                   << "), uncle(" << iterator(uncle)->first << ")";
@@ -265,8 +262,10 @@ class rb_tree {
         n->parent->set_color(black);
         uncle->parent->set_color(red);
         return rebalance_after_insertion(uncle->parent);
-      } else if (!uncle || uncle == node_end || uncle->color() == black) {
-          if (n->orientation() != n->parent->orientation()) {
+      } else {
+          if ((n->is_right_child() && n->parent->is_left_child())
+              || (n->is_left_child() && n->parent->is_right_child()))
+          {
             /*
             std::cout << "n->orientation() " << n->orientation()
                       << " n->parent->orientation() : " << n->parent->orientation()
@@ -299,24 +298,19 @@ class rb_tree {
     }
   }
 
-  public:
+  void transplant(node_ptr x, node_ptr y) {
+    if (x == _root) {
+      _root = y;
+    } else if (x->is_left_child()) {
 
-  // this constructor will eventually dissapear. No node is ever constructed
-  // with this much information, almost all parameters are dummy initalized.
-  node_ptr construct_node(const Val& value,
-                          const node_ptr parent,
-                          n_orientation orientation,
-                          n_color color )
-  {
-    node_ptr new_node = node_alloc.allocate(1);
-    node_alloc.construct(new_node,
-                         node_type(value, parent, orientation, color));
-    return new_node;
+    }
   }
+
+  public:
 
   node_ptr construct_node(const Val& value) {
     node_ptr new_node = node_alloc.allocate(1);
-    node_alloc.construct(new_node, node_type(value, red));
+    node_alloc.construct(new_node, node_type(value));
     return new_node;
   }
 
@@ -388,12 +382,10 @@ class rb_tree {
     return const_iterator(node_end);
   }
 
-  
-
   bool find_and_insert(node_ptr new_node,
                        node_ptr parent,
                        node_ptr start,
-                       n_orientation new_orientation)
+                       bool at_right)
   {
     /*  
      * Theres 3 cases where we can insert on an end. 
@@ -401,27 +393,31 @@ class rb_tree {
      * - If we are inserting at left of parent (we are new min)
      * - If we are inserting and parent does not exist. (first node)
      */
-    if (node_count == 0
-        || start == node_end)
-    {
+    if (!start || start == node_end) {
       if (node_count == 0) {
         new_node->assign_right_child(node_end);
         new_node->assign_left_child(node_end);
-        new_node->make_root();
+        new_node->make_root(node_end);
         _root = new_node;
-      } else if (new_orientation == right_child) {
-        new_node->assign_parent(parent, right_child);
-        new_node->assign_right_child(node_end);
-        parent->assign_right_child(new_node);
       } else {
-        new_node->assign_parent(parent, left_child);
-        new_node->assign_left_child(node_end);
-        parent->assign_left_child(new_node);
+        new_node->assign_parent(parent);
+        if (at_right) {
+          parent->assign_right_child(new_node);
+          if (start == node_end) {
+            new_node->assign_right_child(node_end);
+          }
+        } else {
+          parent->assign_left_child(new_node);
+          if (start == node_end) {
+            new_node->assign_left_child(node_end);
+          }
+        }
       }
-      node_count += 1;
+      ++node_count;
       return true;
     }
     // regular insertion
+    /*
     if (!start) {
       if (new_orientation == right_child) {
         new_node->assign_parent(parent, right_child);
@@ -430,9 +426,10 @@ class rb_tree {
         new_node->assign_parent(parent, left_child);
         parent->assign_left_child(new_node);
       }
-      node_count += 1;
+      ++node_count;
       return true;
     }
+    */
     /*
     std::cout << "key_of_val(new_node) = " << key_of_val(new_node) << std::endl;
     std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
@@ -441,37 +438,23 @@ class rb_tree {
     */
     // seek new path
     if (key_cmp(key_of_val(new_node), key_of_val(start))) {
-      return find_and_insert(new_node, start, start->left, left_child);
+      return find_and_insert(new_node, start, start->left, false);
     } else if (key_of_val(start) == key_of_val(new_node)) {
       return false;
     } else {
-      return find_and_insert(new_node, start, start->right, right_child);
+      return find_and_insert(new_node, start, start->right, true);
     }
   }
 
   bool insert(const Val& value) {
     node_ptr n = construct_node(value);
     // ToDo control return value (duplicates)
-    if (!find_and_insert(n, _root, _root, left_child)) {
+    if (!find_and_insert(n, _root, _root, false)) {
       destroy_node(n);
       return false;
     }
     rebalance_after_insertion(n);
     return true;
-  }
-
-  void pure_insert(node_ptr new_node, node_ptr start,
-                   n_orientation new_orient )
-  {
-    (void)start;
-    (void)new_orient;
-    _root = new_node;
-    ++node_count;
-      /*
-      // assign iterator end (once insert is done, this breaks the test in main)
-      _root->assign_right_child(node_end);
-      _root->assign_left_child(node_end);
-      */
   }
 
 }; // class rbtree
