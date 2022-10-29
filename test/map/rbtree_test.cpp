@@ -5,6 +5,16 @@
 #include "ft/RBT/red_black_tree_iterator.hpp"
 #include "ft/utils/pair.hpp"
 #include <map>
+#include <sys/time.h>
+
+// from https://stackoverflow.com/questions/3756323/how-to-get-the-current-time-in-milliseconds-from-c-in-linux
+long current_timestamp() {
+    struct timeval te; 
+    gettimeofday(&te, NULL); // get current time
+    long milliseconds = te.tv_sec*1000L + te.tv_usec/1000; // calculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds;
+}
 
 typedef enum {
   OK = 0,
@@ -248,22 +258,28 @@ int empty_tree_iteration() {
 
 int insert_with_fix_1() {
 
+  int nbr_insertions = 1000000;
+
+  time_t ft_start = current_timestamp();
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
 
-  for (int i = 0; i < 100000; i++) {
+  for (int i = 0; i < nbr_insertions; i++) {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
   }
-  /*
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
-        it != tree.end(); it++)
-  {
-    std::cout << it->first << std::endl;
+  time_t ft_end = current_timestamp();
+  std::cout << "ft::rb_tree total_time for "
+            << nbr_insertions << " insertions : "
+            << (float)((ft_end - ft_start)/1000.0f) << " s" << std::endl;
+  
+  time_t std_start = current_timestamp();
+  std::map<int, std::string> map;
+
+  for (int i = 0; i < nbr_insertions; i++) {
+    map.insert(std::pair<int, std::string>(i, "hello"));
   }
-  std::cout << "----------------" << std::endl;
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it(tree.get_maximum());
-        it != tree.end(); it--)
-  {
-    std::cout << it->first << std::endl;
-  }*/
+  time_t std_end = current_timestamp();
+  std::cout << "std::rb_tree total_time for "
+            << nbr_insertions << " insertions : "
+            << (float)((std_end - std_start)/1000.0f) << " s" << std::endl;
   return OK;
 }

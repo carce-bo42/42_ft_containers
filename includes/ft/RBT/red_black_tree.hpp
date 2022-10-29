@@ -165,12 +165,14 @@ class rb_tree {
   }
 
   /* 
-   * Rotation helper. Does :
+   * Rotation helper, does:
    *      X                  X
    *      |                 |
    *      p                 n
    *    /        === >       \
    *   n                      p
+   *  
+   * Carries out the symmetric case too
    */
   void switch_with_parent(node_ptr n, node_ptr parent,
                           n_orientation new_child_parent_o) {
@@ -201,6 +203,7 @@ class rb_tree {
   node_ptr rotate_left(node_ptr from) {
 
     node_ptr to = from->parent;
+
     switch_colors(from, to);
     switch_with_parent(from, to, left_child);
 
