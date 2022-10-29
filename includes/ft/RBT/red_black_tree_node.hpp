@@ -46,11 +46,11 @@ struct rb_tree_node {
    * or at the left of the parent, so these methods are
    * necessary.
    */
-  bool is_left_child() {
+  inline bool is_left_child() const {
     return (parent->left == this);
   }
 
-  bool is_right_child() {
+  inline bool is_right_child() const {
     return (parent->right == this);
   }
 
@@ -74,7 +74,7 @@ struct rb_tree_node {
     color = c;
   }
 
-  node_ptr uncle() const{
+  node_ptr uncle() const {
     if (parent->is_left_child()) {
       return parent->parent->right;
     } else if (parent->is_right_child()) {

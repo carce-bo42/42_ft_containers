@@ -377,12 +377,6 @@ class rb_tree {
       ++node_count;
       return true;
     }
-    /*
-    std::cout << "key_of_val(new_node) = " << key_of_val(new_node) << std::endl;
-    std::cout << "key_of_val(start) = " << key_of_val(start) << std::endl;
-    std::cout << "key_cmp(key_of_val(new_node), key_of_val(start)) = "
-              << key_cmp(key_of_val(new_node), key_of_val(start)) << std::endl;
-    */
     // seek new path
     if (key_cmp(key_of_val(new_node), key_of_val(start))) {
       return find_and_insert(new_node, start, start->left, false);
