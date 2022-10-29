@@ -27,7 +27,6 @@ namespace ft {
 // node( ..., red, right_child, nil).
 struct rb_tree_node_properties {
 
-  typedef rb_tree_node_properties  self;
   typedef rb_tree_node_color       n_color;
   typedef rb_tree_node_orientation n_orientation;
   //typedef rb_tree_node_nillness    nilness;
@@ -45,16 +44,6 @@ struct rb_tree_node_properties {
     //nil(nil)
   {}
 };
-
-/* Red black trees must hold :
- * (0) Nodes are either RED or BLACK (surprise)
- * (1) Root and nil leaves are BLACK.
- * (2) If a node is RED, its children are BLACK.
- * (3) All paths from a node (not counting the starting
- *     one) to its nil descendants contain the same number
- *     of black nodes.
- */
-
 
 /*
  * A node template from a red-black tree. T will

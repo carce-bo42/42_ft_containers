@@ -13,7 +13,7 @@ typedef enum {
 } RBTREE_TEST_RESULT;
 
 int insert_hardcode() {
-  return OK; 
+  //return OK;
   std::map<int, std::string> map;
 
 /*
@@ -248,8 +248,12 @@ int empty_tree_iteration() {
 
 int insert_with_fix_1() {
 
-  ft::rb_tree<int, ft::pair<int, std::string> > tree; 
+  ft::rb_tree<int, ft::pair<int, std::string> > tree;
 
+  for (int i = 0; i < 100000; i++) {
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
+  }
+  /*
   for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
         it != tree.end(); it++)
   {
@@ -260,6 +264,6 @@ int insert_with_fix_1() {
         it != tree.end(); it--)
   {
     std::cout << it->first << std::endl;
-  }
+  }*/
   return OK;
 }

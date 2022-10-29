@@ -30,7 +30,14 @@ struct get_key {
  */
 
 /*
- *
+ * Red black trees must hold :
+ * (0) Nodes are either RED or BLACK (surprise)
+ * (1) Root and nil leaves are BLACK.
+ * (2) If a node is RED, its children are BLACK.
+ * (3) All paths from a node (not counting the starting
+ *     one) to its nil descendants contain the same number
+ *     of black nodes.
+ * 
  * This implementation's rules :
  * _root is the only node which has !node->parent.
  * A leaf of the tree will !have node->right && !node->left
@@ -54,8 +61,8 @@ class rb_tree {
   typedef rb_tree_node<Val>                  node_type;
   typedef node_type*                         node_ptr;
   typedef const node_type*                   const_node_ptr;
-  typedef rb_tree_node_color                 n_color;
-  typedef rb_tree_node_orientation           n_orientation;
+  typedef typename node_type::n_color        n_color;
+  typedef typename node_type::n_orientation  n_orientation;
   // get another allocator.
   typedef typename Alloc::
           template rebind<node_type >::other node_allocator;
@@ -121,7 +128,7 @@ class rb_tree {
     node_alloc()
   {
     // iterator end. It goes at the right of the max
-    // value and at the left of the min.
+    // value and at the left of the min. Starts being root.
     node_end = construct_node( Val(), 0, root, red);
     _root = node_end;
   }
@@ -151,6 +158,35 @@ class rb_tree {
     }
   }
 
+  void switch_colors(node_ptr x, node_ptr y) {
+    n_color color_tmp = x->color();
+    x->set_color(y->color());
+    y->set_color(color_tmp);
+  }
+
+  /* 
+   * Rotation helper. Does :
+   *      X                  X
+   *      |                 |
+   *      p                 n
+   *    /        === >       \
+   *   n                      p
+   */
+  void switch_with_parent(node_ptr n, node_ptr parent,
+                          n_orientation new_child_parent_o) {
+    if (parent->is_left_child()) {
+      parent->parent->assign_left_child(n);
+      n->assign_parent(parent->parent, left_child);
+    } else if (parent->is_right_child()) {
+      parent->parent->assign_right_child(n);
+      n->assign_parent(parent->parent, right_child);
+    } else {
+      n->assign_parent(node_end, root);
+      _root = n;
+    }
+    parent->assign_parent(n, new_child_parent_o);
+  }
+
   /* 
    *        Parent                    Parent      
    *          |                         |
@@ -163,26 +199,13 @@ class rb_tree {
    *                      AL   AR
    */
   node_ptr rotate_left(node_ptr from) {
-    node_ptr to = from->parent;
 
-    n_color color_tmp = from->color();
-    from->set_color(to->color());
-    to->set_color(color_tmp);
-    
-    if (to->is_left_child()) {
-      to->parent->assign_left_child(from);
-      from->assign_parent(to->parent, left_child);
-    } else if (to->is_right_child()) {
-      to->parent->assign_right_child(from);
-      from->assign_parent(to->parent, right_child);
-    } else {
-      from->assign_parent(node_end, root);
-      _root = from;
-    }
-    
+    node_ptr to = from->parent;
+    switch_colors(from, to);
+    switch_with_parent(from, to, left_child);
+
     node_ptr tmp = from->left;
     from->assign_left_child(to);
-    to->assign_parent(from, left_child);
     to->assign_right_child(tmp);
     if (tmp && tmp != node_end) {
       tmp->assign_parent(to, right_child);
@@ -204,26 +227,12 @@ class rb_tree {
   node_ptr rotate_right(node_ptr from) {
     
     node_ptr to = from->parent;
+    
+    switch_colors(from, to);
+    switch_with_parent(from, to, right_child);
 
-    n_color color_tmp = from->color();
-    from->set_color(to->color());
-    to->set_color(color_tmp);
-    
-    if (to->is_left_child()) {
-      to->parent->assign_left_child(from);
-      from->assign_parent(to->parent, left_child);
-    } else if (to->is_right_child()) {
-      to->parent->assign_right_child(from);
-      from->assign_parent(to->parent, right_child);
-    } else {
-      from->assign_parent(node_end, root);
-      _root = from;
-      // if root do nothing
-    }
-    
     node_ptr tmp = from->right;
     from->assign_right_child(to);
-    to->assign_parent(from, right_child);
     to->assign_left_child(tmp);
     if (tmp && tmp != node_end) {
       tmp->assign_parent(to, left_child);
@@ -231,8 +240,66 @@ class rb_tree {
     return from;
   }
 
+  void rebalance_after_insertion(node_ptr n) {
+    if (n == _root) {
+      n->set_color(black);
+      return ;
+    } else if (n->parent == _root || n->parent->color() == black) {
+      n->parent->set_color(black); //
+      return ;
+    // with the previous block we make sure there exists a grandparent
+    } else {
+      node_ptr uncle = n->uncle(); // grandparent's other child
+      //std::cout << "uncle : " << uncle << " node end " << node_end << std::endl;
+      if (uncle && uncle != node_end && uncle->color() == red) {
+        /*
+        std::cout << "n(" << iterator(n)->first
+                  << "), uncle(" << iterator(uncle)->first << ")";
+        uncle->print_node_state();
+        std::cout << std::endl;
+        */
+        uncle->set_color(black);
+        n->parent->set_color(black);
+        uncle->parent->set_color(red);
+        return rebalance_after_insertion(uncle->parent);
+      } else if (!uncle || uncle == node_end || uncle->color() == black) {
+          if (n->orientation() != n->parent->orientation()) {
+            /*
+            std::cout << "n->orientation() " << n->orientation()
+                      << " n->parent->orientation() : " << n->parent->orientation()
+                      << std::endl;
+            std::cout << "root : " << _root
+                      << " n->parent : " << n->parent << std::endl;
+            */
+            node_ptr ex_parent = n->parent;
+            rotate(n);
+            /*
+            if (n->is_right_child()) {
+              std::cout << "about to rotate left n : " << std::endl;
+              n->print_node_state();
+              rotate_left(n);
+            } else {
+              rotate_right(n);
+            }*/
+            return rebalance_after_insertion(ex_parent);
+          }
+          // (n->orientation == n->parent->orientation) == true
+          /*
+          if (n->is_left_child()) {
+            rotate_right(n->parent);
+          } else {
+            .rotate_left(n->parent);
+          }
+          */
+         rotate(n->parent);
+      }
+    }
+  }
+
   public:
 
+  // this constructor will eventually dissapear. No node is ever constructed
+  // with this much information, almost all parameters are dummy initalized.
   node_ptr construct_node(const Val& value,
                           const node_ptr parent,
                           n_orientation orientation,
@@ -267,7 +334,6 @@ class rb_tree {
       return node_end;
     }
     node_ptr aux = _root;
-    std::cout << "MAXIMUM SEARCH" << std::endl;
     while (aux->right != node_end) {
     /*
     std::cout << "aux(" << iterator(aux)->first
@@ -377,60 +443,6 @@ class rb_tree {
       return false;
     } else {
       return find_and_insert(new_node, start, start->right, right_child);
-    }
-  }
-
-  void rebalance_after_insertion(node_ptr n) {
-    if (n == _root) {
-      n->set_color(black);
-      return ;
-    } else if (n->parent == _root || n->parent->color() == black) {
-      n->parent->set_color(black); //
-      return ;
-    // with the previous block we make sure there exists a grandparent
-    } else {
-      node_ptr uncle = n->uncle(); // grandparent's other child
-      //std::cout << "uncle : " << uncle << " node end " << node_end << std::endl;
-      if (uncle && uncle != node_end && uncle->color() == red) {
-        std::cout << "n(" << iterator(n)->first
-                  << "), uncle(" << iterator(uncle)->first << ")";
-        uncle->print_node_state();
-        std::cout << std::endl;
-        uncle->set_color(black);
-        n->parent->set_color(black);
-        uncle->parent->set_color(red);
-        return rebalance_after_insertion(uncle->parent);
-      } else if (!uncle || uncle == node_end || uncle->color() == black) {
-          if (n->orientation() != n->parent->orientation()) {
-            /*
-            std::cout << "n->orientation() " << n->orientation()
-                      << " n->parent->orientation() : " << n->parent->orientation()
-                      << std::endl;
-            std::cout << "root : " << _root
-                      << " n->parent : " << n->parent << std::endl;
-            */
-            node_ptr ex_parent = n->parent;
-            rotate(n);
-            /*
-            if (n->is_right_child()) {
-              std::cout << "about to rotate left n : " << std::endl;
-              n->print_node_state();
-              rotate_left(n);
-            } else {
-              rotate_right(n);
-            }*/
-            return rebalance_after_insertion(ex_parent);
-          }
-          // (n->orientation == n->parent->orientation) == true
-          /*
-          if (n->is_left_child()) {
-            rotate_right(n->parent);
-          } else {
-            .rotate_left(n->parent);
-          }
-          */
-         rotate(n->parent);
-      }
     }
   }
 
