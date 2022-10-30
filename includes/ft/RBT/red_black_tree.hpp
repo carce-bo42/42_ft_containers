@@ -259,14 +259,6 @@ class rb_tree {
     }
   }
 
-  void transplant(node_ptr x, node_ptr y) {
-    if (x == _root) {
-      _root = y;
-    } else if (x->is_left_child()) {
-
-    }
-  }
-
   public:
 
   node_ptr construct_node(const Val& value) {
@@ -343,10 +335,10 @@ class rb_tree {
     return const_iterator(node_end);
   }
 
-  bool find_and_insert(node_ptr new_node,
-                       node_ptr parent,
-                       node_ptr start,
-                       bool at_right)
+  node_ptr find_and_insert(node_ptr new_node,
+                           node_ptr parent,
+                           node_ptr start,
+                           bool at_right)
   {
     /*  
      * Theres 3 cases where we can insert on an end. 
@@ -375,13 +367,13 @@ class rb_tree {
         }
       }
       ++node_count;
-      return true;
+      return new_node;
     }
     // seek new path
     if (key_cmp(key_of_val(new_node), key_of_val(start))) {
       return find_and_insert(new_node, start, start->left, false);
     } else if (key_of_val(start) == key_of_val(new_node)) {
-      return false;
+      return start;
     } else {
       return find_and_insert(new_node, start, start->right, true);
     }
@@ -389,12 +381,15 @@ class rb_tree {
 
   bool insert(const Val& value) {
     node_ptr n = construct_node(value);
+    node_ptr m = NULL;
     // ToDo control return value (duplicates)
-    if (!find_and_insert(n, _root, _root, false)) {
+    if ((m = find_and_insert(n, _root, _root, false)) != n) {
       destroy_node(n);
+      //return ft::pair<false, iterator(m); 
       return false;
     }
     rebalance_after_insertion(n);
+    // eventually return ft::pair<true, iterator(n)>
     return true;
   }
 

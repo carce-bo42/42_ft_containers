@@ -257,10 +257,13 @@ int empty_tree_iteration() {
   return OK;
 }
 
-
+/*
+ * Inserting a range form (1, n) in order is essentially fucking up 
+ * the tree every 2 insertions (0 chill insertion). 
+ */
 int insert_with_fix_1() {
 
-  int nbr_insertions = 100000;
+  int nbr_insertions = 10000;
 
   time_t ft_start = current_timestamp();
   ft::rb_tree<int, std::pair<int, std::string> > tree;

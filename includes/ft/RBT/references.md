@@ -34,6 +34,12 @@ Functor less :
 3.2 https://en.cppreference.com/w/cpp/utility/functional/less
 
 
+BEST LINK FOR INSERTION:
+https://tildesites.bowdoin.edu/~ltoma/teaching/cs231/fall16/Lectures/05-BST/rbtrees.pdf
+
+BEST LINK FOR DELETION:
+https://www.youtube.com/watch?v=_c30ot0Kcis&t=275s
+
 
 RED BLACK TREE RULES
 
