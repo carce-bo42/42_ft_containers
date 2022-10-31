@@ -246,6 +246,7 @@ class rb_tree {
         return rebalance_after_insertion(aux->parent);
       }
       aux = n->parent;
+      // This is the same as asking if n and its parent form a line.
       if (key_cmp(key_of_val(n), key_of_val(n->parent))
           ==
           key_cmp(key_of_val(n->parent), key_of_val(n->parent->parent)))
