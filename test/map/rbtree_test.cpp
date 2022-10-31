@@ -7,6 +7,8 @@
 #include <map>
 #include <sys/time.h>
 
+#include "../debug.hpp"
+
 // from https://stackoverflow.com/questions/3756323/how-to-get-the-current-time-in-milliseconds-from-c-in-linux
 long current_timestamp() {
     struct timeval te; 
@@ -227,33 +229,28 @@ int insert_no_fix() {
   tree.insert(ft::pair<int, std::string>(5, "hello"));
   tree.insert(ft::pair<int, std::string>(4, "hello"));
   tree.insert(ft::pair<int, std::string>(80, "hello"));
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.begin();
         it != tree.end(); it++)
   {
     std::cout << it->first << std::endl;
   }
   std::cout << "----------------" << std::endl;
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it(tree.get_maximum());
-        it != tree.end(); it--)
-  {
-    std::cout << it->first << std::endl;
-  }
+  ft::rb_tree<int, ft::pair<int, std::string> >::iterator a = tree.end();
+  a++;
+  a++;
+  std::cout << "end after 2 increments : " << a->first << std::endl;
+  std::cout << "----------------" << std::endl;
   return OK;
 }
 
 int empty_tree_iteration() {
   ft::rb_tree<int, ft::pair<int, std::string> > tree; 
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.get_minimum();
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.begin();
         it != tree.end(); it++)
   {
     std::cout << it->first << std::endl;
   }
   std::cout << "----------------" << std::endl;
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it(tree.get_maximum());
-        it != tree.end(); it--)
-  {
-    std::cout << it->first << std::endl;
-  }
   return OK;
 }
 
@@ -263,13 +260,13 @@ int empty_tree_iteration() {
  */
 int insert_with_fix_1() {
 
-  int nbr_insertions = 10000;
+  int nbr_insertions = 500000;
 
   time_t ft_start = current_timestamp();
-  ft::rb_tree<int, std::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string> > tree;
 
   for (int i = 0; i < nbr_insertions; i++) {
-    tree.insert(std::pair<int, std::string>(i, "hello"));
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
   }
   time_t ft_end = current_timestamp();
   std::cout << "ft::rb_tree total_time for "
@@ -286,5 +283,13 @@ int insert_with_fix_1() {
   std::cout << "std::rb_tree total_time for "
             << nbr_insertions << " insertions : "
             << (double)((std_end - std_start)/1000.0) << " s" << std::endl;
+
+  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  std::map<int, std::string>::iterator std_it = map.begin();
+  for (int i = 0; i < nbr_insertions; i++)  {
+    if (ft_it->first != std_it->first) {  
+      return TEST_ERROR(0);
+    }
+  }
   return OK;
 }

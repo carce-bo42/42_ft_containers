@@ -119,7 +119,7 @@ class rb_tree {
   {
     // iterator end. It goes at the right of the max
     // value and at the left of the min. Starts being root.
-    node_end = construct_node(Val());
+    node_end = construct_node(Val(), 0);
     _root = node_end;
   }
 
@@ -170,14 +170,12 @@ class rb_tree {
   {
     if (parent->is_left_child()) {
       parent->parent->assign_left_child(n);
-      n->assign_parent(parent->parent);
     } else if (parent->is_right_child()) {
       parent->parent->assign_right_child(n);
-      n->assign_parent(parent->parent);
     } else {
-      n->make_root(node_end);
       _root = n;
     }
+    n->assign_parent(parent->parent);
     parent->assign_parent(n);
   }
 
@@ -202,7 +200,7 @@ class rb_tree {
     node_ptr tmp = from->left;
     from->assign_left_child(to);
     to->assign_right_child(tmp);
-    if (tmp && tmp != node_end) {
+    if (tmp != node_end) {
       tmp->assign_parent(from->left);
     }
   }
@@ -228,7 +226,7 @@ class rb_tree {
     node_ptr tmp = from->right;
     from->assign_right_child(to);
     to->assign_left_child(tmp);
-    if (tmp && tmp != node_end) {
+    if (tmp != node_end) {
       tmp->assign_parent(from->right);
     }
   }
@@ -236,34 +234,34 @@ class rb_tree {
   void rebalance_after_insertion(node_ptr n) {
     if (n == _root) {
       n->set_color(black);
-    } else if (n->parent == _root || n->parent->color == black) {
+    } else if (n->parent == _root) {
       n->parent->set_color(black);
     // with the previous block we make sure there exists a grandparent
     } else {
-      node_ptr uncle = n->uncle(); // grandparent's other child
-      if (uncle && uncle != node_end && uncle->color == red) {
-        uncle->set_color(black);
+      node_ptr aux = n->uncle(); // grandparent's other child
+      if (aux != node_end && aux->color == red) {
+        aux->set_color(black);
         n->parent->set_color(black);
-        uncle->parent->set_color(red);
-        return rebalance_after_insertion(uncle->parent);
-      } else {
-          if ((n->is_right_child() && n->parent->is_left_child())
-              || (n->is_left_child() && n->parent->is_right_child()))
-          {
-            node_ptr ex_parent = n->parent;
-            rotate(n);
-            return rebalance_after_insertion(ex_parent);
-          }
-          rotate(n->parent);
+        aux->parent->set_color(red);
+        return rebalance_after_insertion(aux->parent);
       }
+      aux = n->parent;
+      if (key_cmp(key_of_val(n), key_of_val(n->parent))
+          ==
+          key_cmp(key_of_val(n->parent), key_of_val(n->parent->parent)))
+      {
+        rotate(n);
+        aux = aux->parent;
+      }
+      rotate(aux);
     }
   }
 
   public:
 
-  node_ptr construct_node(const Val& value) {
+  node_ptr construct_node(const Val& value, node_ptr node_end) {
     node_ptr new_node = node_alloc.allocate(1);
-    node_alloc.construct(new_node, node_type(value));
+    node_alloc.construct(new_node, node_type(value, node_end));
     return new_node;
   }
 
@@ -320,25 +318,23 @@ class rb_tree {
   }
 
   iterator begin() {
-    return iterator(get_minimum());
+    return iterator(get_minimum(), node_end);
   }
 
   const_iterator begin() const {
-    return const_iterator(get_minimum());
+    return const_iterator(get_minimum(), node_end);
   }
 
   iterator end() {
-    return iterator(node_end);
+    return iterator(node_end, node_end);
   }
 
   const_iterator end() const {
-    return const_iterator(node_end);
+    return const_iterator(node_end, node_end);
   }
 
-  node_ptr find_and_insert(node_ptr new_node,
-                           node_ptr parent,
-                           node_ptr start,
-                           bool at_right)
+  node_ptr find_and_insert(node_ptr new_node, node_ptr parent,
+                           node_ptr start, bool at_right)
   {
     /*  
      * Theres 3 cases where we can insert on an end. 
@@ -346,24 +342,16 @@ class rb_tree {
      * - If we are inserting at left of parent (we are new min)
      * - If we are inserting and parent does not exist. (first node)
      */
-    if (!start || start == node_end) {
+    if (start == node_end) {
       if (node_count == 0) {
-        new_node->assign_right_child(node_end);
-        new_node->assign_left_child(node_end);
-        new_node->make_root(node_end);
+        new_node->assign_parent(node_end);
         _root = new_node;
       } else {
         new_node->assign_parent(parent);
         if (at_right) {
           parent->assign_right_child(new_node);
-          if (start == node_end) {
-            new_node->assign_right_child(node_end);
-          }
         } else {
           parent->assign_left_child(new_node);
-          if (start == node_end) {
-            new_node->assign_left_child(node_end);
-          }
         }
       }
       ++node_count;
@@ -380,17 +368,83 @@ class rb_tree {
   }
 
   bool insert(const Val& value) {
-    node_ptr n = construct_node(value);
+    node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
-    // ToDo control return value (duplicates)
     if ((m = find_and_insert(n, _root, _root, false)) != n) {
       destroy_node(n);
-      //return ft::pair<false, iterator(m); 
+      // return ft::pair<false, iterator(m); 
       return false;
     }
-    rebalance_after_insertion(n);
-    // eventually return ft::pair<true, iterator(n)>
+    if (n->parent != _root
+        || n->parent->color != black)
+    {
+      rebalance_after_insertion(n);
+    }
+    // return ft::pair<true, iterator(n)>
     return true;
+  }
+
+  node_ptr find_from_key(const Key& key, node_ptr start) {
+    if (!start || start == node_end) {
+      return NULL;
+    }
+    if (key == key_of_val(start)) {
+      return start;
+    } else if (key_cmp(key, key_of_val(start))) {
+      find_from_key(key, start->left);
+    } else {
+      find_from_key(key, start->right);
+    }
+  }
+
+  /* 
+   * Case 0: p no childs :
+   *         - delete p
+   *         - If p was black, solve DOUBLE BLACK
+   * Case 1: p has 1 child :
+   *         - delete p and promote child
+   *         - color promoted child to black if p was black
+   * Case 2: p has 2 childs :
+   *         - find inorder predecessor of p, r
+   *         - interchange entries of p and r.
+   *         - p gets color of r and r color of p.
+   *         - delete node at r (now p) staisfying
+   *           either Case 0 or Case 1.
+   * 
+   * DOUBLE_BLACK vocabulary :
+   *          
+   *          z        p : Double black node
+   *        /  \       y : sibling
+   *      y     p      z : common parent
+   *    /              x : sibling child (in the same orientation as y)
+   *   x
+   */
+
+  void erase_and_rebalance(node_ptr p) {
+    (void)p;
+  /*
+    if (!p->left || p->left == node_end
+        && !p->right || p->right == node_end)
+    {
+
+    }
+    else if ((!p->left || p->left == node_end)
+               || (!p->right || p->right == node_end))
+    {
+
+    }
+    else 
+    {
+      // search inorder predecessor of p
+
+    }*/
+  }
+
+  void erase(const Key& key) {
+    node_ptr n = find_from_key(key, _root);
+    if (n) {
+      erase_and_rebalance(n);
+    }
   }
 
 }; // class rbtree

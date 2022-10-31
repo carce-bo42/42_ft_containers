@@ -19,6 +19,7 @@ class rb_tree_iterator {
   private:
 
   Node* node;
+  Node* node_end;
 
   public:
 
@@ -35,9 +36,10 @@ class rb_tree_iterator {
     node(it.node)
   {}
 
-  rb_tree_iterator(Node* start)
+  rb_tree_iterator(Node* start, Node* end)
   :
-    node(start)
+    node(start),
+    node_end(end)
   {}
 
   Node* base() const {
@@ -75,28 +77,22 @@ class rb_tree_iterator {
    * 4.1, 3.1, 4.2, 2.1, 4.3, 3.2, 4.4, 1.1, 4.5, 3.3, 4.6, 2.2, 4.7, 3.4, 4.8
    */
   rb_tree_iterator& operator++() {
-    Node* save = node;
-    if (node->right) {
+    if (node == node_end) {
+      return *this;
+    }
+    if (node->right != node_end) {
       node = node->right;
-      while (node->left) {
+      while (node->left != node_end) {
         node = node->left;
       }
     // else, go up until we are a node which is not its parents' right child
     } else {
-      if (node->parent) {
-        Node* maybe_next = node->parent;
-        while (maybe_next->right == node) {
-          node = maybe_next;
-          if (maybe_next->parent) {
-            maybe_next = maybe_next->parent;
-          } else {
-            // case we got to the root
-            node = save;
-            return *this;
-          }
-        }
+      Node* maybe_next = node->parent;
+      while (maybe_next->right == node) {
         node = maybe_next;
+        maybe_next = maybe_next->parent;
       }
+      node = maybe_next;
     }
     return *this;
   }
@@ -111,29 +107,23 @@ class rb_tree_iterator {
   /* This has perfect symmetry with the ++ case. Switch left/right.
   */
   rb_tree_iterator& operator--() {
-    Node* save = node;
-    if (node->left) {
+    if (node == node_end) {
+      return *this;
+    }
+    if (node->left != node_end) {
       node = node->left;
-      while (node->right) {
+      while (node->right != node_end) {
         node = node->right;
       }
     // else, go up until we are a node which
     // is not its parents' left child
     } else {
-      if (node->parent) {
-        Node* maybe_next = node->parent;
-        while (maybe_next->left == node) {
-          node = maybe_next;
-          if (maybe_next->parent) {
-            maybe_next = maybe_next->parent;
-          } else {
-            // case we got to the root
-            node = save;
-            return *this;
-          }
-        }
+      Node* maybe_next = node->parent;
+      while (maybe_next->left == node) {
         node = maybe_next;
+        maybe_next = maybe_next->parent;
       }
+      node = maybe_next;
     }
     return *this;
   }

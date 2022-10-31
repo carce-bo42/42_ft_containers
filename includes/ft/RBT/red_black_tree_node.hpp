@@ -19,7 +19,6 @@ struct rb_tree_node {
 
   typedef T                       value_type;
   typedef rb_tree_node*           node_ptr;
-
   typedef rb_tree_node_color       n_color;
   
   node_ptr         parent;
@@ -28,12 +27,11 @@ struct rb_tree_node {
   value_type       data;
   n_color          color;
 
-  // default construction is as left child, and red _color.
-  rb_tree_node(const T& value)
+  rb_tree_node(const T& value, node_ptr node_end)
   :
     parent(0),
-    left(0),
-    right(0),
+    left(node_end),
+    right(node_end),
     data(value),
     color(red)
   {}
@@ -52,10 +50,6 @@ struct rb_tree_node {
 
   inline bool is_right_child() const {
     return (parent->right == this);
-  }
-
-  inline void make_root(node_ptr node_end) {
-    parent = node_end;
   }
 
   inline void assign_right_child(node_ptr node) {
