@@ -143,11 +143,11 @@ class rb_tree {
    */
   void delete_subtree(node_ptr node) {
     while (node != node_end) {
-	    delete_subtree(node->right);
+      delete_subtree(node->right);
       node_ptr save = node->left;
       destroy_node(node);
       node = save;
-	  }
+    }
     /*if (node != node_end) {
       delete_subtree(node->right);
       delete_subtree(node->left);
