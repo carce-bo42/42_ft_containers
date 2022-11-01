@@ -260,7 +260,7 @@ int empty_tree_iteration() {
  */
 int insert_with_fix_1() {
 
-  int nbr_insertions = 500000;
+  int nbr_insertions = 1000000;
 
   time_t ft_start = current_timestamp();
   ft::rb_tree<int, ft::pair<int, std::string> > tree;

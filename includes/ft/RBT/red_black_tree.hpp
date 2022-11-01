@@ -120,6 +120,10 @@ class rb_tree {
     // iterator end. It goes at the right of the max
     // value and at the left of the min. Starts being root.
     node_end = construct_node(Val(), 0);
+    node_end->assign_parent(0);
+    node_end->assign_left_child(0);
+    node_end->assign_right_child(0);
+    node_end->set_color(black);
     _root = node_end;
   }
 
@@ -130,14 +134,25 @@ class rb_tree {
 
   private:
 
+  /* 
+   * this constructor had to be, lets say, inspired from STL
+   * because the double recursive one made the stack explode
+   * for large trees (>1 million nodes).
+   * ulimit -a : shows system limits for a variety of `kernel shit`
+   * ulimits -s ; the one we are interested in.
+   */
   void delete_subtree(node_ptr node) {
-    if (node) {
+    while (node != node_end) {
+	    delete_subtree(node->right);
+      node_ptr save = node->left;
+      destroy_node(node);
+      node = save;
+	  }
+    /*if (node != node_end) {
       delete_subtree(node->right);
       delete_subtree(node->left);
-      if (node != node_end) {
-        destroy_node(node);
-      }
-    }
+      destroy_node(node);
+    }*/
   }
 
   inline void rotate(node_ptr n) {
@@ -246,15 +261,18 @@ class rb_tree {
         return rebalance_after_insertion(aux->parent);
       }
       aux = n->parent;
-      // This is the same as asking if n and its parent form a line.
+      // This is the same as asking if n and its parent form a line
+      // this optimization changes insertion from 50% slower
+      // to twice as fast as STL.
       if (key_cmp(key_of_val(n), key_of_val(n->parent))
           ==
           key_cmp(key_of_val(n->parent), key_of_val(n->parent->parent)))
       {
         rotate(n);
+        return rebalance_after_insertion(n->parent);
         aux = aux->parent;
       }
-      rotate(aux);
+      rotate(n->parent);
     }
   }
 
