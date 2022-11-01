@@ -135,7 +135,7 @@ class rb_tree {
   private:
 
   /* 
-   * this constructor had to be, lets say, inspired from STL
+   * this destructor had to be, lets say, inspired from STL
    * because the double recursive one made the stack explode
    * for large trees (>1 million nodes).
    * ulimit -a : shows system limits for a variety of `kernel shit`
@@ -274,13 +274,11 @@ class rb_tree {
       if (key_cmp(key_of_val(n), key_of_val(n->parent))
           ==
           key_cmp(key_of_val(n->parent), key_of_val(n->parent->parent)))
-      
       {
         rotate(n);
-        return rebalance_after_insertion(n->parent);
-        aux = aux->parent;
+        aux = aux->parent; // this case ALWAYS ...
       }
-      rotate(n->parent);
+      rotate(aux); // ... ends up here. 
     }
   }
 
