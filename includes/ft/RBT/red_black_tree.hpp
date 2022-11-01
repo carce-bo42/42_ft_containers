@@ -142,17 +142,20 @@ class rb_tree {
    * ulimits -s ; the one we are interested in.
    */
   void delete_subtree(node_ptr node) {
+#ifndef BAD_DELETE
     while (node != node_end) {
       delete_subtree(node->right);
       node_ptr save = node->left;
       destroy_node(node);
       node = save;
     }
-    /*if (node != node_end) {
+#else
+    if (node != node_end) {
       delete_subtree(node->right);
       delete_subtree(node->left);
       destroy_node(node);
-    }*/
+    }
+#endif
   }
 
   inline void rotate(node_ptr n) {
@@ -261,12 +264,17 @@ class rb_tree {
         return rebalance_after_insertion(aux->parent);
       }
       aux = n->parent;
+      /*
+      if ((n->is_right_child() && n->parent->is_left_child())
+          || (n->is_left_child() && n->parent->is_right_child()))
+      */
       // This is the same as asking if n and its parent form a line
       // this optimization changes insertion from 50% slower
       // to twice as fast as STL.
       if (key_cmp(key_of_val(n), key_of_val(n->parent))
           ==
           key_cmp(key_of_val(n->parent), key_of_val(n->parent->parent)))
+      
       {
         rotate(n);
         return rebalance_after_insertion(n->parent);

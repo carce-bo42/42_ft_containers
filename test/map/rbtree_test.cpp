@@ -269,9 +269,10 @@ int insert_with_fix_1() {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
   }
   time_t ft_end = current_timestamp();
+  double ft_time = (double)((ft_end - ft_start)/1000.0);
   std::cout << "ft::rb_tree total_time for "
             << nbr_insertions << " insertions : "
-            << (double)((ft_end - ft_start)/1000.0) << " s" << std::endl;
+            << ft_time << " s" << std::endl;
   
   time_t std_start = current_timestamp();
   std::map<int, std::string> map;
@@ -280,10 +281,13 @@ int insert_with_fix_1() {
     map.insert(std::pair<int, std::string>(i, "hello"));
   }
   time_t std_end = current_timestamp();
+  double std_time = (double)((std_end - std_start)/1000.0);
   std::cout << "std::rb_tree total_time for "
             << nbr_insertions << " insertions : "
-            << (double)((std_end - std_start)/1000.0) << " s" << std::endl;
+            << std_time << " s" << std::endl;
 
+  std::cout << "ft was " << (std_time/ft_time)
+            << " times faster than stl" << std::endl;
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < nbr_insertions; i++)  {
