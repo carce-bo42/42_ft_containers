@@ -249,6 +249,8 @@ class rb_tree {
     }
   }
 
+  // THE FUCKING UNCLE COMPUTATION BRINGS PERFOMARNCE TO
+  // CRAP. HOW TO DO IT ? NOIDEA
   void rebalance_after_insertion(node_ptr n) {
     if (n == _root) {
       n->set_color(black);
@@ -257,23 +259,15 @@ class rb_tree {
     // with the previous block we make sure there exists a grandparent
     } else {
       node_ptr aux = n->uncle(); // grandparent's other child
-      if (aux != node_end && aux->color == red) {
+      if (aux->color == red) {
         aux->set_color(black);
         n->parent->set_color(black);
         aux->parent->set_color(red);
         return rebalance_after_insertion(aux->parent);
       }
       aux = n->parent;
-      /*
-      if ((n->is_right_child() && n->parent->is_left_child())
-          || (n->is_left_child() && n->parent->is_right_child()))
-      */
-      // This is the same as asking if n and its parent form a line
-      // this optimization changes insertion from 50% slower
-      // to twice as fast as STL.
-      if (key_cmp(key_of_val(n), key_of_val(n->parent))
-          ==
-          key_cmp(key_of_val(n->parent), key_of_val(n->parent->parent)))
+      if (key_cmp(key_of_val(n), key_of_val(aux))
+          != key_cmp(key_of_val(aux), key_of_val(aux->parent)))
       {
         rotate(n);
         aux = aux->parent; // this case ALWAYS ...
@@ -367,29 +361,29 @@ class rb_tree {
      * - If we are inserting at left of parent (we are new min)
      * - If we are inserting and parent does not exist. (first node)
      */
-    if (start == node_end) {
-      if (node_count == 0) {
-        new_node->assign_parent(node_end);
-        _root = new_node;
+    if (start != node_end) {
+      if (key_cmp(key_of_val(new_node), key_of_val(start))) {
+        return find_and_insert(new_node, start, start->left, false);
+      } else if (key_of_val(start) == key_of_val(new_node)) {
+        return start;
       } else {
-        new_node->assign_parent(parent);
-        if (at_right) {
-          parent->assign_right_child(new_node);
-        } else {
-          parent->assign_left_child(new_node);
-        }
+        return find_and_insert(new_node, start, start->right, true);
       }
-      ++node_count;
-      return new_node;
     }
-    // seek new path
-    if (key_cmp(key_of_val(new_node), key_of_val(start))) {
-      return find_and_insert(new_node, start, start->left, false);
-    } else if (key_of_val(start) == key_of_val(new_node)) {
-      return start;
+
+    if (node_count != 0) {
+      new_node->assign_parent(parent);
+      if (at_right) {
+        parent->assign_right_child(new_node);
+      } else {
+        parent->assign_left_child(new_node);
+      }
     } else {
-      return find_and_insert(new_node, start, start->right, true);
+      new_node->assign_parent(node_end);
+      _root = new_node;
     }
+    ++node_count;
+    return new_node;
   }
 
   bool insert(const Val& value) {
@@ -400,9 +394,7 @@ class rb_tree {
       // return ft::pair<false, iterator(m); 
       return false;
     }
-    if (n->parent != _root
-        || n->parent->color != black)
-    {
+    if (n->parent->color != black) {
       rebalance_after_insertion(n);
     }
     // return ft::pair<true, iterator(n)>
@@ -422,47 +414,43 @@ class rb_tree {
     }
   }
 
-  /* 
-   * Case 0: p no childs :
-   *         - delete p
-   *         - If p was black, solve DOUBLE BLACK
-   * Case 1: p has 1 child :
-   *         - delete p and promote child
-   *         - color promoted child to black if p was black
-   * Case 2: p has 2 childs :
-   *         - find inorder predecessor of p, r
-   *         - interchange entries of p and r.
-   *         - p gets color of r and r color of p.
-   *         - delete node at r (now p) staisfying
-   *           either Case 0 or Case 1.
-   * 
-   * DOUBLE_BLACK vocabulary :
-   *          
-   *          z        p : Double black node
-   *        /  \       y : sibling
-   *      y     p      z : common parent
-   *    /              x : sibling child (in the same orientation as y)
-   *   x
-   */
-
+ /* 
+  * Case 0: p no childs :
+  *         - delete p
+  *         - If p was black, solve DOUBLE BLACK
+  * Case 1: p has 1 child :
+  *         - delete p and promote child
+  *         - color promoted child to black if p was black
+  * Case 2: p has 2 childs :
+  *         - find inorder predecessor of p, r
+  *         - interchange entries of p and r.
+  *         - p gets color of r and r color of p.
+  *         - delete node at r (now p) staisfying
+  *           either Case 0 or Case 1.
+  * 
+  * DOUBLE_BLACK vocabulary :
+  *          
+  *          z        p : Double black node
+  *        /  \       y : sibling
+  *      y     p      z : common parent
+  *    /              x : sibling child (in the same orientation as y)
+  *   x
+  */
   void erase_and_rebalance(node_ptr p) {
-    (void)p;
-  /*
-    if (!p->left || p->left == node_end
-        && !p->right || p->right == node_end)
-    {
+    bool l = p->left == node_end;
+    bool r = p->right == node_end;
+    if (r && l) {
+      node_ptr r = p->left; // inorder predecessor
+      while (r->right != node_end) {
+        r = r->right;
+      }
+    }
+    else if (r != l) { // same as (!r && l) || (r && !l)
 
     }
-    else if ((!p->left || p->left == node_end)
-               || (!p->right || p->right == node_end))
-    {
+    else { // 0 childs.
 
     }
-    else 
-    {
-      // search inorder predecessor of p
-
-    }*/
   }
 
   void erase(const Key& key) {

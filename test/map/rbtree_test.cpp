@@ -6,6 +6,7 @@
 #include "ft/utils/pair.hpp"
 #include <map>
 #include <sys/time.h>
+#include <cmath>
 
 #include "../debug.hpp"
 
@@ -260,12 +261,15 @@ int empty_tree_iteration() {
  */
 int insert_with_fix_1() {
 
-  int nbr_insertions = 1000000;
+  int nbr_insertions = 500000;
 
   time_t ft_start = current_timestamp();
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
 
   for (int i = 0; i < nbr_insertions; i++) {
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = -1; i > -nbr_insertions; i--) {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
   }
   time_t ft_end = current_timestamp();
@@ -280,19 +284,22 @@ int insert_with_fix_1() {
   for (int i = 0; i < nbr_insertions; i++) {
     map.insert(std::pair<int, std::string>(i, "hello"));
   }
+  for (int i = -1; i > -nbr_insertions; i--) {
+    map.insert(std::pair<int, std::string>(i, "hello"));
+  }
   time_t std_end = current_timestamp();
   double std_time = (double)((std_end - std_start)/1000.0);
   std::cout << "std::rb_tree total_time for "
             << nbr_insertions << " insertions : "
             << std_time << " s" << std::endl;
 
-  std::cout << "ft was " << (std_time/ft_time)
-            << " times faster than stl" << std::endl;
+  std::cout << "ft was " << (fabs(std_time - ft_time)/std_time)*100.0
+            << "% slower than stl" << std::endl;
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < nbr_insertions; i++)  {
-    if (ft_it->first != std_it->first) {  
-      return TEST_ERROR(0);
+    if (ft_it->first != std_it->first) {
+      return TEST_ERROR(KO_INSERT);
     }
   }
   return OK;
