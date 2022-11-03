@@ -27,6 +27,17 @@ struct get_key {
  * im calling the template inside std::allocator which is the same. 
  */
 
+/* 
+ * Things about optimization :
+ * - Less code does not mean more optimized.
+ * - No information should be consulted twice. Constructions like
+ *   a method for a node that gives the node_ptr for uncle are trash,
+ *   because they internally search for things like the orientation of
+ *   the node with respect to its parent when it is almost always known
+ *   when searching the uncle.
+ * - Recursion is cool but runs terribly slow compared to loops.
+ */
+
 /*
  * Red black trees must hold :
  * (0) Nodes are either RED or BLACK (surprise)
@@ -137,7 +148,7 @@ class rb_tree {
   /* 
    * this destructor had to be, lets say, inspired from STL
    * because the double recursive one made the stack explode
-   * for large trees (>1 million nodes).
+   * for large trees.
    * ulimit -a : shows system limits for a variety of `kernel shit`
    * ulimits -s ; the one we are interested in.
    */
@@ -156,16 +167,6 @@ class rb_tree {
       destroy_node(node);
     }
 #endif
-  }
-
-  inline void rotate(node_ptr n) {
-    return n->is_left_child() ? rotate_right(n) : rotate_left(n);
-  }
-
-  void switch_colors(node_ptr x, node_ptr y) {
-    n_color color_tmp = x->color;
-    x->color = y->color;
-    y->color = color_tmp;
   }
 
   /* 
@@ -187,7 +188,7 @@ class rb_tree {
   void switch_with_parent(node_ptr n, node_ptr parent)
   {
     if (parent == _root) {
-      _root = n;
+      _root = n;  
     } else if (parent->is_left_child()) {
       parent->parent->assign_left_child(n);
     } else if (parent->is_right_child()) {
@@ -370,14 +371,63 @@ class rb_tree {
     return const_iterator(node_end, node_end);
   }
 
+/*
+  node_ptr find_and_insert(node_ptr new_node)
+  {
+    if (node_count == 0) {
+      new_node->assign_parent(node_end);
+      _root = new_node;
+      ++node_count;
+      return new_node;
+    }
+
+    node_ptr parent = NULL;
+    node_ptr start = _root;
+    bool at_right = false;
+
+    while (start != node_end) {
+      if (key_cmp(key_of_val(new_node), key_of_val(start))) {
+        start = start->left;
+        at_right = false;
+      } else {
+        start = start->right;
+        at_right = true;
+      }
+      parent = start;
+    }
+    if (key_of_val(new_node) == key_of_val(parent)) {
+      return start;
+    }
+    new_node->assign_parent(parent);
+    if (at_right) {
+      parent->assign_right_child(new_node);
+    } else {
+      parent->assign_left_child(new_node);
+    }
+    ++node_count;
+    return new_node;
+  }
+
+  bool insert(const Val& value) {
+    node_ptr n = construct_node(value, node_end);
+    node_ptr m = NULL;
+    if ((m = find_and_insert(n)) != n) {
+      destroy_node(n);
+      // return ft::pair<false, iterator(m); 
+      return false;
+    }
+    rebalance_after_insertion(n);
+    // return ft::pair<true, iterator(n)>
+    return true;
+  }
+*/
+
   node_ptr find_and_insert(node_ptr new_node, node_ptr parent,
                            node_ptr start, bool at_right)
   {
     if (start != node_end) {
       if (key_cmp(key_of_val(new_node), key_of_val(start))) {
         return find_and_insert(new_node, start, start->left, false);
-      } else if (key_of_val(start) == key_of_val(new_node)) {
-        return start;
       } else {
         return find_and_insert(new_node, start, start->right, true);
       }
@@ -387,6 +437,9 @@ class rb_tree {
      * - If we are inserting at left
      * - If we are inserting and parent does not exist. (first node)
      */
+    if (key_of_val(new_node) == key_of_val(parent)) {
+      return start;
+    }
     if (node_count != 0) {
       new_node->assign_parent(parent);
       if (at_right) {
