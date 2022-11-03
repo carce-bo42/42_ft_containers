@@ -123,7 +123,7 @@ class rb_tree {
     node_end->assign_parent(0);
     node_end->assign_left_child(0);
     node_end->assign_right_child(0);
-    node_end->set_color(black);
+    node_end->color = black;
     _root = node_end;
   }
 
@@ -164,8 +164,8 @@ class rb_tree {
 
   void switch_colors(node_ptr x, node_ptr y) {
     n_color color_tmp = x->color;
-    x->set_color(y->color);
-    y->set_color(color_tmp);
+    x->color = y->color;
+    y->color = color_tmp;
   }
 
   /* 
@@ -186,12 +186,12 @@ class rb_tree {
    */
   void switch_with_parent(node_ptr n, node_ptr parent)
   {
-    if (parent->is_left_child()) {
+    if (parent == _root) {
+      _root = n;
+    } else if (parent->is_left_child()) {
       parent->parent->assign_left_child(n);
     } else if (parent->is_right_child()) {
       parent->parent->assign_right_child(n);
-    } else {
-      _root = n;
     }
     n->assign_parent(parent->parent);
     parent->assign_parent(n);
@@ -212,7 +212,6 @@ class rb_tree {
 
     node_ptr to = from->parent;
 
-    switch_colors(from, to);
     switch_with_parent(from, to);
 
     node_ptr tmp = from->left;
@@ -238,7 +237,6 @@ class rb_tree {
     
     node_ptr to = from->parent;
     
-    switch_colors(from, to);
     switch_with_parent(from, to);
 
     node_ptr tmp = from->right;
@@ -249,31 +247,52 @@ class rb_tree {
     }
   }
 
-  // THE FUCKING UNCLE COMPUTATION BRINGS PERFOMARNCE TO
-  // CRAP. HOW TO DO IT ? NOIDEA
   void rebalance_after_insertion(node_ptr n) {
-    if (n == _root) {
-      n->set_color(black);
-    } else if (n->parent == _root) {
-      n->parent->set_color(black);
-    // with the previous block we make sure there exists a grandparent
-    } else {
-      node_ptr aux = n->uncle(); // grandparent's other child
-      if (aux->color == red) {
-        aux->set_color(black);
-        n->parent->set_color(black);
-        aux->parent->set_color(red);
-        return rebalance_after_insertion(aux->parent);
+    while (n != _root
+           && n->parent->color == red)
+    {
+      node_ptr grandparent = n->parent->parent;
+      if (n->parent->is_right_child()) {
+        if (grandparent->left
+            && grandparent->left->color == red)
+        {
+          grandparent->left->color = black;
+          grandparent->right->color = black;
+          grandparent->color = red;
+          n = grandparent;
+        }
+        else
+        {
+          if (n->is_left_child()) {
+            rotate_right(n);
+            n = n->right;
+          }
+          n->parent->color = black;
+          grandparent->color = red;
+          rotate_left(grandparent->right);
+        }
+      } else {
+        if (grandparent->right
+            && grandparent->right->color == red)
+        {
+          grandparent->left->color = black;
+          grandparent->right->color = black;
+          grandparent->color = red;
+          n = grandparent;
+        }
+        else
+        {
+          if (n->is_right_child()) {
+            rotate_left(n);
+            n = n->left;
+          }
+          n->parent->color = black;
+          grandparent->color = red;
+          rotate_right(grandparent->left);
+        }
       }
-      aux = n->parent;
-      if (key_cmp(key_of_val(n), key_of_val(aux))
-          != key_cmp(key_of_val(aux), key_of_val(aux->parent)))
-      {
-        rotate(n);
-        aux = aux->parent; // this case ALWAYS ...
-      }
-      rotate(aux); // ... ends up here. 
     }
+    _root->color = black;
   }
 
   public:
@@ -355,12 +374,6 @@ class rb_tree {
   node_ptr find_and_insert(node_ptr new_node, node_ptr parent,
                            node_ptr start, bool at_right)
   {
-    /*  
-     * Theres 3 cases where we can insert on an end. 
-     * - If we are inserting at right of parent (we are new max)
-     * - If we are inserting at left of parent (we are new min)
-     * - If we are inserting and parent does not exist. (first node)
-     */
     if (start != node_end) {
       if (key_cmp(key_of_val(new_node), key_of_val(start))) {
         return find_and_insert(new_node, start, start->left, false);
@@ -370,7 +383,11 @@ class rb_tree {
         return find_and_insert(new_node, start, start->right, true);
       }
     }
-
+    /* Theres 3 cases where we can insert on an end. 
+     * - If we are inserting at right
+     * - If we are inserting at left
+     * - If we are inserting and parent does not exist. (first node)
+     */
     if (node_count != 0) {
       new_node->assign_parent(parent);
       if (at_right) {
@@ -394,9 +411,7 @@ class rb_tree {
       // return ft::pair<false, iterator(m); 
       return false;
     }
-    if (n->parent->color != black) {
-      rebalance_after_insertion(n);
-    }
+    rebalance_after_insertion(n);
     // return ft::pair<true, iterator(n)>
     return true;
   }

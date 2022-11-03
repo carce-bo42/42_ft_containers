@@ -64,10 +64,6 @@ struct rb_tree_node {
     parent = node;
   }
 
-  inline void set_color(n_color c) {
-    color = c;
-  }
-
   node_ptr uncle() const {
     if (parent->is_left_child()) {
       return parent->parent->right;
