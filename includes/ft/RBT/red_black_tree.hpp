@@ -214,11 +214,10 @@ class rb_tree {
 
     switch_with_parent(from, to);
 
-    node_ptr tmp = from->left;
+    to->assign_right_child(from->left);
     from->assign_left_child(to);
-    to->assign_right_child(tmp);
-    if (tmp != node_end) {
-      tmp->assign_parent(from->left);
+    if (to->right != node_end) {
+      to->right->assign_parent(to);
     }
   }
 
@@ -239,15 +238,15 @@ class rb_tree {
     
     switch_with_parent(from, to);
 
-    node_ptr tmp = from->right;
+    to->assign_left_child(from->right);
     from->assign_right_child(to);
-    to->assign_left_child(tmp);
-    if (tmp != node_end) {
-      tmp->assign_parent(from->right);
+    if (to->left != node_end) {
+      to->left->assign_parent(from->right);
     }
   }
 
   void rebalance_after_insertion(node_ptr n) {
+    
     while (n != _root
            && n->parent->color == red)
     {
