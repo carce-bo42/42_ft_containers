@@ -259,7 +259,7 @@ int empty_tree_iteration() {
  * Inserting a range form (1, n) in order is essentially fucking up 
  * the tree every 2 insertions (0 chill insertion). 
  */
-int insert_with_fix_1() {
+int insert_performance() {
 
   int nbr_insertions = 500000;
   int nbr_insertions_mid = 250000;
@@ -310,10 +310,15 @@ int insert_with_fix_1() {
             << "% slower than stl" << std::endl;
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
-  for (int i = 0; i < nbr_insertions; i++)  {
+  for (int i = 0; i < 5; i++)  {
     if (ft_it->first != std_it->first) {
+      std::cout << "expected : " << std_it->first
+                << " actual : " << ft_it->first
+                << " at iterator pos " << i << std::endl;
       return TEST_ERROR(KO_INSERT);
     }
+    ++ft_it;
+    ++std_it;
   }
   return OK;
 }

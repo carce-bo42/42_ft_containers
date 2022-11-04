@@ -36,7 +36,7 @@ int rbtree_test() {
   if (insert_hardcode() != 0
       || insert_no_fix() != 0
       //|| insert_with_fix_1() != 0
-      || insert_with_fix_1() != 0)
+      || insert_performance() != 0)
   {
     return 1;
   }

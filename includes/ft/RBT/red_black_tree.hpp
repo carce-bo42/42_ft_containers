@@ -31,6 +31,11 @@ struct get_key {
  * Things about optimization :
  * - Less code does not mean more optimized.
  * - Recursion is cool but runs terribly slow compared to loops.
+ * - STL implements header, with which they can do cool things,
+ *   such as access quickly to minimum/maximum, which is curcial
+ *   when inserting, because you can skip checking if the key is
+ *   already in the map by just checking if its outside of [min, max]
+ *   interval.
  */
 
 /*
@@ -180,8 +185,7 @@ class rb_tree {
    *      \      === >    /
    *       n            p
    */
-  void switch_with_parent(node_ptr n, node_ptr parent)
-  {
+  inline void switch_with_parent(node_ptr n, node_ptr parent) {
     if (parent == _root) {
       _root = n;  
     } else if (parent->is_left_child()) {
@@ -194,11 +198,11 @@ class rb_tree {
   }
 
   /* 
-   *        Parent                    Parent      
+   *        Parent                    Parent
    *          |                         |
    *         to                       from
    *     /       \       ===>      /        \
-   *    A       from             to         fR      
+   *    A       from             to         fR
    *  /   \     /  \           /   \
    * AL   AR   fL  fR         A    fL
    *                        /  \
@@ -218,7 +222,7 @@ class rb_tree {
   }
 
   /* 
-   *        Parent                    Parent      
+   *        Parent                    Parent
    *          |                         |
    *         to                       from
    *     /       \       ===>      /        \
@@ -350,9 +354,8 @@ class rb_tree {
     return const_iterator(node_end, node_end);
   }
 
-  node_ptr find_and_insert(node_ptr new_node)
-  {
-    // this is now read once per insertion
+  node_ptr find_and_insert(node_ptr new_node) {
+    // this is read once per insertion
     if (node_count == 0) {
       new_node->assign_parent(node_end);
       _root = new_node;
@@ -364,19 +367,21 @@ class rb_tree {
     node_ptr start = _root;
     bool at_right = false;
 
+    Key key = key_of_val(new_node);
     // whereas this is read a million times
     while (start != node_end) {
       parent = start;
-      if (key_cmp(key_of_val(new_node), key_of_val(start))) {
+      if (key_cmp(key, key_of_val(start))) {
         start = start->left;
         at_right = false;
       } else {
+        // if duplicate, return already existing node
+        if (key == key_of_val(start)) {
+          return start;
+        }
         start = start->right;
         at_right = true;
       }
-    }
-    if (key_of_val(new_node) == key_of_val(parent)) {
-      return start;
     }
     new_node->assign_parent(parent);
     if (at_right) {
@@ -401,17 +406,22 @@ class rb_tree {
     return true;
   }
 
-  node_ptr find_from_key(const Key& key, node_ptr start) {
-    if (!start || start == node_end) {
-      return NULL;
+  node_ptr find_from_key(const Key& key) {
+
+    node_ptr start = _root;
+
+    while (start != node_end
+           && key != key_of_val(start))
+    {
+      if (key_cmp(key, key_of_val(start))) {
+        start = start->left;
+      } else {
+        start = start->right;
+      }
     }
-    if (key == key_of_val(start)) {
-      return start;
-    } else if (key_cmp(key, key_of_val(start))) {
-      find_from_key(key, start->left);
-    } else {
-      find_from_key(key, start->right);
-    }
+    // If OK : start == node to erase
+    // If key not in map : start == node_end.
+    return start;
   }
 
  /* 
@@ -454,7 +464,7 @@ class rb_tree {
   }
 
   void erase(const Key& key) {
-    node_ptr n = find_from_key(key, _root);
+    node_ptr n = find_from_key(key);
     if (n) {
       erase_and_rebalance(n);
     }

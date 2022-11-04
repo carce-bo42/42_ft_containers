@@ -4,6 +4,7 @@
 #include "ft/utils/iterator_traits.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/utils/utils.hpp"
+#include "ft/RBT/red_black_tree.hpp"
 
 namespace ft {
 
@@ -20,6 +21,13 @@ class rb_tree_iterator {
 
   Node* node;
   Node* node_end;
+
+  // This is needed to extract pointers from iterators 
+  // from the red_black tree class and at the same time
+  // disallow users to do so.
+  template < typename A, typename B, typename C,
+             typename D, typename E >
+  friend class rb_tree;
 
   public:
 
