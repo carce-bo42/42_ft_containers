@@ -371,9 +371,9 @@ class rb_tree {
     return const_iterator(node_end, node_end);
   }
 
-/*
   node_ptr find_and_insert(node_ptr new_node)
   {
+    // this is now read once per insertion
     if (node_count == 0) {
       new_node->assign_parent(node_end);
       _root = new_node;
@@ -385,7 +385,9 @@ class rb_tree {
     node_ptr start = _root;
     bool at_right = false;
 
+    // whereas this is read a million times
     while (start != node_end) {
+      parent = start;
       if (key_cmp(key_of_val(new_node), key_of_val(start))) {
         start = start->left;
         at_right = false;
@@ -393,7 +395,6 @@ class rb_tree {
         start = start->right;
         at_right = true;
       }
-      parent = start;
     }
     if (key_of_val(new_node) == key_of_val(parent)) {
       return start;
@@ -412,53 +413,6 @@ class rb_tree {
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
     if ((m = find_and_insert(n)) != n) {
-      destroy_node(n);
-      // return ft::pair<false, iterator(m); 
-      return false;
-    }
-    rebalance_after_insertion(n);
-    // return ft::pair<true, iterator(n)>
-    return true;
-  }
-*/
-
-  node_ptr find_and_insert(node_ptr new_node, node_ptr parent,
-                           node_ptr start, bool at_right)
-  {
-    if (start != node_end) {
-      if (key_cmp(key_of_val(new_node), key_of_val(start))) {
-        return find_and_insert(new_node, start, start->left, false);
-      } else {
-        return find_and_insert(new_node, start, start->right, true);
-      }
-    }
-    /* Theres 3 cases where we can insert on an end. 
-     * - If we are inserting at right
-     * - If we are inserting at left
-     * - If we are inserting and parent does not exist. (first node)
-     */
-    if (key_of_val(new_node) == key_of_val(parent)) {
-      return start;
-    }
-    if (node_count != 0) {
-      new_node->assign_parent(parent);
-      if (at_right) {
-        parent->assign_right_child(new_node);
-      } else {
-        parent->assign_left_child(new_node);
-      }
-    } else {
-      new_node->assign_parent(node_end);
-      _root = new_node;
-    }
-    ++node_count;
-    return new_node;
-  }
-
-  bool insert(const Val& value) {
-    node_ptr n = construct_node(value, node_end);
-    node_ptr m = NULL;
-    if ((m = find_and_insert(n, _root, _root, false)) != n) {
       destroy_node(n);
       // return ft::pair<false, iterator(m); 
       return false;
