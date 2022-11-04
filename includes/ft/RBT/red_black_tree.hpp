@@ -30,11 +30,6 @@ struct get_key {
 /* 
  * Things about optimization :
  * - Less code does not mean more optimized.
- * - No information should be consulted twice. Constructions like
- *   a method for a node that gives the node_ptr for uncle are trash,
- *   because they internally search for things like the orientation of
- *   the node with respect to its parent when it is almost always known
- *   when searching the uncle.
  * - Recursion is cool but runs terribly slow compared to loops.
  */
 
@@ -246,53 +241,37 @@ class rb_tree {
     }
   }
 
+  inline void rotate(node_ptr n) {
+    return n->is_left_child() ? rotate_right(n) : rotate_left(n);
+  }
+
   void rebalance_after_insertion(node_ptr n) {
-    
+
     while (n != _root
            && n->parent->color == red)
     {
-      node_ptr grandparent = n->parent->parent;
-      if (n->parent->is_right_child()) {
-        if (grandparent->left
-            && grandparent->left->color == red)
-        {
-          grandparent->left->color = black;
-          grandparent->right->color = black;
-          grandparent->color = red;
-          n = grandparent;
-        }
-        else
-        {
-          if (n->is_left_child()) {
-            rotate_right(n);
-            n = n->right;
-          }
-          n->parent->color = black;
-          grandparent->color = red;
-          rotate_left(grandparent->right);
-        }
+      node_ptr u = n->uncle();
+      if (u->color == red) {
+        u->color = black;
+        n->parent->color = black;
+        u->parent->color = red;
+        n = u->parent;
       } else {
-        if (grandparent->right
-            && grandparent->right->color == red)
+        node_ptr p = n->parent;
+        if (key_cmp(key_of_val(n), key_of_val(p))
+            != key_cmp(key_of_val(p), key_of_val(p->parent)))
         {
-          grandparent->left->color = black;
-          grandparent->right->color = black;
-          grandparent->color = red;
-          n = grandparent;
+          rotate(n); // this case ALWAYS ...
+          n = p;
         }
-        else
-        {
-          if (n->is_right_child()) {
-            rotate_left(n);
-            n = n->left;
-          }
-          n->parent->color = black;
-          grandparent->color = red;
-          rotate_right(grandparent->left);
-        }
+        n->parent->color = black;
+        n->parent->parent->color = red;
+        rotate(n->parent); // ... ends up here.
+        // PS: notice how rotating from n->parent before coloring
+        // n->parent->color to black WILL get out of the loop
       }
     }
-    _root->color = black;
+    _root->color = black; // RBT rule
   }
 
   public:
