@@ -14,8 +14,8 @@ template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
 struct get_key {
 
-  Key operator()(const ft::rb_tree_node<Val>* node) {
-    return node->data.first;
+  Key operator()(const Val& value) {
+    return value.first;
   }
 };
 
@@ -120,6 +120,7 @@ class rb_tree {
  * rebalance() : will recieve a node and a problem to solve.
  *
  */
+
   public:
 
   rb_tree()
@@ -262,8 +263,8 @@ class rb_tree {
         n = u->parent;
       } else {
         node_ptr p = n->parent;
-        if (key_cmp(key_of_val(n), key_of_val(p))
-            != key_cmp(key_of_val(p), key_of_val(p->parent)))
+        if (key_cmp(key_of_val(n->data), key_of_val(p->data))
+            != key_cmp(key_of_val(p->data), key_of_val(p->parent->data)))
         {
           rotate(n); // this case ALWAYS ...
           n = p;
@@ -367,16 +368,16 @@ class rb_tree {
     node_ptr start = _root;
     bool at_right = false;
 
-    Key key = key_of_val(new_node);
+    Key key = key_of_val(new_node->data);
     // whereas this is read a million times
     while (start != node_end) {
       parent = start;
-      if (key_cmp(key, key_of_val(start))) {
+      if (key_cmp(key, key_of_val(start->data))) {
         start = start->left;
         at_right = false;
       } else {
         // if duplicate, return already existing node
-        if (key == key_of_val(start)) {
+        if (key == key_of_val(start->data)) {
           return start;
         }
         start = start->right;
@@ -406,17 +407,35 @@ class rb_tree {
     return true;
   }
 
+  /*
+   * Hints are cool, but bad hints must be avoided. 
+   * If we are inserting at n, go check parent of n.
+   * if n is left child, check if value < n->parent.
+   * If n is right child, check if vlaue > n->parent.
+   * In none of these conditions are met, the hint is
+   * malicious and must be disregarded. 
+   */
+  bool insert(const iterator hint, const Val& value) {
+    if (hint->node == _root) {
+      return false; // nice hint dumbass
+    }
+    if (hint->node->is_left_child()) {
+
+
+    }
+  }
+
   node_ptr find_and_erase(const Key& key) {
 
     node_ptr start = _root;
     bool at_right = false;
 
     while (start != node_end) {
-      if (key_cmp(key, key_of_val(start))) {
+      if (key_cmp(key, key_of_val(start->data))) {
         start = start->left;
         at_right = false;
       } else {
-        if (key == key_of_val(start)) {
+        if (key == key_of_val(start->data)) {
           break;
         }
         start = start->right;
@@ -429,6 +448,9 @@ class rb_tree {
 
     bool l = (start->left != node_end);
     bool r = (start->right != node_end);
+    if (r && l) {
+      //node_ptr r = start->
+    }
 
   }
 

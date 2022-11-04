@@ -38,7 +38,7 @@ struct rb_tree_node {
 
   ~rb_tree_node() {
   }
-
+  
   /*
    * Rotations depend on wether a child is at the right
    * or at the left of the parent, so these methods are
