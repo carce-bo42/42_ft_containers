@@ -355,7 +355,7 @@ class rb_tree {
   }
 
   node_ptr find_and_insert(node_ptr new_node) {
-    // this is read once per insertion
+
     if (node_count == 0) {
       new_node->assign_parent(node_end);
       _root = new_node;
@@ -406,22 +406,30 @@ class rb_tree {
     return true;
   }
 
-  node_ptr find_from_key(const Key& key) {
+  node_ptr find_and_erase(const Key& key) {
 
     node_ptr start = _root;
+    bool at_right = false;
 
-    while (start != node_end
-           && key != key_of_val(start))
-    {
+    while (start != node_end) {
       if (key_cmp(key, key_of_val(start))) {
         start = start->left;
+        at_right = false;
       } else {
+        if (key == key_of_val(start)) {
+          break;
+        }
         start = start->right;
+        at_right = true;
       }
     }
-    // If OK : start == node to erase
-    // If key not in map : start == node_end.
-    return start;
+    if (start == node_end) {
+      return NULL;
+    }
+
+    bool l = (start->left != node_end);
+    bool r = (start->right != node_end);
+
   }
 
  /* 
