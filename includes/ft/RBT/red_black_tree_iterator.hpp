@@ -16,6 +16,7 @@ class rb_tree_iterator {
   typedef Val         value_type;
   typedef value_type& reference;
   typedef value_type* pointer;
+  typedef size_t      size_type;
 
   private:
 
@@ -28,7 +29,7 @@ class rb_tree_iterator {
   template < typename A, typename B, typename C,
              typename D, typename E >
   friend class rb_tree;
-
+  
   public:
 
   rb_tree_iterator() {}
@@ -49,6 +50,10 @@ class rb_tree_iterator {
     node(start),
     node_end(end)
   {}
+
+  Node* base() const {
+    return node;
+  }
 
   rb_tree_iterator& operator=( const rb_tree_iterator& other) {
     if (this != other) {
@@ -136,6 +141,22 @@ class rb_tree_iterator {
     rb_tree_iterator t = *this;
     this->operator--();
     return t;
+  }
+
+  rb_tree_iterator operator+(size_type n) const {
+    rb_tree_iterator ret(*this);
+    while (n-- > 0) {
+      ++ret;
+    }
+    return ret;
+  }
+
+  rb_tree_iterator operator-(size_type n) const {
+    rb_tree_iterator ret(*this);
+    while (n-- > 0) {
+      --ret;
+    }
+    return ret;
   }
 
 };

@@ -322,3 +322,23 @@ int insert_performance() {
   }
   return OK;
 }
+
+
+int insert_with_hint() {
+
+  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+
+  tree.insert_with_hint(tree.begin(), ft::pair<int, std::string>(3, "hello"));
+  tree.insert_with_hint(tree.begin(), ft::pair<int, std::string>(4, "hello"));
+  tree.insert_with_hint(tree.begin(), ft::pair<int, std::string>(5, "he ,mllo"));
+  tree.insert_with_hint(tree.begin(), ft::pair<int, std::string>(6, "hello"));
+  tree.insert_with_hint(tree.begin() + 2, ft::pair<int, std::string>(123, "hello"));
+  tree.insert_with_hint(tree.begin() + 3, ft::pair<int, std::string>(32, "hello"));
+  tree.insert_with_hint(tree.begin() + 1, ft::pair<int, std::string>(2, "hello"));
+  tree.insert_with_hint(tree.begin() + 3, ft::pair<int, std::string>(-32, "hello"));
+  tree.insert_with_hint(tree.begin() + 2, ft::pair<int, std::string>(-42, "hello"));
+  tree.insert_with_hint(tree.begin() + 7, ft::pair<int, std::string>(23, "hello"));
+  tree.insert_with_hint(tree.begin() + 9, ft::pair<int, std::string>(7, "hello"));
+
+  return OK;
+}

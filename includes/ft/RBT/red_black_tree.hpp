@@ -417,11 +417,11 @@ class rb_tree {
 
     bool good_hint = check_insert_hint(hint, value);
     if (good_hint) {
-      m = find_and_insert(n, hint->node);
+      m = find_and_insert(n, hint.base());
     } else {
       m = find_and_insert(n, _root);
     }
-    if ((m != n) {
+    if (m != n) {
       destroy_node(n);
       // return ft::pair<false, iterator(m); 
       return false;
@@ -441,17 +441,17 @@ class rb_tree {
    */
   bool check_insert_hint(const iterator hint, const Val& value) {
 
-    node_ptr n = hint->node;
+    node_ptr n = hint.base();
     
     if (n == _root) { // nice hint dumbass
       return false;
     }
     if (n->is_left_child()) { // n < parent
-      if (key_of_val(value) > n->parent) {
+      if (key_of_val(value) > key_of_val(n->parent->data)) {
         return false;
       }
     } else { // n > parent
-      if (key_of_val(value) < n->parent) {
+      if (key_of_val(value) < key_of_val(n->parent->data)) {
         return false;
       }
     }
