@@ -50,10 +50,6 @@ class rb_tree_iterator {
     node_end(end)
   {}
 
-  Node* base() const {
-    return node;
-  }
-
   rb_tree_iterator& operator=( const rb_tree_iterator& other) {
     if (this != other) {
       this->node = other.node;

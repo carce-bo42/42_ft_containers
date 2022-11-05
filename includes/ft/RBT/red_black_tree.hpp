@@ -288,8 +288,9 @@ class rb_tree {
   }
 
   /*
-   * This is a dangerous method to be public. These innocent lines will produce
-   * a use after free error when the tree destructor is called :
+   * This is a dangerous method to be public. These innocent
+   * lines will produce a use after free error when the tree
+   * destructor is called :
    * n = construct_node(...)
    * tree.pure_insert(n);
    * destroy_node(n);
@@ -355,7 +356,7 @@ class rb_tree {
     return const_iterator(node_end, node_end);
   }
 
-  node_ptr find_and_insert(node_ptr new_node) {
+  node_ptr find_and_insert(node_ptr new_node, node_ptr init) {
 
     if (node_count == 0) {
       new_node->assign_parent(node_end);
@@ -364,8 +365,8 @@ class rb_tree {
       return new_node;
     }
 
-    node_ptr parent = NULL;
-    node_ptr start = _root;
+    node_ptr parent = (init != _root) ? init->parent : NULL;
+    node_ptr start = init;
     bool at_right = false;
 
     Key key = key_of_val(new_node->data);
@@ -395,9 +396,11 @@ class rb_tree {
   }
 
   bool insert(const Val& value) {
+
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
-    if ((m = find_and_insert(n)) != n) {
+    
+    if ((m = find_and_insert(n, _root)) != n) {
       destroy_node(n);
       // return ft::pair<false, iterator(m); 
       return false;
@@ -407,22 +410,52 @@ class rb_tree {
     return true;
   }
 
+  bool insert_with_hint(const iterator hint, const Val& value) {
+
+    node_ptr n = construct_node(value, node_end);
+    node_ptr m = NULL;
+
+    bool good_hint = check_insert_hint(hint, value);
+    if (good_hint) {
+      m = find_and_insert(n, hint->node);
+    } else {
+      m = find_and_insert(n, _root);
+    }
+    if ((m != n) {
+      destroy_node(n);
+      // return ft::pair<false, iterator(m); 
+      return false;
+    }
+    rebalance_after_insertion(n);
+    // return ft::pair<true, iterator(n)>;
+    return true;
+  }
+
   /*
    * Hints are cool, but bad hints must be avoided. 
    * If we are inserting at n, go check parent of n.
-   * if n is left child, check if value < n->parent.
+   * If n is left child, check if value < n->parent.
    * If n is right child, check if vlaue > n->parent.
    * In none of these conditions are met, the hint is
    * malicious and must be disregarded. 
    */
-  bool insert(const iterator hint, const Val& value) {
-    if (hint->node == _root) {
-      return false; // nice hint dumbass
-    }
-    if (hint->node->is_left_child()) {
+  bool check_insert_hint(const iterator hint, const Val& value) {
 
-
+    node_ptr n = hint->node;
+    
+    if (n == _root) { // nice hint dumbass
+      return false;
     }
+    if (n->is_left_child()) { // n < parent
+      if (key_of_val(value) > n->parent) {
+        return false;
+      }
+    } else { // n > parent
+      if (key_of_val(value) < n->parent) {
+        return false;
+      }
+    }
+    return true;
   }
 
   node_ptr find_and_erase(const Key& key) {
