@@ -386,7 +386,9 @@ class rb_tree {
       node_ptr tmp = n->left;
       // D
       n->assign_left_child(r->left);
-      r->left->assign_parent(n->left);
+      if (r->left != node_end) {
+        r->left->assign_parent(n->left);
+      }
       // X
       r->assign_left_child(tmp);
       tmp->assign_parent(r);
@@ -408,7 +410,9 @@ class rb_tree {
       // no C or X in this case.
       // D
       n->assign_left_child(r->left);
-      r->left->assign_parent(n);
+      if (r->left != node_end) {
+        r->left->assign_parent(n);
+      }
       // A
       r->assign_parent(n->parent);
       if (n->is_left_child()) {
