@@ -146,6 +146,17 @@ class rb_tree {
 
   private:
 
+  node_ptr construct_node(const Val& value, node_ptr node_end) {
+    node_ptr new_node = node_alloc.allocate(1);
+    node_alloc.construct(new_node, node_type(value, node_end));
+    return new_node;
+  }
+
+  void destroy_node(node_ptr node) {
+    node_alloc.destroy(node);
+    node_alloc.deallocate(node, 1);
+  }
+
   /* 
    * this destructor had to be, lets say, inspired from STL
    * because the double recursive one made the stack explode
@@ -154,32 +165,27 @@ class rb_tree {
    * ulimits -s ; the one we are interested in.
    */
   void delete_subtree(node_ptr node) {
-#ifndef BAD_DELETE
     while (node != node_end) {
       delete_subtree(node->right);
       node_ptr save = node->left;
       destroy_node(node);
       node = save;
     }
-#else
-    if (node != node_end) {
-      delete_subtree(node->right);
-      delete_subtree(node->left);
-      destroy_node(node);
-    }
-#endif
   }
 
   /* 
    * Rotation helper, does:
    * 
    * if new_child_parent_o == right_child
+   * 
    *      X                  X
    *      |                 |
    *      p                 n
    *    /        === >       \
    *   n                      p
+   * 
    * else
+   *  
    *     X                  X
    *     |                  |
    *     p                  n
@@ -272,6 +278,7 @@ class rb_tree {
         n->parent->color = black;
         n->parent->parent->color = red;
         rotate(n->parent); // ... ends up here.
+        // 
         // PS: notice how rotating from n->parent before coloring
         // n->parent->color to black WILL get out of the loop
       }
@@ -279,26 +286,146 @@ class rb_tree {
     _root->color = black; // RBT rule
   }
 
-  public:
+  node_ptr find_and_insert(node_ptr new_node, node_ptr init) {
+  
+    if (node_count == 0) {
+      new_node->assign_parent(node_end);
+      _root = new_node;
+      ++node_count;
+      return new_node;
+    }
 
-  node_ptr construct_node(const Val& value, node_ptr node_end) {
-    node_ptr new_node = node_alloc.allocate(1);
-    node_alloc.construct(new_node, node_type(value, node_end));
+    node_ptr parent = (init != _root) ? init->parent : NULL;
+    node_ptr start = init;
+    bool at_right = false;
+
+    // Iterate until we get to a leaf
+    Key key = key_of_val(new_node->data);
+    while (start != node_end) {
+      parent = start;
+      if (key_cmp(key, key_of_val(start->data))) {
+        start = start->left;
+        at_right = false;
+      } else {
+        // if duplicate, return already existing node
+        if (key == key_of_val(start->data)) {
+          return start;
+        }
+        start = start->right;
+        at_right = true;
+      }
+    }
+    // once start == node_end, insert after parent
+    new_node->assign_parent(parent);
+    if (at_right) {
+      parent->assign_right_child(new_node);
+    } else {
+      parent->assign_left_child(new_node);
+    }
+    ++node_count;
     return new_node;
   }
 
   /*
-   * This is a dangerous method to be public. These innocent
-   * lines will produce a use after free error when the tree
-   * destructor is called :
-   * n = construct_node(...)
-   * tree.pure_insert(n);
-   * destroy_node(n);
+   * Hints are cool, but bad hints must be avoided. 
+   * If we are inserting at n, go check parent of n.
+   * If n is left child, check if value < n->parent.
+   * If n is right child, check if vlaue > n->parent.
+   * In none of these conditions are met, the hint is
+   * malicious and must be disregarded. 
    */
-  void destroy_node(node_ptr node) {
-    node_alloc.destroy(node);
-    node_alloc.deallocate(node, 1);
+  bool check_insert_hint(const iterator hint, const Val& value) {
+
+    node_ptr n = hint.base();
+    
+    if (n == _root) { // nice hint dumbass
+      return false;
+    }
+    if (n->is_left_child()) { // n < parent
+      if (key_of_val(value) > key_of_val(n->parent->data)) {
+        return false;
+      }
+    } else { // n > parent
+      if (key_of_val(value) < key_of_val(n->parent->data)) {
+        return false;
+      }
+    }
+    return true;
   }
+
+  /*
+   * Searched n's inorder predecessor and switches node entries.
+   * 
+   *            A                        A
+   *            |                        |
+   *            n                        r
+   *          /  \                     /  \
+   *         X   B       ===>         X    B
+   *                   
+   *        C                        C
+   *        |                        |
+   *        r                       n
+   *      /                        /
+   *     D                       D
+   * 
+   * - parent is GUARANTEED to have two childs.
+   * - inorder predecessor has at most 1 left child
+   * - inorder predecessor can be n's left child.
+   */
+  void switch_with_inorder_predecessor(node_ptr n) {
+    
+    node_ptr r = n->left;
+
+    while (r->right != node_end) {
+      r = r->right;
+    }
+    // B
+    r->assign_right_child(n->right);
+    n->right->assign_parent(r);
+    if (r != n->left) {
+      node_ptr tmp = n->left;
+      // D
+      n->assign_left_child(r->left);
+      r->left->assign_parent(n->left);
+      // X
+      r->assign_left_child(tmp);
+      tmp->assign_parent(r);
+
+      tmp = r->parent;
+      // A
+      r->assign_parent(n->parent);
+      if (n->is_left_child()) {
+        n->parent->assign_left_child(r);
+      } else if (n->is_right_child()) {
+        n->parent->assign_right_child(r);
+      } else {
+        _root = r;
+      }
+      // C
+      n->assign_parent(tmp);
+      tmp->assign_right_child(n);
+    } else {
+      // no C or X in this case.
+      // D
+      n->assign_left_child(r->left);
+      r->left->assign_parent(n);
+      // A
+      r->assign_parent(n->parent);
+      if (n->is_left_child()) {
+        n->parent->assign_left_child(r);
+      } else if (n->is_right_child()) {
+        n->parent->assign_right_child(r);
+      } else {
+        _root = r;
+      }
+      // transfer
+      n->assign_parent(r);
+      r->assign_left_child(n);
+    }
+    n->assign_right_child(node_end);
+  }
+
+  public:
 
   node_ptr get_maximum() {
     if (_root == node_end) {
@@ -356,45 +483,6 @@ class rb_tree {
     return const_iterator(node_end, node_end);
   }
 
-  node_ptr find_and_insert(node_ptr new_node, node_ptr init) {
-
-    if (node_count == 0) {
-      new_node->assign_parent(node_end);
-      _root = new_node;
-      ++node_count;
-      return new_node;
-    }
-
-    node_ptr parent = (init != _root) ? init->parent : NULL;
-    node_ptr start = init;
-    bool at_right = false;
-
-    Key key = key_of_val(new_node->data);
-    // whereas this is read a million times
-    while (start != node_end) {
-      parent = start;
-      if (key_cmp(key, key_of_val(start->data))) {
-        start = start->left;
-        at_right = false;
-      } else {
-        // if duplicate, return already existing node
-        if (key == key_of_val(start->data)) {
-          return start;
-        }
-        start = start->right;
-        at_right = true;
-      }
-    }
-    new_node->assign_parent(parent);
-    if (at_right) {
-      parent->assign_right_child(new_node);
-    } else {
-      parent->assign_left_child(new_node);
-    }
-    ++node_count;
-    return new_node;
-  }
-
   bool insert(const Val& value) {
 
     node_ptr n = construct_node(value, node_end);
@@ -423,7 +511,7 @@ class rb_tree {
     }
     if (m != n) {
       destroy_node(n);
-      // return ft::pair<false, iterator(m); 
+      // return ft::pair<false, iterator(m);
       return false;
     }
     rebalance_after_insertion(n);
@@ -431,106 +519,93 @@ class rb_tree {
     return true;
   }
 
-  /*
-   * Hints are cool, but bad hints must be avoided. 
-   * If we are inserting at n, go check parent of n.
-   * If n is left child, check if value < n->parent.
-   * If n is right child, check if vlaue > n->parent.
-   * In none of these conditions are met, the hint is
-   * malicious and must be disregarded. 
-   */
-  bool check_insert_hint(const iterator hint, const Val& value) {
-
-    node_ptr n = hint.base();
-    
-    if (n == _root) { // nice hint dumbass
-      return false;
-    }
-    if (n->is_left_child()) { // n < parent
-      if (key_of_val(value) > key_of_val(n->parent->data)) {
-        return false;
-      }
-    } else { // n > parent
-      if (key_of_val(value) < key_of_val(n->parent->data)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   node_ptr find_and_erase(const Key& key) {
 
     node_ptr start = _root;
-    bool at_right = false;
 
+    // same iteration as insert with other intentions.
     while (start != node_end) {
       if (key_cmp(key, key_of_val(start->data))) {
         start = start->left;
-        at_right = false;
       } else {
         if (key == key_of_val(start->data)) {
           break;
         }
         start = start->right;
-        at_right = true;
       }
     }
+    // if we iterated until a leaf, rip.
     if (start == node_end) {
       return NULL;
     }
 
-    bool l = (start->left != node_end);
-    bool r = (start->right != node_end);
-    if (r && l) {
-      //node_ptr r = start->
-    }
+   /* 
+    * Case 0: p no childs :
+    *         - delete p
+    *         - If p was black, solve DOUBLE BLACK
+    * Case 1: p has 1 child :
+    *         - delete p and promote child
+    *         - color promoted child to black if p was black
+    * Case 2: p has 2 childs :
+    *         - find inorder predecessor of p, r
+    *         - interchange entries of p and r.
+    *         - p gets color of r and r color of p.
+    *         - delete node at r (now p) staisfying
+    *           either Case 0 or Case 1.
+    * 
+    * DOUBLE_BLACK vocabulary :
+    *          
+    *          z        p : Double black node
+    *        /  \       y : sibling
+    *      y     p      z : common parent
+    *    /              x : sibling child (in the same orientation as y)
+    *   x
+    * 
+    * DB cases:
+    * 
+    * 
+    */
+   // this will eventually have to be some loop that says
+   // while (double_black_not_solved
+   //        || has had only 1 child )
+    if (start->left == start->right) { // only if both node_end
 
-  }
-
- /* 
-  * Case 0: p no childs :
-  *         - delete p
-  *         - If p was black, solve DOUBLE BLACK
-  * Case 1: p has 1 child :
-  *         - delete p and promote child
-  *         - color promoted child to black if p was black
-  * Case 2: p has 2 childs :
-  *         - find inorder predecessor of p, r
-  *         - interchange entries of p and r.
-  *         - p gets color of r and r color of p.
-  *         - delete node at r (now p) staisfying
-  *           either Case 0 or Case 1.
-  * 
-  * DOUBLE_BLACK vocabulary :
-  *          
-  *          z        p : Double black node
-  *        /  \       y : sibling
-  *      y     p      z : common parent
-  *    /              x : sibling child (in the same orientation as y)
-  *   x
-  */
-  void erase_and_rebalance(node_ptr p) {
-    bool l = p->left == node_end;
-    bool r = p->right == node_end;
-    if (r && l) {
-      node_ptr r = p->left; // inorder predecessor
-      while (r->right != node_end) {
-        r = r->right;
+    } else if (start->left == node_end) { // right only
+      start->right->assign_parent(start->parent);
+      if (start->is_left_child()) {
+        start->parent->assign_left_child(start->right);
+      } else if (start->is_right_child()) {
+        start->parent->assign_right_child(start->right);
+      } else { // start is root
+        _root = start->right;
       }
-    }
-    else if (r != l) { // same as (!r && l) || (r && !l)
+      if (start->color == black) {
+        start->right->color = black;
+      }
+      destroy_node(start);
+      --node_count;
+    } else if (start->right == node_end) { // left only
+      start->left->assign_parent(start->parent);
+      if (start->is_left_child()) {
+        start->parent->assign_left_child(start->left);
+      } else if (start->is_right_child()) {
+        start->parent->assign_right_child(start->left);
+      } else { // start is root
+        _root = start->left;
+      }
+      if (start->color == black) {
+        start->left->color = black;
+      }
+      destroy_node(start);
+      --node_count;
+    } else { // 2 childs
 
-    }
-    else { // 0 childs.
 
     }
   }
 
   void erase(const Key& key) {
-    node_ptr n = find_from_key(key);
-    if (n) {
-      erase_and_rebalance(n);
-    }
+    find_and_erase(key);
   }
 
 }; // class rbtree
