@@ -422,11 +422,15 @@ class rb_tree {
       } else {
         _root = r;
       }
-      // transfer
+      // n
       n->assign_parent(r);
       r->assign_left_child(n);
     }
     n->assign_right_child(node_end);
+    // finally, change color
+    n_color tmp_color = n->color;
+    n->color = r->color;
+    r->color = tmp_color;
   }
 
   public:
@@ -556,7 +560,14 @@ class rb_tree {
     *         - p gets color of r and r color of p.
     *         - delete node at r (now p) staisfying
     *           either Case 0 or Case 1.
-    * 
+    *       r->assign_parent(n->parent);
+      if (n->is_left_child()) {
+        n->parent->assign_left_child(r);
+      } else if (n->is_right_child()) {
+        n->parent->assign_right_child(r);
+      } else {
+        _root = r;
+      }
     * DOUBLE_BLACK vocabulary :
     *          
     *          z        p : Double black node
@@ -569,26 +580,19 @@ class rb_tree {
     * 
     * 
     */
-   // this will eventually have to be some loop that says
-   // while (double_black_not_solved
-   //        || has had only 1 child )
-    if (start->left == start->right) { // only if both node_end
+    // this will eventually have to be some loop that says
+    // while (double_black_not_solved
+    //        || has had only 1 child )
+    if (start->left != node_end
+        && start->right != node_end)
+    {
+      switch_with_inorder_predecessor(start);
+    }
+    // if both are end
+    if (start->right == start->left) {
 
-    } else if (start->left == node_end) { // right only
-      start->right->assign_parent(start->parent);
-      if (start->is_left_child()) {
-        start->parent->assign_left_child(start->right);
-      } else if (start->is_right_child()) {
-        start->parent->assign_right_child(start->right);
-      } else { // start is root
-        _root = start->right;
-      }
-      if (start->color == black) {
-        start->right->color = black;
-      }
-      destroy_node(start);
-      --node_count;
-    } else if (start->right == node_end) { // left only
+    }
+    if (start->right == node_end) { // left only
       start->left->assign_parent(start->parent);
       if (start->is_left_child()) {
         start->parent->assign_left_child(start->left);
@@ -600,12 +604,21 @@ class rb_tree {
       if (start->color == black) {
         start->left->color = black;
       }
-      destroy_node(start);
-      --node_count;
-    } else { // 2 childs
-
-
+    } else { // right only
+      start->right->assign_parent(start->parent);
+      if (start->is_left_child()) {
+        start->parent->assign_left_child(start->right);
+      } else if (start->is_right_child()) {
+        start->parent->assign_right_child(start->right);
+      } else { // start is root
+        _root = start->right;
+      }
+      if (start->color == black) {
+        start->right->color = black;
+      }
     }
+    destroy_node(start);
+    --node_count;
   }
 
   void erase(const Key& key) {
