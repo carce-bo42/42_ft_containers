@@ -353,25 +353,25 @@ class rb_tree {
     return true;
   }
 
-  /*
-   * Searched n's inorder predecessor and switches node entries.
-   * 
-   *            A                        A
-   *            |                        |
-   *            n                        r
-   *          /  \                     /  \
-   *         X   B       ===>         X    B
-   *                   
-   *        C                        C
-   *        |                        |
-   *        r                       n
-   *      /                        /
-   *     D                       D
-   * 
-   * - parent is GUARANTEED to have two childs.
-   * - inorder predecessor has at most 1 left child
-   * - inorder predecessor can be n's left child.
-   */
+ /*
+  * Searched n's inorder predecessor and switches node entries.
+  * 
+  *            A                        A
+  *            |                        |
+  *            n                        r
+  *          /  \                     /  \
+  *         X   B       ===>         X    B
+  *                   
+  *        C                        C
+  *        |                        |
+  *        r                       n
+  *      /                        /
+  *     D                       D
+  * 
+  * - parent is GUARANTEED to have two childs.
+  * - inorder predecessor has at most 1 left child
+  * - inorder predecessor can be n's left child.
+  */
   void switch_with_inorder_predecessor(node_ptr n) {
     
     node_ptr r = n->left;
@@ -527,6 +527,35 @@ class rb_tree {
     return true;
   }
 
+  /* 
+   * 
+   * DOUBLE_BLACK vocabulary :
+   *          
+   *          z        p : Double black node
+   *        /  \       y : sibling
+   *      y     p      z : common parent
+   *    /              x : sibling child (in the same orientation as y)
+   *   x
+   * 
+   * DB cases:
+   * 
+   * Case 1: y is BLACK and x is RED.
+   *        - rotate right y -> z
+   *        - color y the former color of z.
+   * Case 2: y is BLACK (or does not exist) and has BLACK children
+   *        - color p BLACK and y RED.
+   *        - if z is RED, color it BLACK.
+   *        - else if z is not the root, z is new double BLACK.
+   * Case 3: y is RED
+   *        - rotate right y -> z 
+   *        - color y BLACK and z RED.
+   *        - repeat double black solve (derives to case 1 or 2).
+   */
+  void solve_double_black(node_ptr d_black) {
+
+
+  }
+
   node_ptr find_and_erase(const Key& key) {
 
     node_ptr start = _root;
@@ -560,24 +589,6 @@ class rb_tree {
     *         - p gets color of r and r color of p.
     *         - delete node at r (now p) staisfying
     *           either Case 0 or Case 1.
-    *       r->assign_parent(n->parent);
-      if (n->is_left_child()) {
-        n->parent->assign_left_child(r);
-      } else if (n->is_right_child()) {
-        n->parent->assign_right_child(r);
-      } else {
-        _root = r;
-      }
-    * DOUBLE_BLACK vocabulary :
-    *          
-    *          z        p : Double black node
-    *        /  \       y : sibling
-    *      y     p      z : common parent
-    *    /              x : sibling child (in the same orientation as y)
-    *   x
-    * 
-    * DB cases:
-    * 
     * 
     */
     // this will eventually have to be some loop that says
@@ -590,9 +601,10 @@ class rb_tree {
     }
     // if both are end
     if (start->right == start->left) {
-
-    }
-    if (start->right == node_end) { // left only
+      if (start->color == black) {
+        solve_double_black(start);
+      }
+    } else if (start->right == node_end) { // left only
       start->left->assign_parent(start->parent);
       if (start->is_left_child()) {
         start->parent->assign_left_child(start->left);
