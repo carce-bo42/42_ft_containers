@@ -528,18 +528,22 @@ class rb_tree {
   }
 
   /* 
+   * Edit: this needs to be reviewed. There are inconsistencies.
+   *      The video I watched explaining this includes pseudocode that
+   *      the explanation skips. Quite some important parts. Fuck
+   * 
    * 
    * DOUBLE_BLACK vocabulary :
    *          
    *          z        p : Double black node
    *        /  \       y : sibling
    *      y     p      z : common parent
-   *    /              x : sibling child (in the same orientation as y)
-   *   x
+   *    /  \           x : sibling child (in the same orientation as y)
+   *   xL  xR 
    * 
    * DB cases:
    * 
-   * Case 1: y is BLACK and x is RED.
+   * Case 1: y is BLACK and some x is RED. preferrably, the one in line.
    *        - rotate right y -> z
    *        - color y the former color of z.
    * Case 2: y is BLACK (or does not exist) and has BLACK children
@@ -552,6 +556,8 @@ class rb_tree {
    *        - repeat double black solve (derives to case 1 or 2).
    */
   void solve_double_black(node_ptr d_black) {
+    while (d_black->parent != _root
+           && )
 
 
   }
