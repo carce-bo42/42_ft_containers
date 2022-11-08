@@ -532,7 +532,6 @@ class rb_tree {
    *      The video I watched explaining this includes pseudocode that
    *      the explanation skips. Quite some important parts. Fuck
    * 
-   * 
    * DOUBLE_BLACK vocabulary :
    *          
    *          z        p : Double black node
@@ -543,23 +542,40 @@ class rb_tree {
    * 
    * DB cases:
    * 
-   * Case 1: y is BLACK and some x is RED. preferrably, the one in line.
-   *        - rotate right y -> z
-   *        - color y the former color of z.
+   * Case 1: y is BLACK and a sibling x of y is RED.
+   *        Case 1.1 : x y z form a line. 
+   *                   - rotate y -> z.
+   *        Case 2.2 : x y z do not form a line.
+   *                   - rotate x -> y, then rotate x -> z.
+   *        The end structure is, not including symmetric cases :
+   *     1.1                     1.2 
+   * b -          y                       xR
+   *            /  \                    /   \
+   * a -      xL    z                  y     z
+   * 
+   * Note : line a will always be black, and line b will remain the same
+   *         color as it was (z's color).
+   * 
    * Case 2: y is BLACK (or does not exist) and has BLACK children
    *        - color p BLACK and y RED.
    *        - if z is RED, color it BLACK.
    *        - else if z is not the root, z is new double BLACK.
    * Case 3: y is RED
-   *        - rotate right y -> z 
+   *        - rotate y -> z 
    *        - color y BLACK and z RED.
-   *        - repeat double black solve (derives to case 1 or 2).
+   *        - repeat double black solve (p stays at same position,
+   *          derives to case 1 or 2).
+   * 
+   * Double black acts as a theoretical node, it does not exist
+   * as its been deleted. We will work with its family members, not
+   * the double black node directly.
    */
-  void solve_double_black(node_ptr d_black) {
-    while (d_black->parent != _root
-           && )
+  void solve_double_black(node_ptr db_parent, node_ptr db_sibling,
+                          bool at_right)
+  {
+    while (db_parent != node_end) {
 
-
+    }
   }
 
   node_ptr find_and_erase(const Key& key) {
