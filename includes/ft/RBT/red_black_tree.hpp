@@ -569,13 +569,55 @@ class rb_tree {
    * Double black acts as a theoretical node, it does not exist
    * as its been deleted. We will work with its family members, not
    * the double black node directly.
+   * at_right indicates wether double black is at right or not of
+   * parent.
    */
-  void solve_double_black(node_ptr db_parent, node_ptr db_sibling,
-                          bool at_right)
-  {
-    while (db_parent != node_end) {
+  void solve_double_black(node_ptr db_parent, bool at_right) {
 
-    }
+    bool solved = false;
+
+    while (db_parent != node_end) { // equivalent to double black != root
+      
+      node_ptr s = at_right ? db_parent->left : db_parent->right;
+      // if sibling does not exist, move double black to parent.
+      if (s == node_end) {
+        db_parent = db_parent->db_parent;
+        at_right = db_parent->is_right_child() ? true : false;
+      } else {
+        if (s->color == black) {
+          // if s is black and has at least one red child : 
+          if (s->left->color == red) {
+            if (at_right) {
+
+            } else {
+
+            }
+            db_parent = node_end; // end loop
+          } else if (s->right->color == red) {
+            if (at_right) {
+
+            } else {
+
+            }
+            db_parent = node_end; // end loop
+          // both childs are black
+          } else {
+            s->color = red;
+            db_parent = db_parent->db_parent;
+            at_right = db_parent->is_right_child() ? true : false;
+          }
+        // s is red
+        } else {
+          if (at_right) {
+
+          } else {
+
+          }
+          db_parent = node_end; // end loop
+        }
+      }
+
+    } // while db not root or db not solved.
   }
 
   node_ptr find_and_erase(const Key& key) {
@@ -598,28 +640,36 @@ class rb_tree {
       return NULL;
     }
 
-
     if (start->left != node_end
         && start->right != node_end)
     {
       switch_with_inorder_predecessor(start);
     }
 
-/*
- * Here, start is to be deleted and can only have 0 or 1 child.
- * If 0 childs :
- *  - If start is red, delete. Done.
- *  - If start is black, solve double black on start.
- * If 1 child :
- *  - If start or child is red, delete, subsitute, successor node
- *    gets painted black.
- *  - If both are black, switch positions start <-> child, and 
- *    solve double black on start
- * 
- */
+   /*
+    * Here, start is to be deleted and can only have 0 or 1 child.
+    * If 0 childs :
+    *  - If start is red, delete. Done.
+    *  - If start is black, solve double black on start.
+    * If 1 child :
+    *  - If start or child is red, delete, subsitute, successor node
+    *    gets painted black.
+    *  - If both are black, switch positions start <-> child, and 
+    *    solve double black on start.
+    */
     if (start->right == start->left) {
       if (start->color == black) {
-        solve_double_black(start);
+        if (start == _root) {
+          _root = node_end;
+        } else {
+          if (start->is_left_child()) {
+            start->parent->assign_left_child(node_end);
+            solve_double_black(start->parent, false);
+          } else {
+            start->parent->assign_right_child(node_end);
+            solve_double_black(start->parent, true);
+          }
+        }
       }
     } else if (start->right == node_end) { // left child E
       // switch start <--> start->left
@@ -629,15 +679,10 @@ class rb_tree {
       } else {
         _root = start->left;
       }
-      // make start start->left's left child in
-      // case double black needs to be solved
       if (start->color == black
           && start->left->color == black)
       {
-        start->assign_parent(start->left);
-        start->assign_left_child(node_end);
-        start->left->assign_left_child(start);
-        solve_double_black(start);
+        solve_double_black(start->left, false);
       } else {
         start->left->color = black;
       }
@@ -649,16 +694,11 @@ class rb_tree {
       } else {
         _root = start->right;
       }
-      // make start start->right's right child in case
-      // double black needs to be solved
       if (start->color == black
           && start->right->color == black)
       {
-        start->assign_parent(start->right);
-        start->assign_right_child(node_end);
-        start->right->assign_right_child(start);
-        solve_double_black(start);
-      // else, the node remaining must be black, not caring 
+        solve_double_black(start->right, true);
+      // the node remaining must be black, not caring 
       } else {
         start->right->color = black;
       }
