@@ -528,10 +528,6 @@ class rb_tree {
   }
 
   /* 
-   * Edit: this needs to be reviewed. There are inconsistencies.
-   *      The video I watched explaining this includes pseudocode that
-   *      the explanation skips. Quite some important parts. Fuck
-   * 
    * DOUBLE_BLACK vocabulary :
    *          
    *          z        p : Double black node
@@ -540,37 +536,11 @@ class rb_tree {
    *    /  \           x : sibling child (in the same orientation as y)
    *   xL  xR 
    * 
-   * DB cases:
-   * 
-   * Case 1: y is BLACK and a sibling x of y is RED.
-   *        Case 1.1 : x y z form a line. 
-   *                   - rotate y -> z.
-   *        Case 2.2 : x y z do not form a line.
-   *                   - rotate x -> y, then rotate x -> z.
-   *        The end structure is, not including symmetric cases :
-   *     1.1                     1.2 
-   * b -          y                       xR
-   *            /  \                    /   \
-   * a -      xL    z                  y     z
-   * 
-   * Note : line a will always be black, and line b will remain the same
-   *         color as it was (z's color).
-   * 
-   * Case 2: y is BLACK (or does not exist) and has BLACK children
-   *        - color p BLACK and y RED.
-   *        - if z is RED, color it BLACK.
-   *        - else if z is not the root, z is new double BLACK.
-   * Case 3: y is RED
-   *        - rotate y -> z 
-   *        - color y BLACK and z RED.
-   *        - repeat double black solve (p stays at same position,
-   *          derives to case 1 or 2).
-   * 
    * 
    * This is a mix between the theory from GeeksForgeeks, the following
    * link :
    * https://www.codesdope.com/course/data-structures-red-black-trees-deletion/
-   * and my own reasoning (not one fucking site mentions case parent is red.).
+   * and my own reasoning (not one fucking site mentions case parent is red).
    * 
    * Double black acts as a theoretical node, it does not exist
    * as its been deleted. We will work with its family members, not
@@ -584,60 +554,97 @@ class rb_tree {
 
     while (db_parent != node_end) { // equivalent to double black != root
 
-      // TODO
-      if (db_parent == red) {
-        db_parent->color = black;
-        // rotate_sibling(s);
-        break;
-      // for this entire code block, parent IS black.
+      node_ptr s = at_right ? db_parent->left : db_parent->right;
+      // if sibling does not exist, move double black to parent.
+      if (s == node_end) { // can sibling not exist in a double black scenario ? It shouldnt
+        db_parent = db_parent->db_parent;
+        at_right = db_parent->is_right_child() ? true : false;
       } else {
-        node_ptr s = at_right ? db_parent->left : db_parent->right;
-        // if sibling does not exist, move double black to parent.
-        if (s == node_end) {
-          db_parent = db_parent->db_parent;
-          at_right = db_parent->is_right_child() ? true : false;
-        } else {
-          if (s->color == black) {
-            // if s is black and has at least one red child : 
-            if (s->right->color == red) {
-              if (at_right) {
-                s->right->color = black;
-                rotate_left(s);
-              } else {
-                s->right->color = black;
-                rotate_left(s->right);
-                rotate_right(s->parent);
-              }
-              break;
-            } else if (s->left->color == red) {
-              if (at_right) {
-                s->left->color = black;
-                rotate_right(s->left);
-                rotate_left(s->parent);
-              } else {
-                s->left->color = black;
-                rotate_right(s);
-              }
-              break;
-            // both childs are black
+        if (s->color == black) {
+          /*
+           * if s is black and has at least one red child :
+           * Rules : 
+           * - After rotating, db_parent should have its sibling
+           *   the same color as him :
+           * 
+           * 
+           *    aB/R                   bB  
+           *    /  \    rot b->a     /   \          OK
+           *  BB   bB     ==>     aB/R   cB/R
+           *      /  \
+           *    nil  cR
+           * 
+           *    aB/R    rot c->b       cB  
+           *    /  \    rot c->a     /   \
+           *  BB   bB     ==>     aB/R   bB/R       OK
+           *      /  \              
+           *     cR  nil
+           */
+          if (s->right->color == red) {
+            if (at_right) {
+              s->right->color = db_parent->color;
+              rotate_left(s);                        
             } else {
-              s->color = red;
+              s->right->color = black;
+              s->color = db_parent->color;
+              rotate_left(s->right);
+              rotate_right(s->parent);
+            }
+            break;
+          } else if (s->left->color == red) {
+            if (at_right) {
+              s->left->color = black;
+              s->color = db_parent->color;
+              rotate_right(s->left);
+              rotate_left(s->parent);
+            } else {
+              s->left->color = db_parent->color;
+              rotate_right(s);
+            }
+            break;
+          /*
+           * If s is black and has no red childs, they MUST be nil,
+           * otherwise theres a black depth violation on sibling side:
+           * db side has n + 2 (db) black depth,
+           * sibling would have n + 1(s) + 1(child) + k(!= 0) black depth. 
+           * 
+           *     aR                  aB       
+           *    /  \               /   \
+           *  BB   bB     ==>    nil   bR           OK
+           *      /  \                /  \
+           *    nil  nil            nil  nil
+           *
+           *     aB                  aB -> new BB       
+           *    /  \               /   \
+           *  BB   bB     ==>    nil   bR           CONTINUE 
+           *      /  \                /  \
+           *    nil  nil            nil  nil   
+           */  
+          } else {
+            s->color = red;
+            if (db_parent->color == red) {
+              db_parent->color = black;
+              break;
+            } else {
               db_parent = db_parent->parent;
               at_right = db_parent->is_right_child() ? true : false;
             }
-          // s is red
-          } else {
-            if (at_right) {
-
-            } else {
-
-            }
-            db_parent = node_end; // end loop
           }
+        // s is red
+        } else {
+          if (at_right) {
+
+          } else {
+
+          }
+          db_parent = node_end; // end loop
         }
       }
 
     } // while db not root or db not solved.
+    node_end->color = black; // skips a lot of if's, when I know if a child exists it
+                             // must be red i just paint it, if it was a nil node, this
+                             // will put it back to normal.
   }
 
   node_ptr find_and_erase(const Key& key) {
