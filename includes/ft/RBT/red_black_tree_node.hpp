@@ -38,6 +38,12 @@ struct rb_tree_node {
 
   ~rb_tree_node() {
   }
+
+  void swap_values(node_ptr other) {
+    value_type tmp = data;
+    data = other->data;
+    other->data = tmp;
+  }
   
   /*
    * Rotations depend on wether a child is at the right

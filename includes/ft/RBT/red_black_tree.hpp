@@ -372,7 +372,7 @@ class rb_tree {
   * - inorder predecessor has at most 1 left child
   * - inorder predecessor can be n's left child.
   */
-  void switch_with_inorder_predecessor(node_ptr n) {
+  void switch_with_inorder_predecessor_1(node_ptr n) {
     
     node_ptr r = n->left;
 
@@ -431,6 +431,16 @@ class rb_tree {
     n_color tmp_color = n->color;
     n->color = r->color;
     r->color = tmp_color;
+  }
+
+  node_ptr switch_with_inorder_predecessor_2(node_ptr n) {
+    node_ptr r = n->left;
+
+    while (r->right != node_end) {
+      r = r->right;
+    }
+    r->swap_values(n);
+    return r;
   }
 
   public:
@@ -656,11 +666,7 @@ class rb_tree {
           }
         }
       }
-
     } // while db not root or db not solved.
-    node_end->color = black; // skips a lot of if's, when I know if a child exists it
-                             // must be red i just paint it, if it was a nil node, this
-                             // will put it back to normal.
   }
 
   node_ptr find_and_erase(const Key& key) {
@@ -686,7 +692,7 @@ class rb_tree {
     if (start->left != node_end
         && start->right != node_end)
     {
-      switch_with_inorder_predecessor(start);
+      switch_with_inorder_predecessor_1(start); // what if I changed values ? ...
     }
 
    /*
