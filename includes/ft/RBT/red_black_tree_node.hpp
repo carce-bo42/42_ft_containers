@@ -40,7 +40,7 @@ struct rb_tree_node {
   }
 
   void swap_values(node_ptr other) {
-    value_type tmp = data;
+    value_type tmp = this->data;
     data = other->data;
     other->data = tmp;
   }

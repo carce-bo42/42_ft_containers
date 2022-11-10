@@ -357,40 +357,47 @@ int erase_1() {
 
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
 
+  tree.insert(ft::pair<int, std::string>(4, "hello"));
   tree.insert(ft::pair<int, std::string>(13, "hello"));
-  tree.insert(ft::pair<int, std::string>(1, "hello"));
-  tree.insert(ft::pair<int, std::string>(60, "hello"));
   tree.insert(ft::pair<int, std::string>(0, "hello"));
   tree.insert(ft::pair<int, std::string>(-9, "hello"));
   tree.insert(ft::pair<int, std::string>(2, "hello"));
-  tree.insert(ft::pair<int, std::string>(40, "hello"));
   tree.insert(ft::pair<int, std::string>(-12, "hello"));
   tree.insert(ft::pair<int, std::string>(-4, "hello"));
-  tree.insert(ft::pair<int, std::string>(12, "hello"));
+  tree.insert(ft::pair<int, std::string>(1, "hello"));
   tree.insert(ft::pair<int, std::string>(3, "hello"));
   tree.insert(ft::pair<int, std::string>(11, "hello"));
+  tree.insert(ft::pair<int, std::string>(60, "hello"));
   tree.insert(ft::pair<int, std::string>(5, "hello"));
-  tree.insert(ft::pair<int, std::string>(4, "hello"));
+  tree.insert(ft::pair<int, std::string>(12, "hello"));
+  tree.insert(ft::pair<int, std::string>(40, "hello"));
   tree.insert(ft::pair<int, std::string>(80, "hello"));
 
   std::map<int, std::string> map;
 
+  map.insert(std::pair<int, std::string>(4, "hello"));
   map.insert(std::pair<int, std::string>(13, "hello"));
-  map.insert(std::pair<int, std::string>(1, "hello"));
-  map.insert(std::pair<int, std::string>(60, "hello"));
   map.insert(std::pair<int, std::string>(0, "hello"));
   map.insert(std::pair<int, std::string>(-9, "hello"));
   map.insert(std::pair<int, std::string>(2, "hello"));
-  map.insert(std::pair<int, std::string>(40, "hello"));
   map.insert(std::pair<int, std::string>(-12, "hello"));
   map.insert(std::pair<int, std::string>(-4, "hello"));
-  map.insert(std::pair<int, std::string>(12, "hello"));
+  map.insert(std::pair<int, std::string>(1, "hello"));
   map.insert(std::pair<int, std::string>(3, "hello"));
   map.insert(std::pair<int, std::string>(11, "hello"));
+  map.insert(std::pair<int, std::string>(60, "hello"));
   map.insert(std::pair<int, std::string>(5, "hello"));
-  map.insert(std::pair<int, std::string>(4, "hello"));
+  map.insert(std::pair<int, std::string>(12, "hello"));
+  map.insert(std::pair<int, std::string>(40, "hello"));
   map.insert(std::pair<int, std::string>(80, "hello"));
 
+  // 13 is switched for 12 and is black :
+/*
+here                                                                                                                                                                                                       
+expected : 12 actual : 40 at iterator pos 10                                                                                                                                                               
+ERROR at line 408 from test test/map/rbtree_test.cpp                                                                                                                                                       
+AddressSanitizer:DEADLYSIGNAL 
+*/
   tree.erase(13);
   //tree.erase(5);  // blows up
 

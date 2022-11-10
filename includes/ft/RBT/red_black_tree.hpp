@@ -353,93 +353,23 @@ class rb_tree {
     return true;
   }
 
- /*
-  * Searched n's inorder predecessor and switches node entries.
-  * 
-  *            A                        A
-  *            |                        |
-  *            n                        r
-  *          /  \                     /  \
-  *         X   B       ===>         X    B
-  *                   
-  *        C                        C
-  *        |                        |
-  *        r                       n
-  *      /                        /
-  *     D                       D
-  * 
-  * - parent is GUARANTEED to have two childs.
-  * - inorder predecessor has at most 1 left child
-  * - inorder predecessor can be n's left child.
-  */
-  void switch_with_inorder_predecessor_1(node_ptr n) {
-    
+  node_ptr switch_with_inorder_predecessor(node_ptr n) {
     node_ptr r = n->left;
 
     while (r->right != node_end) {
       r = r->right;
     }
-    // B
-    r->assign_right_child(n->right);
-    n->right->assign_parent(r);
-    if (r != n->left) {
-      node_ptr tmp = n->left;
-      // D
-      n->assign_left_child(r->left);
-      if (r->left != node_end) {
-        r->left->assign_parent(n->left);
-      }
-      // X
-      r->assign_left_child(tmp);
-      tmp->assign_parent(r);
-
-      tmp = r->parent;
-      // A
-      r->assign_parent(n->parent);
-      if (n->is_left_child()) {
-        n->parent->assign_left_child(r);
-      } else if (n->is_right_child()) {
-        n->parent->assign_right_child(r);
-      } else {
-        _root = r;
-      }
-      // C
-      n->assign_parent(tmp);
-      tmp->assign_right_child(n);
-    } else {
-      // no C or X in this case.
-      // D
-      n->assign_left_child(r->left);
-      if (r->left != node_end) {
-        r->left->assign_parent(n);
-      }
-      // A
-      r->assign_parent(n->parent);
-      if (n->is_left_child()) {
-        n->parent->assign_left_child(r);
-      } else if (n->is_right_child()) {
-        n->parent->assign_right_child(r);
-      } else {
-        _root = r;
-      }
-      // n
-      n->assign_parent(r);
-      r->assign_left_child(n);
-    }
-    n->assign_right_child(node_end);
-    // finally, change color
-    n_color tmp_color = n->color;
-    n->color = r->color;
-    r->color = tmp_color;
-  }
-
-  node_ptr switch_with_inorder_predecessor_2(node_ptr n) {
-    node_ptr r = n->left;
-
-    while (r->right != node_end) {
-      r = r->right;
-    }
+    /*std::cout << "n and r are :" << std::endl;
+    n->print_node_state();
+    r->print_node_state();
+    */
     r->swap_values(n);
+    /*
+    std::cout <<  std::endl;
+    std::cout << "n and r are :" << std::endl;
+    n->print_node_state();
+    r->print_node_state();
+    */
     return r;
   }
 
@@ -566,12 +496,15 @@ class rb_tree {
     while (db_parent != node_end) { // equivalent to double black != root
 
       node_ptr s = at_right ? db_parent->left : db_parent->right;
+      std::cout << "sibling : " << std::endl;
+      s->print_node_state();
       // if sibling does not exist, move double black to parent.
       if (s == node_end) { // can sibling not exist in a double black scenario ? It shouldnt
         db_parent = db_parent->parent;
         at_right = db_parent->is_right_child() ? true : false;
       } else {
         if (s->color == black) {
+          std::cout << "here" << std::endl;
           /*
            * if s is black and has at least one red child :
            * - After rotating, db_parent should have its sibling
@@ -594,7 +527,7 @@ class rb_tree {
           if (s->right->color == red) {
             if (at_right) {
               s->right->color = db_parent->color;
-              rotate_left(s);                        
+              rotate_left(s);
             } else {
               s->right->color = black;
               s->color = db_parent->color;
@@ -636,6 +569,7 @@ class rb_tree {
            *    nil  nil              nil  nil   
            */
           } else {
+            std::cout << "here2" << std::endl;
             s->color = red;
             if (db_parent->color == red) {
               db_parent->color = black;
@@ -647,8 +581,9 @@ class rb_tree {
           }
         } else {
           /* 
-           * If s is red, parent is black and both of sibling's childs MUST exist and
-           * be black. Else, black depth is violated on sibling's side. 
+           * If s is red, parent is black and both of sibling's
+           * childs MUST exist and be black.
+           * Else, black depth is violated on sibling's side. 
            *  
            * [3]
            *      aB    col a<->b       bB              bB
@@ -659,6 +594,7 @@ class rb_tree {
            */
           db_parent->color = red;
           s->color = black;
+          std::cout << "ASDASDAD" << std::endl;
           if (at_right) {
             rotate_right(s);
           } else {
@@ -692,7 +628,10 @@ class rb_tree {
     if (start->left != node_end
         && start->right != node_end)
     {
-      switch_with_inorder_predecessor_1(start); // what if I changed values ? ...
+      start = switch_with_inorder_predecessor(start); // what if I changed values ? ...
+      std::cout << std::endl;
+      std::cout << "new start : " << std::endl;
+      start->print_node_state();
     }
 
    /*
@@ -707,15 +646,22 @@ class rb_tree {
     *    solve double black on start.
     */
     if (start->right == start->left) {
-      if (start->color == black) {
-        if (start == _root) {
-          _root = node_end;
-        } else {
-          if (start->is_left_child()) {
-            start->parent->assign_left_child(node_end);
+      if (start == _root) {
+        _root = node_end;
+      } else {
+        if (start->is_left_child()) {
+          //std::cout << "BBBBBB" << std::endl;
+          start->parent->assign_left_child(node_end);
+          //std::cout << std::endl;
+          //std::cout << "parent of db : " << std::endl;
+          //start->parent->print_node_state();
+          if (start->color == black) {
             solve_double_black(start->parent, false);
-          } else {
-            start->parent->assign_right_child(node_end);
+          }
+        } else {
+          //std::cout << "AAAAAAA" << std::endl;
+          start->parent->assign_right_child(node_end);
+          if (start->color == black) {
             solve_double_black(start->parent, true);
           }
         }
@@ -732,7 +678,8 @@ class rb_tree {
           && start->left->color == black)
       {
         solve_double_black(start->left, false);
-      } else {
+      }
+      else {
         start->left->color = black;
       }
     } else { // right child E
