@@ -297,7 +297,7 @@ class rb_tree {
 
     node_ptr parent = (init != _root) ? init->parent : NULL;
     node_ptr start = init;
-    bool at_right = false;
+    bool db_at_right = false;
 
     // Iterate until we get to a leaf
     Key key = key_of_val(new_node->data);
@@ -305,19 +305,19 @@ class rb_tree {
       parent = start;
       if (key_cmp(key, key_of_val(start->data))) {
         start = start->left;
-        at_right = false;
+        db_at_right = false;
       } else {
         // if duplicate, return already existing node
         if (key == key_of_val(start->data)) {
           return start;
         }
         start = start->right;
-        at_right = true;
+        db_at_right = true;
       }
     }
     // once start == node_end, insert after parent
     new_node->assign_parent(parent);
-    if (at_right) {
+    if (db_at_right) {
       parent->assign_right_child(new_node);
     } else {
       parent->assign_left_child(new_node);
@@ -475,7 +475,7 @@ class rb_tree {
    * 
    * Double black acts as a theoretical node, since only its
    * parent, sibling and sibling's childs are relevant.
-   * at_right indicates wether double black is at right or not of
+   * db_at_right indicates wether double black is at right or not of
    * parent.
    * Symmetric cases are obviated from grafs.
    * DOUBLE_BLACK vocabulary (for grafs) :
@@ -491,61 +491,19 @@ class rb_tree {
    * the db_parent was initially, the black depth is kept the same as it
    * was before deletion, without the need of a double black node.
    */
-  void solve_double_black(node_ptr db_parent, bool at_right) {
+  void solve_double_black(node_ptr db_parent, bool db_at_right) {
 
     while (db_parent != node_end) { // equivalent to double black != root
 
-      node_ptr s = at_right ? db_parent->left : db_parent->right;
+      node_ptr s = db_at_right ? db_parent->left : db_parent->right;
       std::cout << "sibling : " << std::endl;
       s->print_node_state();
       // if sibling does not exist, move double black to parent.
       if (s == node_end) { // can sibling not exist in a double black scenario ? It shouldnt
         db_parent = db_parent->parent;
-        at_right = db_parent->is_right_child() ? true : false;
+        db_at_right = db_parent->is_right_child() ? true : false;
       } else {
         if (s->color == black) {
-          std::cout << "here" << std::endl;
-          /*
-           * if s is black and has at least one red child :
-           * - After rotating, db_parent should have its sibling
-           *   the same color as him :
-           *
-           * [1.1]
-           *    aB/R    rot b->a         bB  
-           *    /  \   col c as a      /   \          OK
-           *  BB   bB     ==>       aB/R   cB/R
-           *      /  \
-           *    nil  cR
-           * 
-           * [1.2]
-           *    aB/R    rot c->b      aB/R    rot c->a       cB  
-           *    /  \   col c black   /   \   col b as a    /   \
-           *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
-           *      /  \                    \
-           *     cR  nil                  bB
-           */
-          if (s->right->color == red) {
-            if (at_right) {
-              s->right->color = db_parent->color;
-              rotate_left(s);
-            } else {
-              s->right->color = black;
-              s->color = db_parent->color;
-              rotate_left(s->right);
-              rotate_right(s->parent);
-            }
-            break;
-          } else if (s->left->color == red) {
-            if (at_right) {
-              s->left->color = black;
-              s->color = db_parent->color;
-              rotate_right(s->left);
-              rotate_left(s->parent);
-            } else {
-              s->left->color = db_parent->color;
-              rotate_right(s);
-            }
-            break;
           /*
            * If s is black and has no red childs, they MUST be nil,
            * otherwise theres a black depth violation on sibling side:
@@ -554,30 +512,95 @@ class rb_tree {
            *                      + 1(black child)
            *                      + k(nil leaves at least) black depth. 
            * 
-           * [2.1]
+           * [1.1]
            *     aR                  aB       
            *    /  \   col a<->b   /   \
            *  BB   bB     ==>    nil   bR           OK
            *      /  \                /  \
            *    nil  nil            nil  nil
            * 
-           * [2.2]
+           * [1.2]
            *     aB                    aB -> new BB       
            *    /  \   col b red     /   \
            *  BB   bB      ==>     nil   bR           CONTINUE 
            *      /  \                  /  \
            *    nil  nil              nil  nil   
            */
-          } else {
-            std::cout << "here2" << std::endl;
+          if (s->right->color == black
+              && s->right->color == black)
+          {
             s->color = red;
             if (db_parent->color == red) {
               db_parent->color = black;
               break;
             } else {
               db_parent = db_parent->parent;
-              at_right = db_parent->is_right_child() ? true : false;
+              db_at_right = db_parent->is_right_child() ? true : false;
             }
+          }
+          /*
+           * if s is black and has at least one red child :
+           * - After rotating, db_parent should have its sibling
+           *   the same color as him :
+           *
+           * [2.1]
+           *    aB/R    rot b->a         bB  
+           *    /  \   col c as a      /   \          OK
+           *  BB   bB     ==>       aB/R   cB/R
+           *      /  \
+           *    nil  cR
+           * 
+           * [2.2]
+           *    aB/R    rot b->a         bB       if a == R        bR
+           *    /  \   col c as a      /   \      a,c -> black    /  \
+           *  BB   bB     ==>       aB/R   cB/R    b -> red     aB   cB    OK
+           *      /  \                 \                         \ 
+           *     dR  cR                dR                        dR
+           *   
+           * [2.3]
+           *    aB/R    rot c->b      aB/R    rot c->a       cB  
+           *    /  \   col c black   /   \   col b as a    /   \
+           *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
+           *      /  \                    \
+           *     cR  nil                  bB
+           *  
+           */
+          else if (db_at_right) {
+            if (s->left->color == red) {
+              s->left->color = db_parent->color;
+              rotate_right(s);
+              if (s->right->color == red
+                  && s->right->left->color == red)
+              {
+                s->left->color = black;
+                s->right->color = black;
+                s->color = red;
+              }
+            } else { // s->right->color == red
+              s->right->color = black;
+              s->color = db_parent->color;
+              rotate_left(s->right);
+              rotate_right(s->parent);
+            }
+            break ;
+          } else { // db at left
+            if (s->right->color == red) {
+              s->right->color = db_parent->color;
+              rotate_left(s);
+              if (s->left->color == red
+                  && s->left->right->color == red)
+              {
+                s->left->color = black;
+                s->right->color = black;
+                s->color = red;
+              }
+            } else {
+              s->left->color = black; 
+              s->color = db_parent->color;
+              rotate_right(s->left);
+              rotate_left(s->parent);
+            }
+            break ;
           }
         } else {
           /* 
@@ -594,8 +617,7 @@ class rb_tree {
            */
           db_parent->color = red;
           s->color = black;
-          std::cout << "ASDASDAD" << std::endl;
-          if (at_right) {
+          if (db_at_right) {
             rotate_right(s);
           } else {
             rotate_left(s);
@@ -655,6 +677,7 @@ class rb_tree {
           //std::cout << std::endl;
           //std::cout << "parent of db : " << std::endl;
           //start->parent->print_node_state();
+          std::cout << "ASADASDASDASDAS" << std::endl;
           if (start->color == black) {
             solve_double_black(start->parent, false);
           }

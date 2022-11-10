@@ -398,10 +398,30 @@ expected : 12 actual : 40 at iterator pos 10
 ERROR at line 408 from test test/map/rbtree_test.cpp                                                                                                                                                       
 AddressSanitizer:DEADLYSIGNAL 
 */
-  tree.erase(13);
-  //tree.erase(5);  // blows up
+  //tree.erase(13);
+  tree.erase(0);
+  tree.erase(-4);
 
-  map.erase(13);
+/*
+ *
+ *
+ *                      4                   -> BLACK
+ *                  /      \
+ *               /            \
+ *            /                  \
+ *           -12                 13         -> RED
+ *       /       \           /       \
+ *     -9         2         11       60      -> BLACK
+ *              /   \     /   \     /   \
+ *             1    3    5    12  40    80  -> RED
+ */
+  tree.erase(-9); // blows up.
+  //tree.erase(4);
+
+  //map.erase(4);
+  map.erase(0);
+  map.erase(-4);
+  map.erase(-9);
   //map.erase(5);
 
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
