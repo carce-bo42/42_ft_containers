@@ -528,26 +528,28 @@ class rb_tree {
   }
 
   /* 
-   * DOUBLE_BLACK vocabulary :
-   *          
-   *          z        p : Double black node
-   *        /  \       y : sibling
-   *      y     p      z : common parent
-   *    /  \           x : sibling child (in the same orientation as y)
-   *   xL  xR 
-   * 
-   * 
-   * This is a mix between the theory from GeeksForgeeks, the following
+   * This is a mix between the theory from GeeksForGeeks, the following
    * link :
    * https://www.codesdope.com/course/data-structures-red-black-trees-deletion/
-   * and my own reasoning (not one fucking site mentions case parent is red).
+   * and my own reasoning (NOT ONE SINGLE site mentions case parent is red).
    * 
-   * 
-   * Double black acts as a theoretical node, it does not exist
-   * as its been deleted. We will work with its family members, not
-   * the double black node directly.
+   * Double black acts as a theoretical node, since only its
+   * parent, sibling and sibling's childs are relevant.
    * at_right indicates wether double black is at right or not of
    * parent.
+   * Symmetric cases are obviated from grafs.
+   * DOUBLE_BLACK vocabulary (for grafs) :
+   *                  
+   *                  B/R : black / red
+   *          a       BB : Double black node
+   *        /  \       a : db_parent
+   *      BB    b      b : sibling
+   *           / \    c,d : sibling's childs 
+   *          c   d   
+   * 
+   * A double black problem is solved if, from the position
+   * the db_parent was initially, the black depth is kept the same as it
+   * was before deletion, without the need of a double black node.
    */
   void solve_double_black(node_ptr db_parent, bool at_right) {
 
@@ -605,7 +607,9 @@ class rb_tree {
            * If s is black and has no red childs, they MUST be nil,
            * otherwise theres a black depth violation on sibling side:
            * db side has n + 2 (db) black depth,
-           * sibling would have n + 1(s) + 1(child) + k(!= 0) black depth. 
+           * sibling would have n + 1(s black)
+           *                      + 1(black child)
+           *                      + k(nil leaves at least) black depth. 
            * 
            * [2.1]
            *     aR                  aB       
@@ -620,7 +624,7 @@ class rb_tree {
            *  BB   bB      ==>     nil   bR           CONTINUE 
            *      /  \                  /  \
            *    nil  nil              nil  nil   
-           */  
+           */
           } else {
             s->color = red;
             if (db_parent->color == red) {
@@ -636,19 +640,20 @@ class rb_tree {
            * If s is red, parent is black and both of sibling's childs MUST exist and
            * be black. Else, black depth is violated on sibling's side. 
            *  
-           *      aB                    bB              bB
-           *    /   \                 /   \    2.2    /   \
-           *   BB   bR       ==>    aR    dB   ==>   aB   dB
+           * [3]
+           *      aB    col a<->b       bB              bB
+           *    /   \   rot b->a      /   \   [2.2]   /   \
+           *   BB   bR     ==>      aR    dB   ==>   aB   dB     OK
            *       /  \            / \              /  \ 
            *      cB  dB         BB  cB           nil  cR
-           *
            */
+          db_parent->color = red;
+          s->color = black;
           if (at_right) {
-
+            rotate_right(s);            
           } else {
-
+            rotate_left(s);
           }
-          db_parent = node_end; // end loop
         }
       }
 
