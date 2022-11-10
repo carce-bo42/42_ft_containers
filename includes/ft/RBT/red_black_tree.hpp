@@ -542,6 +542,7 @@ class rb_tree {
    * https://www.codesdope.com/course/data-structures-red-black-trees-deletion/
    * and my own reasoning (not one fucking site mentions case parent is red).
    * 
+   * 
    * Double black acts as a theoretical node, it does not exist
    * as its been deleted. We will work with its family members, not
    * the double black node directly.
@@ -549,8 +550,6 @@ class rb_tree {
    * parent.
    */
   void solve_double_black(node_ptr db_parent, bool at_right) {
-
-    bool solved = false;
 
     while (db_parent != node_end) { // equivalent to double black != root
 
@@ -563,22 +562,22 @@ class rb_tree {
         if (s->color == black) {
           /*
            * if s is black and has at least one red child :
-           * Rules : 
            * - After rotating, db_parent should have its sibling
            *   the same color as him :
-           * 
-           * 
-           *    aB/R                   bB  
-           *    /  \    rot b->a     /   \          OK
-           *  BB   bB     ==>     aB/R   cB/R
+           *
+           * [1.1]
+           *    aB/R    rot b->a         bB  
+           *    /  \   col c as a      /   \          OK
+           *  BB   bB     ==>       aB/R   cB/R
            *      /  \
            *    nil  cR
            * 
-           *    aB/R    rot c->b       cB  
-           *    /  \    rot c->a     /   \
-           *  BB   bB     ==>     aB/R   bB/R       OK
-           *      /  \              
-           *     cR  nil
+           * [1.2]
+           *    aB/R    rot c->b      aB/R    rot c->a       cB  
+           *    /  \   col c black   /   \   col b as a    /   \
+           *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
+           *      /  \                    \
+           *     cR  nil                  bB
            */
           if (s->right->color == red) {
             if (at_right) {
@@ -608,17 +607,19 @@ class rb_tree {
            * db side has n + 2 (db) black depth,
            * sibling would have n + 1(s) + 1(child) + k(!= 0) black depth. 
            * 
+           * [2.1]
            *     aR                  aB       
-           *    /  \               /   \
+           *    /  \   col a<->b   /   \
            *  BB   bB     ==>    nil   bR           OK
            *      /  \                /  \
            *    nil  nil            nil  nil
-           *
-           *     aB                  aB -> new BB       
-           *    /  \               /   \
-           *  BB   bB     ==>    nil   bR           CONTINUE 
-           *      /  \                /  \
-           *    nil  nil            nil  nil   
+           * 
+           * [2.2]
+           *     aB                    aB -> new BB       
+           *    /  \   col b red     /   \
+           *  BB   bB      ==>     nil   bR           CONTINUE 
+           *      /  \                  /  \
+           *    nil  nil              nil  nil   
            */  
           } else {
             s->color = red;
@@ -630,8 +631,18 @@ class rb_tree {
               at_right = db_parent->is_right_child() ? true : false;
             }
           }
-        // s is red
         } else {
+          /* 
+           * If s is red, parent is black and both of sibling's childs MUST exist and
+           * be black. Else, black depth is violated on sibling's side. 
+           *  
+           *      aB                    bB              bB
+           *    /   \                 /   \    2.2    /   \
+           *   BB   bR       ==>    aR    dB   ==>   aB   dB
+           *       /  \            / \              /  \ 
+           *      cB  dB         BB  cB           nil  cR
+           *
+           */
           if (at_right) {
 
           } else {
