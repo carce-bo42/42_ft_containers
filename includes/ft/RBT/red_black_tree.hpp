@@ -568,7 +568,7 @@ class rb_tree {
       node_ptr s = at_right ? db_parent->left : db_parent->right;
       // if sibling does not exist, move double black to parent.
       if (s == node_end) { // can sibling not exist in a double black scenario ? It shouldnt
-        db_parent = db_parent->db_parent;
+        db_parent = db_parent->parent;
         at_right = db_parent->is_right_child() ? true : false;
       } else {
         if (s->color == black) {
@@ -660,7 +660,7 @@ class rb_tree {
           db_parent->color = red;
           s->color = black;
           if (at_right) {
-            rotate_right(s);            
+            rotate_right(s);
           } else {
             rotate_left(s);
           }
@@ -754,6 +754,7 @@ class rb_tree {
     }
     destroy_node(start);
     --node_count;
+    return node_end;
   }
 
   void erase(const Key& key) {

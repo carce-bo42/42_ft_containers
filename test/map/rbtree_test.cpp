@@ -223,8 +223,6 @@ int insert_no_fix() {
   tree.insert(ft::pair<int, std::string>(-12, "hello"));
   tree.insert(ft::pair<int, std::string>(-4, "hello"));
   tree.insert(ft::pair<int, std::string>(12, "hello"));
-  // until here i studied each insertion carefully. After I debugged
-  // this first 10 numbers, everything else worked.
   tree.insert(ft::pair<int, std::string>(3, "hello"));
   tree.insert(ft::pair<int, std::string>(11, "hello"));
   tree.insert(ft::pair<int, std::string>(5, "hello"));
@@ -339,6 +337,78 @@ int insert_with_hint() {
   tree.insert_with_hint(tree.begin() + 2, ft::pair<int, std::string>(-42, "hello"));
   tree.insert_with_hint(tree.begin() + 7, ft::pair<int, std::string>(23, "hello"));
   tree.insert_with_hint(tree.begin() + 9, ft::pair<int, std::string>(7, "hello"));
+
+  return OK;
+}
+
+/*
+ *                      4
+ *                  /      \
+ *               /            \
+ *            /                  \
+ *           0                   13
+ *       /       \           /       \
+ *      -9        2         11       60
+ *    /   \     /   \     /   \     /   \
+ *  -12   -4   1    3    5    12  40    80
+ *
+ */
+int erase_1() {
+
+  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+
+  tree.insert(ft::pair<int, std::string>(13, "hello"));
+  tree.insert(ft::pair<int, std::string>(1, "hello"));
+  tree.insert(ft::pair<int, std::string>(60, "hello"));
+  tree.insert(ft::pair<int, std::string>(0, "hello"));
+  tree.insert(ft::pair<int, std::string>(-9, "hello"));
+  tree.insert(ft::pair<int, std::string>(2, "hello"));
+  tree.insert(ft::pair<int, std::string>(40, "hello"));
+  tree.insert(ft::pair<int, std::string>(-12, "hello"));
+  tree.insert(ft::pair<int, std::string>(-4, "hello"));
+  tree.insert(ft::pair<int, std::string>(12, "hello"));
+  tree.insert(ft::pair<int, std::string>(3, "hello"));
+  tree.insert(ft::pair<int, std::string>(11, "hello"));
+  tree.insert(ft::pair<int, std::string>(5, "hello"));
+  tree.insert(ft::pair<int, std::string>(4, "hello"));
+  tree.insert(ft::pair<int, std::string>(80, "hello"));
+
+  std::map<int, std::string> map;
+
+  map.insert(std::pair<int, std::string>(13, "hello"));
+  map.insert(std::pair<int, std::string>(1, "hello"));
+  map.insert(std::pair<int, std::string>(60, "hello"));
+  map.insert(std::pair<int, std::string>(0, "hello"));
+  map.insert(std::pair<int, std::string>(-9, "hello"));
+  map.insert(std::pair<int, std::string>(2, "hello"));
+  map.insert(std::pair<int, std::string>(40, "hello"));
+  map.insert(std::pair<int, std::string>(-12, "hello"));
+  map.insert(std::pair<int, std::string>(-4, "hello"));
+  map.insert(std::pair<int, std::string>(12, "hello"));
+  map.insert(std::pair<int, std::string>(3, "hello"));
+  map.insert(std::pair<int, std::string>(11, "hello"));
+  map.insert(std::pair<int, std::string>(5, "hello"));
+  map.insert(std::pair<int, std::string>(4, "hello"));
+  map.insert(std::pair<int, std::string>(80, "hello"));
+
+  tree.erase(13);
+  //tree.erase(5);  // blows up
+
+  map.erase(13);
+  //map.erase(5);
+
+  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  std::map<int, std::string>::iterator std_it = map.begin();
+  for (int i = 0; i < (int)map.size(); i++)  {
+    if (ft_it->first != std_it->first) {
+      std::cout << "expected : " << std_it->first
+                << " actual : " << ft_it->first
+                << " at iterator pos " << i << std::endl;
+      return TEST_ERROR(KO_INSERT);
+    }
+    ++ft_it;
+    ++std_it;
+  }
 
   return OK;
 }
