@@ -37,7 +37,8 @@ int rbtree_test() {
       //|| insert_no_fix() != 0
       //|| insert_with_fix_1() != 0
       //|| insert_performance() != 0
-      || erase_1() != 0)
+      || erase_1() != 0
+      || erase_2() != 0)
   {
     return 1;
   }
@@ -98,9 +99,9 @@ int main() {
   // Correct way of calling construct with no simple constructor ?
   alloc.construct(ptr, Example(3, 4 ));
 
-  ptr->print_numbers();
+  //ptr->print_numbers();
   alloc.destroy(ptr);
-  ptr->print_numbers();
+  //ptr->print_numbers();
   alloc.deallocate(ptr, 1);
 
 /*

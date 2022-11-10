@@ -298,6 +298,7 @@ int insert_performance() {
   for (int i = -1; i > -nbr_insertions; i--) {
     map.insert(std::pair<int, std::string>(i, "hello"));
   }
+
   time_t std_end = current_timestamp();
   double std_time = (double)((std_end - std_start)/1000.0);
   std::cout << "std::rb_tree total_time for "
@@ -391,38 +392,27 @@ int erase_1() {
   map.insert(std::pair<int, std::string>(40, "hello"));
   map.insert(std::pair<int, std::string>(80, "hello"));
 
-  // 13 is switched for 12 and is black :
-/*
-here                                                                                                                                                                                                       
-expected : 12 actual : 40 at iterator pos 10                                                                                                                                                               
-ERROR at line 408 from test test/map/rbtree_test.cpp                                                                                                                                                       
-AddressSanitizer:DEADLYSIGNAL 
-*/
-  //tree.erase(13);
   tree.erase(0);
   tree.erase(-4);
+  tree.erase(-9);
+  tree.erase(13);
+  tree.erase(1);
+  tree.erase(11);
+  tree.erase(60);
+  tree.erase(40);
+  tree.erase(5);
+  tree.erase(2);
 
-/*
- *
- *
- *                      4                   -> BLACK
- *                  /      \
- *               /            \
- *            /                  \
- *           -12                 13         -> RED
- *       /       \           /       \
- *     -9         2         11       60      -> BLACK
- *              /   \     /   \     /   \
- *             1    3    5    12  40    80  -> RED
- */
-  tree.erase(-9); // blows up.
-  //tree.erase(4);
-
-  //map.erase(4);
   map.erase(0);
   map.erase(-4);
   map.erase(-9);
-  //map.erase(5);
+  map.erase(13);
+  map.erase(1);
+  map.erase(11);
+  map.erase(60);
+  map.erase(40);
+  map.erase(5);
+  map.erase(2);
 
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
@@ -437,5 +427,75 @@ AddressSanitizer:DEADLYSIGNAL
     ++std_it;
   }
 
+  return OK;
+}
+
+
+int erase_2() {
+
+  int nbr_insertions = 50000;
+  int nbr_insertions_mid = 25000;
+
+  time_t ft_start = current_timestamp();
+  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+
+  for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = -nbr_insertions_mid; i > -nbr_insertions; i--) {
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = 0; i < nbr_insertions; i++) {
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = -1; i > -nbr_insertions; i--) {
+    tree.insert(ft::pair<int, std::string>(i, "hello"));
+  }
+  time_t ft_end = current_timestamp();
+  double ft_time = (double)((ft_end - ft_start)/1000.0);
+  std::cout << "ft::rb_tree total_time for "
+            << nbr_insertions << " insertions : "
+            << ft_time << " s" << std::endl;
+  
+  time_t std_start = current_timestamp();
+  std::map<int, std::string> map;
+
+  for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
+    map.insert(std::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = -nbr_insertions_mid; i > -nbr_insertions; i--) {
+    map.insert(std::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = 0; i < nbr_insertions; i++) {
+    map.insert(std::pair<int, std::string>(i, "hello"));
+  }
+  for (int i = -1; i > -nbr_insertions; i--) {
+    map.insert(std::pair<int, std::string>(i, "hello"));
+  }
+
+  time_t std_end = current_timestamp();
+  double std_time = (double)((std_end - std_start)/1000.0);
+  std::cout << "std::rb_tree total_time for "
+            << nbr_insertions << " insertions : "
+            << std_time << " s" << std::endl;
+
+  std::cout << "ft was " << (fabs(std_time - ft_time)/std_time)*100.0
+            << "% slower than stl" << std::endl;
+  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  std::map<int, std::string>::iterator std_it = map.begin();
+  for (int i = 0; i < 5; i++)  {
+    if (ft_it->first != std_it->first) {
+      std::cout << "expected : " << std_it->first
+                << " actual : " << ft_it->first
+                << " at iterator pos " << i << std::endl;
+      return TEST_ERROR(KO_INSERT);
+    }
+    ++ft_it;
+    ++std_it;
+  }
+  for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
+    tree.erase(i);
+    map.erase(i);
+  }
   return OK;
 }

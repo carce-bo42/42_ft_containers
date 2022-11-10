@@ -496,8 +496,10 @@ class rb_tree {
     while (db_parent != node_end) { // equivalent to double black != root
 
       node_ptr s = db_at_right ? db_parent->left : db_parent->right;
+      /*
       std::cout << "sibling : " << std::endl;
       s->print_node_state();
+      */
       // if sibling does not exist, move double black to parent.
       if (s == node_end) { // can sibling not exist in a double black scenario ? It shouldnt
         db_parent = db_parent->parent;
@@ -563,7 +565,6 @@ class rb_tree {
            *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
            *      /  \                    \
            *     cR  nil                  bB
-           *  
            */
           else if (db_at_right) {
             if (s->left->color == red) {
@@ -651,9 +652,11 @@ class rb_tree {
         && start->right != node_end)
     {
       start = switch_with_inorder_predecessor(start); // what if I changed values ? ...
+      /*
       std::cout << std::endl;
       std::cout << "new start : " << std::endl;
       start->print_node_state();
+      */
     }
 
    /*
@@ -677,7 +680,6 @@ class rb_tree {
           //std::cout << std::endl;
           //std::cout << "parent of db : " << std::endl;
           //start->parent->print_node_state();
-          std::cout << "ASADASDASDASDAS" << std::endl;
           if (start->color == black) {
             solve_double_black(start->parent, false);
           }
