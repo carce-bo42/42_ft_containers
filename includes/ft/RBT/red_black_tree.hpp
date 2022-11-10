@@ -566,6 +566,12 @@ class rb_tree {
    *        - repeat double black solve (p stays at same position,
    *          derives to case 1 or 2).
    * 
+   * 
+   * This is a mix between the theory from GeeksForgeeks, the following
+   * link :
+   * https://www.codesdope.com/course/data-structures-red-black-trees-deletion/
+   * and my own reasoning (not one fucking site mentions case parent is red.).
+   * 
    * Double black acts as a theoretical node, it does not exist
    * as its been deleted. We will work with its family members, not
    * the double black node directly.
@@ -577,43 +583,57 @@ class rb_tree {
     bool solved = false;
 
     while (db_parent != node_end) { // equivalent to double black != root
-      
-      node_ptr s = at_right ? db_parent->left : db_parent->right;
-      // if sibling does not exist, move double black to parent.
-      if (s == node_end) {
-        db_parent = db_parent->db_parent;
-        at_right = db_parent->is_right_child() ? true : false;
+
+      // TODO
+      if (db_parent == red) {
+        db_parent->color = black;
+        // rotate_sibling(s);
+        break;
+      // for this entire code block, parent IS black.
       } else {
-        if (s->color == black) {
-          // if s is black and has at least one red child : 
-          if (s->left->color == red) {
-            if (at_right) {
-
-            } else {
-
-            }
-            db_parent = node_end; // end loop
-          } else if (s->right->color == red) {
-            if (at_right) {
-
-            } else {
-
-            }
-            db_parent = node_end; // end loop
-          // both childs are black
-          } else {
-            s->color = red;
-            db_parent = db_parent->db_parent;
-            at_right = db_parent->is_right_child() ? true : false;
-          }
-        // s is red
+        node_ptr s = at_right ? db_parent->left : db_parent->right;
+        // if sibling does not exist, move double black to parent.
+        if (s == node_end) {
+          db_parent = db_parent->db_parent;
+          at_right = db_parent->is_right_child() ? true : false;
         } else {
-          if (at_right) {
-
+          if (s->color == black) {
+            // if s is black and has at least one red child : 
+            if (s->right->color == red) {
+              if (at_right) {
+                s->right->color = black;
+                rotate_left(s);
+              } else {
+                s->right->color = black;
+                rotate_left(s->right);
+                rotate_right(s->parent);
+              }
+              break;
+            } else if (s->left->color == red) {
+              if (at_right) {
+                s->left->color = black;
+                rotate_right(s->left);
+                rotate_left(s->parent);
+              } else {
+                s->left->color = black;
+                rotate_right(s);
+              }
+              break;
+            // both childs are black
+            } else {
+              s->color = red;
+              db_parent = db_parent->parent;
+              at_right = db_parent->is_right_child() ? true : false;
+            }
+          // s is red
           } else {
+            if (at_right) {
 
+            } else {
+
+            }
+            db_parent = node_end; // end loop
           }
-          db_parent = node_end; // end loop
         }
       }
 
