@@ -95,32 +95,6 @@ class rb_tree {
   Compare        key_cmp;
   KeyOfVal       key_of_val;
 
-/*
- * red black tree interface  
- * 
- * get_node_from_key()
- * get_node_key is not implemented because get_key exists
- * get_node_data()
- * construct_node()
- * destroy_node()
- * search_node() given a key
- * get_minimum()
- * get_maximum()
- * /////// iterators go somewhere else
- * pure_insert() - insert a node on the tree 
- * pure_erase() - erase a node from the tree
- * after_insert_check() : will determine if a newly inserted
- *                        node is a problem and which problem
- *                        is it.
- * after_erase_check() : same but with deletion, in case theres
- *                       diferent conditions met. But will somehow
- *                       redirect it to rebalance in a way rebalance
- *                       is agnostic to wether an insertion or 
- *                       deletion happened.
- * rebalance() : will recieve a node and a problem to solve.
- *
- */
-
   public:
 
   rb_tree()
@@ -129,8 +103,7 @@ class rb_tree {
     node_count(0),
     node_alloc()
   {
-    // iterator end. It goes at the right of the max
-    // value and at the left of the min. Starts being root.
+    // Node end acts as nil. Starts being root
     node_end = construct_node(Val(), 0);
     node_end->assign_parent(0);
     node_end->assign_left_child(0);
@@ -620,8 +593,10 @@ class rb_tree {
           s->color = black;
           if (db_at_right) {
             rotate_right(s);
+            db_parent = s->right;
           } else {
             rotate_left(s);
+            db_parent = s->left;
           }
         }
       }
@@ -651,77 +626,53 @@ class rb_tree {
     if (start->left != node_end
         && start->right != node_end)
     {
-      start = switch_with_inorder_predecessor(start); // what if I changed values ? ...
-      /*
-      std::cout << std::endl;
-      std::cout << "new start : " << std::endl;
-      start->print_node_state();
-      */
+      start = switch_with_inorder_predecessor(start);
     }
 
    /*
     * Here, start is to be deleted and can only have 0 or 1 child.
-    * If 0 childs :
-    *  - If start is red, delete. Done.
-    *  - If start is black, solve double black on start.
-    * If 1 child :
-    *  - If start or child is red, delete, subsitute, successor node
-    *    gets painted black.
-    *  - If both are black, switch positions start <-> child, and 
-    *    solve double black on start.
+    *  - Notice how theres only 3 possible constructions (taking out
+    *    symmetric cases) for a node to have 0 or1 child. Any other 
+    *    disposition violates black depth. 
+    *     B/R          B          B
+    *    /  \        /  \       /  \ 
+    *  nil  nil     R   nil   nil   R
+    * - one of them leads to double black, the others are instantly
+    *   solved by just promoting the child.
     */
     if (start->right == start->left) {
       if (start == _root) {
         _root = node_end;
       } else {
         if (start->is_left_child()) {
-          //std::cout << "BBBBBB" << std::endl;
           start->parent->assign_left_child(node_end);
-          //std::cout << std::endl;
-          //std::cout << "parent of db : " << std::endl;
-          //start->parent->print_node_state();
           if (start->color == black) {
             solve_double_black(start->parent, false);
           }
         } else {
-          //std::cout << "AAAAAAA" << std::endl;
           start->parent->assign_right_child(node_end);
           if (start->color == black) {
             solve_double_black(start->parent, true);
           }
         }
       }
-    } else if (start->right == node_end) { // left child E
-      // switch start <--> start->left
+    // left child red => switch start <--> start->left
+    } else if (start->right == node_end) {
+      start->left->color = black;
       start->left->assign_parent(start->parent);
       if (start->parent != node_end) {
         start->parent->assign_left_child(start->left);
       } else {
         _root = start->left;
       }
-      if (start->color == black
-          && start->left->color == black)
-      {
-        solve_double_black(start->left, false);
-      }
-      else {
-        start->left->color = black;
-      }
-    } else { // right child E
-      // switch start <--> start->right
+    // right child red => switch start <--> start->right
+    } else {
+      start->right->color = black;
       start->right->assign_parent(start->parent);
       if (start->parent != node_end) {
         start->parent->assign_right_child(start->right);
       } else {
         _root = start->right;
-      }
-      if (start->color == black
-          && start->right->color == black)
-      {
-        solve_double_black(start->right, true);
-      // the node remaining must be black, not caring 
-      } else {
-        start->right->color = black;
       }
     }
     destroy_node(start);
