@@ -483,7 +483,7 @@ int erase_2() {
             << "% slower than stl" << std::endl;
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
-  for (int i = 0; i < 5; i++)  {
+  for (int i = 0; i < (int)map.size(); i++)  {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
@@ -493,9 +493,28 @@ int erase_2() {
     ++ft_it;
     ++std_it;
   }
+
+  tree.erase(25000);
+  tree.erase(25001);
+  map.erase(25000);
+  map.erase(25001);
+
+  for (int i = 0; i < (int)map.size(); i++)  {
+    if (ft_it->first != std_it->first) {
+      std::cout << "expected : " << std_it->first
+                << " actual : " << ft_it->first
+                << " at iterator pos " << i << std::endl;
+      return TEST_ERROR(KO_INSERT);
+    }
+    ++ft_it;
+    ++std_it;
+  }
+  /*
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
+    std::cout << " i : " << i << std::endl;
     tree.erase(i);
     map.erase(i);
   }
+  */
   return OK;
 }

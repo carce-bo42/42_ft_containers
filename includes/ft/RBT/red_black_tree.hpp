@@ -332,17 +332,7 @@ class rb_tree {
     while (r->right != node_end) {
       r = r->right;
     }
-    /*std::cout << "n and r are :" << std::endl;
-    n->print_node_state();
-    r->print_node_state();
-    */
     r->swap_values(n);
-    /*
-    std::cout <<  std::endl;
-    std::cout << "n and r are :" << std::endl;
-    n->print_node_state();
-    r->print_node_state();
-    */
     return r;
   }
 
@@ -469,135 +459,130 @@ class rb_tree {
     while (db_parent != node_end) { // equivalent to double black != root
 
       node_ptr s = db_at_right ? db_parent->left : db_parent->right;
-      /*
-      std::cout << "sibling : " << std::endl;
-      s->print_node_state();
-      */
-      // if sibling does not exist, move double black to parent.
-      if (s == node_end) { // can sibling not exist in a double black scenario ? It shouldnt
-        db_parent = db_parent->parent;
-        db_at_right = db_parent->is_right_child() ? true : false;
-      } else {
-        if (s->color == black) {
-          /*
-           * If s is black and has no red childs, they MUST be nil,
-           * otherwise theres a black depth violation on sibling side:
-           * db side has n + 2 (db) black depth,
-           * sibling would have n + 1(s black)
-           *                      + 1(black child)
-           *                      + k(nil leaves at least) black depth. 
-           * 
-           * [1.1]
-           *     aR                  aB       
-           *    /  \   col a<->b   /   \
-           *  BB   bB     ==>    nil   bR           OK
-           *      /  \                /  \
-           *    nil  nil            nil  nil
-           * 
-           * [1.2]
-           *     aB                    aB -> new BB       
-           *    /  \   col b red     /   \
-           *  BB   bB      ==>     nil   bR           CONTINUE 
-           *      /  \                  /  \
-           *    nil  nil              nil  nil   
-           */
-          if (s->right->color == black
-              && s->right->color == black)
-          {
-            s->color = red;
-            if (db_parent->color == red) {
-              db_parent->color = black;
-              break;
-            } else {
-              db_parent = db_parent->parent;
-              db_at_right = db_parent->is_right_child() ? true : false;
-            }
-          }
-          /*
-           * if s is black and has at least one red child :
-           * - After rotating, db_parent should have its sibling
-           *   the same color as him :
-           *
-           * [2.1]
-           *    aB/R    rot b->a         bB  
-           *    /  \   col c as a      /   \          OK
-           *  BB   bB     ==>       aB/R   cB/R
-           *      /  \
-           *    nil  cR
-           * 
-           * [2.2]
-           *    aB/R    rot b->a         bB       if a == R        bR
-           *    /  \   col c as a      /   \      a,c -> black    /  \
-           *  BB   bB     ==>       aB/R   cB/R    b -> red     aB   cB    OK
-           *      /  \                 \                         \ 
-           *     dR  cR                dR                        dR
-           *   
-           * [2.3]
-           *    aB/R    rot c->b      aB/R    rot c->a       cB  
-           *    /  \   col c black   /   \   col b as a    /   \
-           *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
-           *      /  \                    \
-           *     cR  nil                  bB
-           */
-          else if (db_at_right) {
-            if (s->left->color == red) {
-              s->left->color = db_parent->color;
-              rotate_right(s);
-              if (s->right->color == red
-                  && s->right->left->color == red)
-              {
-                s->left->color = black;
-                s->right->color = black;
-                s->color = red;
-              }
-            } else { // s->right->color == red
-              s->right->color = black;
-              s->color = db_parent->color;
-              rotate_left(s->right);
-              rotate_right(s->parent);
-            }
-            break ;
-          } else { // db at left
-            if (s->right->color == red) {
-              s->right->color = db_parent->color;
-              rotate_left(s);
-              if (s->left->color == red
-                  && s->left->right->color == red)
-              {
-                s->left->color = black;
-                s->right->color = black;
-                s->color = red;
-              }
-            } else {
-              s->left->color = black; 
-              s->color = db_parent->color;
-              rotate_right(s->left);
-              rotate_left(s->parent);
-            }
-            break ;
-          }
-        } else {
-          /* 
-           * If s is red, parent is black and both of sibling's
-           * childs MUST exist and be black.
-           * Else, black depth is violated on sibling's side. 
-           *  
-           * [3]
-           *      aB    col a<->b       bB              bB
-           *    /   \   rot b->a      /   \   [2.2]   /   \
-           *   BB   bR     ==>      aR    dB   ==>   aB   dB     OK
-           *       /  \            / \              /  \ 
-           *      cB  dB         BB  cB           nil  cR
-           */
-          db_parent->color = red;
-          s->color = black;
-          if (db_at_right) {
-            rotate_right(s);
-            db_parent = s->right;
+      if (s->color == black) {
+        /*
+          * If s is black and has no red childs, they MUST be nil,
+          * otherwise theres a black depth violation on sibling side:
+          * db side has n + 2 (db) black depth,
+          * sibling would have n + 1(s black)
+          *                      + 1(black child)
+          *                      + k(nil leaves at least) black depth. 
+          * 
+          * [1.1]
+          *     aR                  aB       
+          *    /  \   col a<->b   /   \
+          *  BB   bB     ==>    nil   bR           OK
+          *      /  \                /  \
+          *    nil  nil            nil  nil
+          * 
+          * [1.2]
+          *     aB                    aB -> new BB       
+          *    /  \   col b red     /   \
+          *  BB   bB      ==>     nil   bR           CONTINUE 
+          *      /  \                  /  \
+          *    nil  nil              nil  nil   
+          */
+        if (s->right->color == black
+            && s->left->color == black)
+        {
+          s->color = red;
+          if (db_parent->color == red) {
+            db_parent->color = black;
+            break;
           } else {
-            rotate_left(s);
-            db_parent = s->left;
+            db_parent = db_parent->parent;
+            db_at_right = db_parent->is_right_child() ? true : false;
           }
+        }
+        /*
+          * if s is black and has at least one red child :
+          * - After rotating, db_parent should have its sibling
+          *   the same color as him :
+          *
+          * [2.1]
+          *    aB/R    rot b->a         bB  
+          *    /  \   col c as a      /   \          OK
+          *  BB   bB     ==>       aB/R   cB/R
+          *      /  \
+          *    nil  cR
+          * 
+          * [2.2]
+          *    aB/R    rot b->a         bB       if a == R        bR
+          *    /  \   col c as a      /   \      a,c -> black    /  \
+          *  BB   bB     ==>       aB/R   cB/R    b -> red     aB   cB    OK
+          *      /  \                 \                         \ 
+          *     dR  cR                dR                        dR
+          *   
+          * [2.3]
+          *    aB/R    rot c->b      aB/R    rot c->a       cB  
+          *    /  \   col c black   /   \   col b as a    /   \
+          *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
+          *      /  \                    \
+          *     cR  nil                  bB
+          */
+        else if (db_at_right) {
+          if (s->left->color == red) {
+            s->left->color = db_parent->color;
+            rotate_right(s);
+            if (s->right->color == red
+                && s->right->left->color == red)
+            {
+              s->left->color = black;
+              s->right->color = black;
+              s->color = red;
+            }
+          } else { // s->right->color == red
+            s->right->color = black;
+            s->color = db_parent->color;
+            rotate_left(s->right);
+            rotate_right(s->parent);
+          }
+          break ;
+        } else { // db at left
+          if (s->right->color == red) {
+            s->right->color = db_parent->color;
+            rotate_left(s);
+            if (s->left->color == red
+                && s->left->right->color == red)
+            {
+              s->left->color = black;
+              s->right->color = black;
+              s->color = red;
+            }
+          } else {
+            s->left->color = black; 
+            s->color = db_parent->color;
+            rotate_right(s->left);
+            rotate_left(s->parent);
+          }
+          break ;
+        }
+      } else {
+        /* 
+          * If s is red, parent is black and both of sibling's
+          * childs MUST exist and be black.
+          * Else, black depth is violated on sibling's side. 
+          *  
+          * [3]
+          *      aB    col a<->b       bB              bB
+          *    /   \   rot b->a      /   \   [2.2]   /   \
+          *   BB   bR     ==>      aR    dB   ==>   aB   dB     OK
+          *       /  \            / \              /  \ 
+          *      cB  dB         BB  cB           nil  cR
+          */
+        /*
+        std::cout << std::endl;
+        std::cout << "sibling state : " << std::endl;
+        s->print_node_state(node_end);
+        */
+        db_parent->color = red;
+        s->color = black;
+        if (db_at_right) {
+          rotate_right(s);
+          db_parent = s->right;
+        } else {
+          rotate_left(s);
+          db_parent = s->left;
         }
       }
     } // while db not root or db not solved.
@@ -657,24 +642,31 @@ class rb_tree {
         }
       }
     // left child red => switch start <--> start->left
-    } else if (start->right == node_end) {
-      start->left->color = black;
-      start->left->assign_parent(start->parent);
-      if (start->parent != node_end) {
-        start->parent->assign_left_child(start->left);
-      } else {
-        _root = start->left;
-      }
-    // right child red => switch start <--> start->right
     } else {
-      start->right->color = black;
-      start->right->assign_parent(start->parent);
-      if (start->parent != node_end) {
-        start->parent->assign_right_child(start->right);
+      node_ptr substitute;
+      if (start->right == node_end) {
+        substitute = start->left;
       } else {
-        _root = start->right;
+        substitute = start->right;
+      }
+      substitute->color = black;
+      substitute->assign_parent(start->parent);
+      if (start->parent != node_end) {
+        if (start->is_left_child()) {
+          start->parent->assign_left_child(substitute);
+        } else {
+          start->parent->assign_right_child(substitute);
+        }
+      } else {
+        _root = substitute;
       }
     }
+    
+    /*
+    std::cout << std::endl;
+    std::cout << "start to be deleted : " << std::endl;
+    start->print_node_state(node_end);
+    */
     destroy_node(start);
     --node_count;
     return node_end;

@@ -4,7 +4,7 @@ SRCS		=	test/main.cpp \
 				test/map/rbtree_test.cpp
 
 CXX			=	g++ 
-CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -pedantic -g3 -Wno-c++0x-compat -fsanitize=address
+CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3 -Wno-c++0x-compat -fsanitize=address
 RM			=	rm -f
 OBJS		=	$(SRCS:.cpp=.o)
 
