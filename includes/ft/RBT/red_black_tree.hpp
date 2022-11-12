@@ -457,7 +457,6 @@ class rb_tree {
   void solve_double_black(node_ptr db_parent, bool db_at_right) {
 
     while (db_parent != node_end) { // equivalent to double black != root
-
       node_ptr s = db_at_right ? db_parent->left : db_parent->right;
       if (s->color == black) {
         /*
@@ -608,11 +607,6 @@ class rb_tree {
     {
       start = switch_with_inorder_predecessor(start);
     }
-    /*
-    std::cout << std::endl;
-    std::cout << "start to be deleted :" << std::endl;
-    start->print_node_state(node_end);
-    */
    /*
     * Here, start is to be deleted and can only have 0 or 1 child.
     *  - Notice how theres only 3 possible constructions (taking out
@@ -628,16 +622,16 @@ class rb_tree {
       if (start == _root) {
         _root = node_end;
       } else {
+        bool db_at_right;
         if (start->is_left_child()) {
           start->parent->assign_left_child(node_end);
-          if (start->color == black) {
-            solve_double_black(start->parent, false);
-          }
+          db_at_right = false;
         } else {
           start->parent->assign_right_child(node_end);
-          if (start->color == black) {
-            solve_double_black(start->parent, true);
-          }
+          db_at_right = true;
+        }
+        if (start->color == black) {
+          solve_double_black(start->parent, db_at_right);
         }
       }
     // left child red => switch start <--> start->left
@@ -657,12 +651,6 @@ class rb_tree {
         _root = substitute;
       }
     }
-    
-    /*
-    std::cout << std::endl;
-    std::cout << "start to be deleted : " << std::endl;
-    start->print_node_state(node_end);
-    */
     destroy_node(start);
     --node_count;
     return node_end;

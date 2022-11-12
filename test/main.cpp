@@ -39,7 +39,8 @@ int rbtree_test() {
       //|| insert_performance() != 0
       //|| erase_1() != 0
       || erase_2() != 0
-      || erase_3() != 0)
+      || erase_performance() != 0
+      || insert_delete_behaviour_test() != 0)
   {
     return 1;
   }

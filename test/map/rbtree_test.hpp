@@ -8,6 +8,7 @@ int empty_tree_iteration();
 int insert_performance();
 int erase_1();
 int erase_2();
-int erase_3();
+int erase_performance();
+int insert_delete_behaviour_test();
 
 #endif

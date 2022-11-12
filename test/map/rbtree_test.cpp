@@ -7,6 +7,7 @@
 #include <map>
 #include <sys/time.h>
 #include <cmath>
+#include <stdlib.h>
 
 #include "../debug.hpp"
 
@@ -426,10 +427,8 @@ int erase_1() {
     ++ft_it;
     ++std_it;
   }
-
   return OK;
 }
-
 
 int erase_2() {
 
@@ -466,10 +465,9 @@ int erase_2() {
     map.insert(std::pair<int, std::string>(i, "hello"));
   }
 
-  //map.erase(25014);
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it_2 = tree.begin();
   std::map<int, std::string>::iterator std_it_2 = map.begin();
-  for (int i = 0; i < (int)map.size(); i++)  {
+  for (int i = 0; i < (int)map.size(); i++) {
     //std::cout << "i : " << i << std::endl;
     if (ft_it_2->first != std_it_2->first) {
       std::cout << "expected : " << std_it_2->first
@@ -524,18 +522,18 @@ int erase_2() {
 
   std::cout << "ft was " << (fabs(std_time - ft_time)/std_time)*100.0
             << "% slower than stl" << std::endl;
-          
   return OK;
 }
 
 
-int erase_3() {
+int erase_performance() {
 
 
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
 
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  std::map<int, std::string> map;
 
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
@@ -549,8 +547,6 @@ int erase_3() {
   for (int i = -1; i > -nbr_insertions; i--) {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
   }
-
-  std::map<int, std::string> map;
 
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
     map.insert(std::pair<int, std::string>(i, "hello"));
@@ -572,7 +568,8 @@ int erase_3() {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
-                << " at iterator pos " << i << std::endl;
+                << " at iterator pos " << i
+                << std::endl;
       return TEST_ERROR(KO_INSERT);
     }
     ++ft_it;
@@ -595,13 +592,15 @@ int erase_3() {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
-                << " at iterator pos " << i << std::endl;
+                << " at iterator pos " << i
+                << std::endl;
       return TEST_ERROR(KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
   }
+  // erase step, then delete
   for (int i = -nbr_insertions_mid; i > -nbr_insertions; i--) {
     tree.erase(i);
   }
@@ -611,12 +610,13 @@ int erase_3() {
   {
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
-  for (int i = 0; i < (int)map.size(); i++)  {
+  for (int i = 0; i < (int)map.size(); i++) {
     //std::cout << "i : " << i << std::endl;
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
-                << " at iterator pos " << i << std::endl;
+                << " at iterator pos " << i
+                << std::endl;
       return TEST_ERROR(KO_INSERT);
     }
     ++ft_it;
@@ -638,14 +638,15 @@ int erase_3() {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
-                << " at iterator pos " << i << std::endl;
+                << " at iterator pos " << i
+                << std::endl;
       return TEST_ERROR(KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
   }
-
+  // erase step, then delete
   for (int i = 0; i < nbr_insertions; i++) {
     tree.erase(i);
   }
@@ -660,12 +661,52 @@ int erase_3() {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
-                << " at iterator pos " << i << std::endl;
+                << " at iterator pos " << i
+                << std::endl;
       return TEST_ERROR(KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
+  }
+  return OK;
+}
+
+// insert 2, delete 1. All random
+int insert_delete_behaviour_test() {
+
+  int iterations = 5000000;
+
+  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  std::map<int, std::string> map;
+
+  srand(time(NULL));
+
+  for (int i = 0; i < iterations; i++) {
+    int i1 = rand();
+    tree.insert(ft::pair<int, std::string>(i1, "hello"));
+    map.insert(std::pair<int, std::string>(i1, "hello"));
+    int i2 = rand();
+    tree.insert(ft::pair<int, std::string>(i2, "hello"));
+    map.insert(std::pair<int, std::string>(i2, "hello"));
+    int d1 = rand();
+    tree.erase(d1);
+    map.erase(d1);
+  }
+
+  // check equality between maps.
+  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  std::map<int, std::string>::iterator std_it = map.begin();
+  for (int i = 0; i < (int)map.size(); i++)  {
+    if (ft_it->first != std_it->first) {
+      std::cout << "expected : " << std_it->first
+                << " actual : " << ft_it->first
+                << " at iterator pos " << i
+                << std::endl;
+      return TEST_ERROR(KO_INSERT);
+    }
+    ++ft_it;
+    ++std_it;
   }
   return OK;
 }
