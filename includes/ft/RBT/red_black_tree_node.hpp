@@ -86,18 +86,23 @@ struct rb_tree_node {
     std::cout << std::endl;
     std::cout << "node_ptr : " << this << std::endl;
     if (parent != node_end) {
-      std::cout << "parent : " << parent->data.first << std::endl;
+      std::cout << "parent : " << parent->data.first 
+                << ", " << ((parent->color == black) ? "black" : "red")
+                << std::endl;
     } else {
       std::cout << "parent : nill" << std::endl;
     }
     if (left != node_end) {
-      std::cout << "left : " << left->data.first << std::endl;
+      std::cout << "left : " << left->data.first
+                << ", " << ((left->color == black) ? "black" : "red")
+                << std::endl;
     } else {
       std::cout << "left : nill" << std::endl;
     }
     if (right != node_end) {
-      std::cout << "right pointer : " << right << std::endl;
-      std::cout << "right : " << right->data.first << std::endl;
+      std::cout << "right pointer : " << right
+                << ", " << ((right->color == black) ? "black" : "red")
+                << std::endl;
     } else {
       std::cout << "right : nill" << std::endl;
     }

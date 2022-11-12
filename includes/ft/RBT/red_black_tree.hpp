@@ -461,27 +461,27 @@ class rb_tree {
       node_ptr s = db_at_right ? db_parent->left : db_parent->right;
       if (s->color == black) {
         /*
-          * If s is black and has no red childs, they MUST be nil,
-          * otherwise theres a black depth violation on sibling side:
-          * db side has n + 2 (db) black depth,
-          * sibling would have n + 1(s black)
-          *                      + 1(black child)
-          *                      + k(nil leaves at least) black depth. 
-          * 
-          * [1.1]
-          *     aR                  aB       
-          *    /  \   col a<->b   /   \
-          *  BB   bB     ==>    nil   bR           OK
-          *      /  \                /  \
-          *    nil  nil            nil  nil
-          * 
-          * [1.2]
-          *     aB                    aB -> new BB       
-          *    /  \   col b red     /   \
-          *  BB   bB      ==>     nil   bR           CONTINUE 
-          *      /  \                  /  \
-          *    nil  nil              nil  nil   
-          */
+         * If s is black and has no red childs, they MUST be nil,
+         * otherwise theres a black depth violation on sibling side:
+         * db side has n + 2 (db) black depth,
+         * sibling would have n + 1(s black)
+         *                      + 1(black child)
+         *                      + k(nil leaves at least) black depth. 
+         * 
+         * [1.1]
+         *     aR                  aB       
+         *    /  \   col a<->b   /   \
+         *  BB   bB     ==>    nil   bR           OK
+         *      /  \                /  \
+         *    nil  nil            nil  nil
+         * 
+         * [1.2]
+         *     aB                    aB -> new BB 
+         *    /  \   col b red     /   \
+         *  BB   bB      ==>     nil   bR           CONTINUE 
+         *      /  \                  /  \
+         *    nil  nil              nil  nil   
+         */
         if (s->right->color == black
             && s->left->color == black)
         {
@@ -490,36 +490,36 @@ class rb_tree {
             db_parent->color = black;
             break;
           } else {
-            db_parent = db_parent->parent;
             db_at_right = db_parent->is_right_child() ? true : false;
+            db_parent = db_parent->parent;
           }
         }
         /*
-          * if s is black and has at least one red child :
-          * - After rotating, db_parent should have its sibling
-          *   the same color as him :
-          *
-          * [2.1]
-          *    aB/R    rot b->a         bB  
-          *    /  \   col c as a      /   \          OK
-          *  BB   bB     ==>       aB/R   cB/R
-          *      /  \
-          *    nil  cR
-          * 
-          * [2.2]
-          *    aB/R    rot b->a         bB       if a == R        bR
-          *    /  \   col c as a      /   \      a,c -> black    /  \
-          *  BB   bB     ==>       aB/R   cB/R    b -> red     aB   cB    OK
-          *      /  \                 \                         \ 
-          *     dR  cR                dR                        dR
-          *   
-          * [2.3]
-          *    aB/R    rot c->b      aB/R    rot c->a       cB  
-          *    /  \   col c black   /   \   col b as a    /   \
-          *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
-          *      /  \                    \
-          *     cR  nil                  bB
-          */
+         * if s is black and has at least one red child :
+         * - After rotating, db_parent should have its sibling
+         *   the same color as him :
+         * 
+         * [2.1]
+         *    aB/R    rot b->a         bB  
+         *    /  \   col c as a      /   \          OK
+         *  BB   bB     ==>       aB/R   cB/R
+         *      /  \
+         *    nil  cR
+         * 
+         * [2.2]
+         *    aB/R    rot b->a         bB       if a == R        bR
+         *    /  \   col c as a      /   \      a,c -> black    /  \
+         *  BB   bB     ==>       aB/R   cB/R    b -> red     aB   cB    OK
+         *      /  \                 \                         \ 
+         *     dR  cR                dR                        dR
+         *   
+         * [2.3]
+         *    aB/R    rot c->b      aB/R    rot c->a       cB  
+         *    /  \   col c black   /   \   col b as a    /   \
+         *  BB   bB     ==>      BB    cB     ==>      aB/R   bB/R    OK
+         *      /  \                    \
+         *     cR  nil                  bB
+         */
         else if (db_at_right) {
           if (s->left->color == red) {
             s->left->color = db_parent->color;
@@ -559,22 +559,17 @@ class rb_tree {
         }
       } else {
         /* 
-          * If s is red, parent is black and both of sibling's
-          * childs MUST exist and be black.
-          * Else, black depth is violated on sibling's side. 
-          *  
-          * [3]
-          *      aB    col a<->b       bB              bB
-          *    /   \   rot b->a      /   \   [2.2]   /   \
-          *   BB   bR     ==>      aR    dB   ==>   aB   dB     OK
-          *       /  \            / \              /  \ 
-          *      cB  dB         BB  cB           nil  cR
-          */
-        /*
-        std::cout << std::endl;
-        std::cout << "sibling state : " << std::endl;
-        s->print_node_state(node_end);
-        */
+         * If s is red, parent is black and both of sibling's
+         * childs MUST exist and be black.
+         * Else, black depth is violated on sibling's side. 
+         *  
+         * [3]
+         *      aB    col a<->b       bB              bB
+         *    /   \   rot b->a      /   \   [2.2]   /   \
+         *   BB   bR     ==>      aR    dB   ==>   aB   dB     OK
+         *       /  \            / \              /  \ 
+         *      cB  dB         BB  cB           nil  cR
+         */
         db_parent->color = red;
         s->color = black;
         if (db_at_right) {
@@ -613,7 +608,11 @@ class rb_tree {
     {
       start = switch_with_inorder_predecessor(start);
     }
-
+    /*
+    std::cout << std::endl;
+    std::cout << "start to be deleted :" << std::endl;
+    start->print_node_state(node_end);
+    */
    /*
     * Here, start is to be deleted and can only have 0 or 1 child.
     *  - Notice how theres only 3 possible constructions (taking out
@@ -643,12 +642,9 @@ class rb_tree {
       }
     // left child red => switch start <--> start->left
     } else {
-      node_ptr substitute;
-      if (start->right == node_end) {
-        substitute = start->left;
-      } else {
-        substitute = start->right;
-      }
+      node_ptr substitute = start->right == node_end
+                            ? start->left
+                            : start->right;
       substitute->color = black;
       substitute->assign_parent(start->parent);
       if (start->parent != node_end) {
