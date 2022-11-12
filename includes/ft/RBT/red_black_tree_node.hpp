@@ -12,7 +12,7 @@ namespace ft {
 
 /*
  * A node template from a red-black tree. T will
- * always be pairs in case of the map. 
+ * always be pairs in case of the map.
  */
 template <typename T>
 struct rb_tree_node {
@@ -45,11 +45,6 @@ struct rb_tree_node {
     other->data = tmp;
   }
   
-  /*
-   * Rotations depend on wether a child is at the right
-   * or at the left of the parent, so these methods are
-   * necessary.
-   */
   inline bool is_left_child() const {
     return (parent->left == this);
   }

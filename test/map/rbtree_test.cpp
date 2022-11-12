@@ -672,10 +672,12 @@ int erase_performance() {
   return OK;
 }
 
-// insert 2, delete 1. All random
+// insert 2 randoms, deletes 4. All random.
+// I delete twice as i insert to force deletion of existing
+// nodes.
 int insert_delete_behaviour_test() {
 
-  int iterations = 5000000;
+  int iterations = 500000;
 
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
   std::map<int, std::string> map;
@@ -690,8 +692,17 @@ int insert_delete_behaviour_test() {
     tree.insert(ft::pair<int, std::string>(i2, "hello"));
     map.insert(std::pair<int, std::string>(i2, "hello"));
     int d1 = rand();
+    int d2 = rand();
+    int d3 = rand();
+    int d4 = rand();
     tree.erase(d1);
     map.erase(d1);
+    tree.erase(d2);
+    map.erase(d2);
+    tree.erase(d3);
+    map.erase(d3);
+    tree.erase(d4);
+    map.erase(d4);
   }
 
   // check equality between maps.

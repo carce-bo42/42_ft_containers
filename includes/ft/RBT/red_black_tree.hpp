@@ -268,9 +268,9 @@ class rb_tree {
       return new_node;
     }
 
-    node_ptr parent = (init != _root) ? init->parent : NULL;
+    node_ptr parent = (init != _root) ? init->parent : node_end;
     node_ptr start = init;
-    bool db_at_right = false;
+    bool at_right = false;
 
     // Iterate until we get to a leaf
     Key key = key_of_val(new_node->data);
@@ -278,19 +278,19 @@ class rb_tree {
       parent = start;
       if (key_cmp(key, key_of_val(start->data))) {
         start = start->left;
-        db_at_right = false;
+        at_right = false;
       } else {
         // if duplicate, return already existing node
         if (key == key_of_val(start->data)) {
           return start;
         }
         start = start->right;
-        db_at_right = true;
+        at_right = true;
       }
     }
     // once start == node_end, insert after parent
     new_node->assign_parent(parent);
-    if (db_at_right) {
+    if (at_right) {
       parent->assign_right_child(new_node);
     } else {
       parent->assign_left_child(new_node);
@@ -344,15 +344,6 @@ class rb_tree {
     }
     node_ptr aux = _root;
     while (aux->right != node_end) {
-    /*
-    std::cout << "aux(" << iterator(aux)->first
-              << "), aux->right(" << iterator(aux->right)->first
-              << "), node_end(" << iterator(node_end)->first << ") : "
-              << aux
-              << ", " << aux->right
-              << ", " << node_end
-              << std::endl;
-    */
       aux = aux->right;
     }
     return aux;
@@ -364,15 +355,6 @@ class rb_tree {
     }
     node_ptr aux = _root;
     while (aux->left != node_end) {
-    /*
-    std::cout << "aux(" << iterator(aux)->first
-              << "), aux->left(" << iterator(aux->left)->first
-              << "), node_end(" << iterator(node_end)->first << ") : "
-              << aux
-              << ", " << aux->left
-              << ", " << node_end
-              << std::endl;
-    */
       aux = aux->left;
     }
     return aux;
@@ -487,10 +469,10 @@ class rb_tree {
           s->color = red;
           if (db_parent->color == red) {
             db_parent->color = black;
-            break;
           } else {
             db_at_right = db_parent->is_right_child() ? true : false;
             db_parent = db_parent->parent;
+            continue;
           }
         }
         /*
@@ -536,7 +518,6 @@ class rb_tree {
             rotate_left(s->right);
             rotate_right(s->parent);
           }
-          break ;
         } else { // db at left
           if (s->right->color == red) {
             s->right->color = db_parent->color;
@@ -554,8 +535,8 @@ class rb_tree {
             rotate_right(s->left);
             rotate_left(s->parent);
           }
-          break ;
         }
+        break;
       } else {
         /* 
          * If s is red, parent is black and both of sibling's
@@ -582,7 +563,7 @@ class rb_tree {
     } // while db not root or db not solved.
   }
 
-  node_ptr find_and_erase(const Key& key) {
+  node_ptr find(const Key& key) {
 
     node_ptr start = _root;
 
@@ -601,14 +582,18 @@ class rb_tree {
     if (start == node_end) {
       return NULL;
     }
+    return start;
+  }
 
-    if (start->left != node_end
-        && start->right != node_end)
+  node_ptr erase(node_ptr n) {
+
+    if (n->left != node_end
+        && n->right != node_end)
     {
-      start = switch_with_inorder_predecessor(start);
+      n = switch_with_inorder_predecessor(n);
     }
    /*
-    * Here, start is to be deleted and can only have 0 or 1 child.
+    * Here, n is to be deleted and can only have 0 or 1 child.
     *  - Notice how theres only 3 possible constructions (taking out
     *    symmetric cases) for a node to have 0 or1 child. Any other 
     *    disposition violates black depth. 
@@ -618,46 +603,49 @@ class rb_tree {
     * - one of them leads to double black, the others are instantly
     *   solved by just promoting the child.
     */
-    if (start->right == start->left) {
-      if (start == _root) {
+    if (n->right == n->left) {
+      if (n == _root) {
         _root = node_end;
       } else {
         bool db_at_right;
-        if (start->is_left_child()) {
-          start->parent->assign_left_child(node_end);
+        if (n->is_left_child()) {
+          n->parent->assign_left_child(node_end);
           db_at_right = false;
         } else {
-          start->parent->assign_right_child(node_end);
+          n->parent->assign_right_child(node_end);
           db_at_right = true;
         }
-        if (start->color == black) {
-          solve_double_black(start->parent, db_at_right);
+        if (n->color == black) {
+          solve_double_black(n->parent, db_at_right);
         }
       }
-    // left child red => switch start <--> start->left
+    // left child red => switch n <--> n->left
     } else {
-      node_ptr substitute = start->right == node_end
-                            ? start->left
-                            : start->right;
+      node_ptr substitute = n->right == node_end
+                            ? n->left
+                            : n->right;
       substitute->color = black;
-      substitute->assign_parent(start->parent);
-      if (start->parent != node_end) {
-        if (start->is_left_child()) {
-          start->parent->assign_left_child(substitute);
+      substitute->assign_parent(n->parent);
+      if (n->parent != node_end) {
+        if (n->is_left_child()) {
+          n->parent->assign_left_child(substitute);
         } else {
-          start->parent->assign_right_child(substitute);
+          n->parent->assign_right_child(substitute);
         }
       } else {
         _root = substitute;
       }
     }
-    destroy_node(start);
+    destroy_node(n);
     --node_count;
     return node_end;
   }
 
   void erase(const Key& key) {
-    find_and_erase(key);
+    node_ptr n = find(key);
+    if (n) {
+      erase(n);
+    }
   }
 
 }; // class rbtree
