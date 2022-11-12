@@ -644,6 +644,7 @@ class rb_tree {
   void erase(const Key& key) {
     node_ptr n = find(key);
     if (n) {
+      //std::cout << "ERASING EXISTING NODE " << key << std::endl;
       erase(n);
     }
   }
