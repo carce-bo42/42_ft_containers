@@ -13,15 +13,18 @@ namespace ft {
 template <typename Val, typename Node = rb_tree_node<Val> > 
 class rb_tree_iterator {
 
+  public:
+
   typedef Val         value_type;
   typedef value_type& reference;
   typedef value_type* pointer;
   typedef size_t      size_type;
+  typedef Node        node_type;
 
   private:
 
-  Node* node;
-  Node* node_end;
+  node_type* node;
+  node_type* node_end;
 
   public:
 
@@ -38,13 +41,13 @@ class rb_tree_iterator {
     node(it.node)
   {}
 
-  rb_tree_iterator(Node* start, Node* end)
+  rb_tree_iterator(node_type* start, node_type* end)
   :
     node(start),
     node_end(end)
   {}
 
-  Node* base() const {
+  node_type* base() const {
     return node;
   }
 
@@ -89,7 +92,7 @@ class rb_tree_iterator {
       }
     // else, go up until we are a node which is not its parents' right child
     } else {
-      Node* maybe_next = node->parent;
+      node_type* maybe_next = node->parent;
       while (maybe_next->right == node) {
         node = maybe_next;
         maybe_next = maybe_next->parent;
@@ -120,7 +123,7 @@ class rb_tree_iterator {
     // else, go up until we are a node which
     // is not its parents' left child
     } else {
-      Node* maybe_next = node->parent;
+      node_type* maybe_next = node->parent;
       while (maybe_next->left == node) {
         node = maybe_next;
         maybe_next = maybe_next->parent;

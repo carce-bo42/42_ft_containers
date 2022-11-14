@@ -36,13 +36,14 @@ int vector_test() {
 
 int rbtree_test() {
   if (insert_hardcode() != 0
+      || reverse_iteration() != 0)
       //|| insert_no_fix() != 0
       //|| insert_with_fix_1() != 0
       //|| insert_performance() != 0
       //|| erase_1() != 0
-      || erase_2() != 0
-      || erase_performance() != 0
-      || insert_delete_behaviour_test() != 0)
+      //|| erase_2() != 0
+      //|| erase_performance() != 0
+      //|| insert_delete_behaviour_test() != 0)
   {
     return 1;
   }

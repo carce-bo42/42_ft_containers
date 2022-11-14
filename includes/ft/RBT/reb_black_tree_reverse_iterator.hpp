@@ -13,10 +13,13 @@ namespace ft {
 template < typename Iterator >
 class rb_tree_reverse_iterator {
 
+  public:
+
   typedef Iterator                            iterator_type;
   typedef typename iterator_type::value_type  value_type;
   typedef typename iterator_type::reference   reference;
   typedef typename iterator_type::pointer     pointer;
+  typedef typename iterator_type::node_type   node_type;
   typedef typename iterator_type::size_type   size_type;
 
   private:
@@ -34,36 +37,40 @@ class rb_tree_reverse_iterator {
 
   template < typename U >
   rb_tree_reverse_iterator(const rb_tree_reverse_iterator<U>& x,
-                   typename ft::enable_if<
-                            ft::is_same_type<
-                     typename rb_tree_reverse_iterator<U>::value_type,
-                              value_type>::value,
-                            value_type>::type* = 0 )
+                  typename ft::enable_if<
+                             ft::is_same_type<
+                      typename rb_tree_reverse_iterator<U>::value_type,
+                               value_type>::value,
+                             value_type>::type* = 0)
   :
-    iter(x.base())
+    iter(x)
   {}
 
   virtual ~rb_tree_reverse_iterator() {}
 
-  pointer base() const {
+  node_type* base() const {
     return iter.base();
   }
 
-  rb_tree_reverse_iterator& operator=( const rb_tree_reverse_iterator& other) {
+  rb_tree_reverse_iterator& operator=(const rb_tree_reverse_iterator& other) {
     if (this != &other) {
       iter = other.iter;
     }
     return *this;
   }
 
+  /*
+   * THIS IS A TRICK !!! I do not want to implement a super structure
+   * over the red black tree to manage dumb fucking dereferences on
+   * reverse iterators as they are on vectors. This will work the same
+   * and save a thousand steps.
+   */
   reference operator*() const {
-    iterator_type tmp = iter;
-    return *(--tmp);
+    return iter.operator*();
   }
 
   pointer operator->() const {
-    iterator_type tmp = iter;
-    return --tmp;
+    return iter.operator->();
   }
 
   rb_tree_reverse_iterator& operator++() {

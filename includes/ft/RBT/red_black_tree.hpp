@@ -6,6 +6,7 @@
 #include <functional>
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
+#include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
 namespace ft {
 
@@ -67,20 +68,22 @@ class rb_tree {
 
   protected:
   
-  typedef rb_tree_node<Val>                  node_type;
-  typedef node_type*                         node_ptr;
-  typedef const node_type*                   const_node_ptr;
-  typedef typename node_type::n_color        n_color;
+  typedef rb_tree_node<Val>                        node_type;
+  typedef node_type*                               node_ptr;
+  typedef const node_type*                         const_node_ptr;
+  typedef typename node_type::n_color              n_color;
   // get another allocator.
   typedef typename Alloc::
-          template rebind<node_type >::other node_allocator;
+          template rebind<node_type >::other       node_allocator;
 
   public:
 
-  typedef Key                              key_type;
-  typedef size_t                           size_type;
-  typedef rb_tree_iterator<Val>            iterator;
-  typedef rb_tree_iterator<const Val>      const_iterator;
+  typedef Key                                      key_type;
+  typedef size_t                                   size_type;
+  typedef rb_tree_iterator<Val>                    iterator;
+  typedef rb_tree_iterator<const Val>              const_iterator;
+  typedef rb_tree_reverse_iterator<iterator>       reverse_iterator;
+  typedef rb_tree_reverse_iterator<const_iterator> const_reverse_iterator;
 
   private:
 
@@ -327,8 +330,9 @@ class rb_tree {
   }
 
   node_ptr switch_with_inorder_predecessor(node_ptr n) {
-    node_ptr r = n->left;
 
+    node_ptr r = n->left;
+    
     while (r->right != node_end) {
       r = r->right;
     }
@@ -368,12 +372,28 @@ class rb_tree {
     return const_iterator(get_minimum(), node_end);
   }
 
+  reverse_iterator rbegin() {
+    return reverse_iterator(iterator(get_maximum(), node_end));
+  }
+
+  const_reverse_iterator rbegin() const {
+    return const_reverse_iterator(iterator(get_maximum(), node_end));
+  }
+
   iterator end() {
     return iterator(node_end, node_end);
   }
 
   const_iterator end() const {
     return const_iterator(node_end, node_end);
+  }
+
+  reverse_iterator rend() {
+    return reverse_iterator(end());
+  }
+
+  const_reverse_iterator rend() const {
+    return const_reverse_iterator(end());
   }
 
   bool insert(const Val& value) {

@@ -4,6 +4,7 @@
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
 #include "ft/utils/pair.hpp"
+#include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 #include <map>
 #include <sys/time.h>
 #include <cmath>
@@ -173,6 +174,52 @@ int insert_hardcode() {
 }
 */
 
+
+int reverse_iteration() {
+
+  ft::rb_tree<
+    int,
+    ft::pair<int, std::string> > tree;
+
+  tree.insert(ft::pair<int, std::string>(13, "hello"));
+  tree.insert(ft::pair<int, std::string>(1, "hello"));
+  tree.insert(ft::pair<int, std::string>(60, "hello"));
+  tree.insert(ft::pair<int, std::string>(0, "hello"));
+  tree.insert(ft::pair<int, std::string>(-9, "hello"));
+  tree.insert(ft::pair<int, std::string>(2, "hello"));
+  tree.insert(ft::pair<int, std::string>(40, "hello"));
+  tree.insert(ft::pair<int, std::string>(-12, "hello"));
+  tree.insert(ft::pair<int, std::string>(-4, "hello"));
+  tree.insert(ft::pair<int, std::string>(12, "hello"));
+  tree.insert(ft::pair<int, std::string>(3, "hello"));
+  tree.insert(ft::pair<int, std::string>(11, "hello"));
+  tree.insert(ft::pair<int, std::string>(5, "hello"));
+  tree.insert(ft::pair<int, std::string>(4, "hello"));
+  tree.insert(ft::pair<int, std::string>(80, "hello"));
+
+  ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator it = tree.rbegin();
+
+  std::cout << "reverse iteration : " << std::endl;
+
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator it = tree.rbegin();
+       it != tree.rend(); it++)
+  {
+    std::cout << it->first << std::endl;
+  }
+
+  std::cout << std::endl;
+  std::cout << "normal iteration : " << std::endl;
+
+  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.begin();
+       it != tree.end(); it++)
+  {
+    std::cout << it->first << std::endl;
+  }
+  
+  return OK;
+}
+
+
 /*
  * The following tree insertions creates this tree:
  * 
@@ -260,8 +307,8 @@ int empty_tree_iteration() {
  */
 int insert_performance() {
 
-  int nbr_insertions = 500000;
-  int nbr_insertions_mid = 250000;
+  int nbr_insertions = 50000;
+  int nbr_insertions_mid = 25000;
 
   time_t ft_start = current_timestamp();
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
@@ -528,7 +575,6 @@ int erase_2() {
 
 int erase_performance() {
 
-
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
 
@@ -677,7 +723,7 @@ int erase_performance() {
 // nodes.
 int insert_delete_behaviour_test() {
 
-  int iterations = 5000000;
+  int iterations = 50000;
 
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
   std::map<int, std::string> map;
