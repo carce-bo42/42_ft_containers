@@ -1,5 +1,6 @@
 #include "ft/vector.hpp"
 #include "ft/stack.hpp"
+#include "ft/map.hpp"
 #include "debug.hpp"
 #include <vector>
 #include <stdio.h>
@@ -13,6 +14,7 @@
 #include "ft/RBT/red_black_tree_iterator.hpp"
 #include "ft/utils/pair.hpp"
 #include "ft/utils/utils.hpp"
+#include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
 int Test_Error(int result, int line, const char* file) {
   std::cout << "ERROR at line " << line << " from test "

@@ -10,5 +10,6 @@ int erase_1();
 int erase_2();
 int erase_performance();
 int insert_delete_behaviour_test();
+int normal_iteration();
 
 #endif

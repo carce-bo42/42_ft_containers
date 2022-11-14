@@ -31,7 +31,7 @@ struct get_key {
  * Things about optimization :
  * - Less code does not mean more optimized.
  * - Recursion is cool but runs terribly slow compared to loops.
- * - STL implements header, with which they can do cool things,
+ * - STL implements a rb_tree_header struct, with which they can do cool things,
  *   such as access quickly to minimum/maximum, which is curcial
  *   when inserting, because you can skip checking if the key is
  *   already in the map by just checking if its outside of [min, max]
@@ -54,7 +54,7 @@ struct get_key {
 
 template < typename Key,
            typename Val, // Val is some implementation of a pair of values.
-           typename KeyOfVal = ft::get_key<Key, Val>,
+           typename KeyOfVal = ft::get_key<const Key, Val>,
                               // In stl, this is used presumably to generalize
                               // Val to any structure containing Key. With this
                               // functor you are supposed to operate on Val

@@ -23,13 +23,6 @@ class rb_tree_iterator {
   Node* node;
   Node* node_end;
 
-  // This is needed to extract pointers from iterators 
-  // from the red_black tree class and at the same time
-  // disallow users to do so.
-  template < typename A, typename B, typename C,
-             typename D, typename E >
-  friend class rb_tree;
-  
   public:
 
   rb_tree_iterator() {}
@@ -56,7 +49,7 @@ class rb_tree_iterator {
   }
 
   rb_tree_iterator& operator=( const rb_tree_iterator& other) {
-    if (this != other) {
+    if (this != &other) {
       this->node = other.node;
     }
     return *this;

@@ -677,7 +677,7 @@ int erase_performance() {
 // nodes.
 int insert_delete_behaviour_test() {
 
-  int iterations = 500000;
+  int iterations = 5000000;
 
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
   std::map<int, std::string> map;
@@ -704,6 +704,8 @@ int insert_delete_behaviour_test() {
     tree.erase(d4);
     map.erase(d4);
   }
+
+  std::cout << map.size() << std::endl;
 
   // check equality between maps.
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();

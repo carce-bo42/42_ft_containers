@@ -59,6 +59,13 @@ class reverse_iterator {
     return _ptr ;
   }
 
+  reverse_iterator& operator=( const reverse_iterator& other) {
+    if (this != &other) {
+      _ptr = other._ptr;
+    }
+    return *this;
+  }
+
   /* 
    * From 
    * https://en.cppreference.com/w/cpp/iterator/reverse_iterator/operator*
@@ -75,11 +82,11 @@ class reverse_iterator {
   }
 
   /*
-    * From
-    * https://en.cppreference.com/w/cpp/iterator/reverse_iterator/operator_at
-    * Return value : A reference to the element at relative location,
-    * that is, base()[-n-1].
-    */
+   * From
+   * https://en.cppreference.com/w/cpp/iterator/reverse_iterator/operator_at
+   * Return value : A reference to the element at relative location,
+   * that is, base()[-n-1].
+   */
   reference operator[] (difference_type n) {
     return base()[-n-1];
   }
@@ -121,11 +128,11 @@ class reverse_iterator {
   }
 
   reverse_iterator operator+(difference_type n) const {
-    return (reverse_iterator(_ptr - n));
+    return reverse_iterator(_ptr - n);
   }
 
   reverse_iterator operator-(difference_type n) const {
-    return (reverse_iterator(_ptr + n));
+    return reverse_iterator(_ptr + n);
   }
 
   reverse_iterator& operator+=(difference_type n) {
