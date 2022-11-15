@@ -108,9 +108,9 @@ class rb_tree {
   {
     // Node end acts as nil. Starts being root
     node_end = construct_node(Val(), 0);
-    node_end->assign_parent(0);
-    node_end->assign_left_child(0);
-    node_end->assign_right_child(0);
+    node_end->assign_parent(node_end);
+    node_end->assign_left_child(node_end);
+    node_end->assign_right_child(node_end);
     node_end->color = black;
     _root = node_end;
   }
@@ -232,6 +232,10 @@ class rb_tree {
     return n->is_left_child() ? rotate_right(n) : rotate_left(n);
   }
 
+  /*
+   * This followed the source : 
+   * https://tildesites.bowdoin.edu/~ltoma/teaching/cs231/fall16/Lectures/05-BST/rbtrees.pdf
+   */
   void rebalance_after_insertion(node_ptr n) {
 
     while (n != _root
@@ -338,98 +342,6 @@ class rb_tree {
     }
     r->swap_values(n);
     return r;
-  }
-
-  public:
-
-  node_ptr get_maximum() {
-    if (_root == node_end) {
-      return node_end;
-    }
-    node_ptr aux = _root;
-    while (aux->right != node_end) {
-      aux = aux->right;
-    }
-    return aux;
-  }
-
-  node_ptr get_minimum() {
-    if (_root == node_end) {
-      return node_end;
-    }
-    node_ptr aux = _root;
-    while (aux->left != node_end) {
-      aux = aux->left;
-    }
-    return aux;
-  }
-
-  iterator begin() {
-    return iterator(get_minimum(), node_end);
-  }
-
-  const_iterator begin() const {
-    return const_iterator(get_minimum(), node_end);
-  }
-
-  reverse_iterator rbegin() {
-    return reverse_iterator(iterator(get_maximum(), node_end));
-  }
-
-  const_reverse_iterator rbegin() const {
-    return const_reverse_iterator(iterator(get_maximum(), node_end));
-  }
-
-  iterator end() {
-    return iterator(node_end, node_end);
-  }
-
-  const_iterator end() const {
-    return const_iterator(node_end, node_end);
-  }
-
-  reverse_iterator rend() {
-    return reverse_iterator(end());
-  }
-
-  const_reverse_iterator rend() const {
-    return const_reverse_iterator(end());
-  }
-
-  bool insert(const Val& value) {
-
-    node_ptr n = construct_node(value, node_end);
-    node_ptr m = NULL;
-    
-    if ((m = find_and_insert(n, _root)) != n) {
-      destroy_node(n);
-      // return ft::pair<false, iterator(m); 
-      return false;
-    }
-    rebalance_after_insertion(n);
-    // return ft::pair<true, iterator(n)>
-    return true;
-  }
-
-  bool insert_with_hint(const iterator hint, const Val& value) {
-
-    node_ptr n = construct_node(value, node_end);
-    node_ptr m = NULL;
-
-    bool good_hint = check_insert_hint(hint, value);
-    if (good_hint) {
-      m = find_and_insert(n, hint.base());
-    } else {
-      m = find_and_insert(n, _root);
-    }
-    if (m != n) {
-      destroy_node(n);
-      // return ft::pair<false, iterator(m);
-      return false;
-    }
-    rebalance_after_insertion(n);
-    // return ft::pair<true, iterator(n)>;
-    return true;
   }
 
   /* 
@@ -583,28 +495,6 @@ class rb_tree {
     } // while db not root or db not solved.
   }
 
-  node_ptr find(const Key& key) {
-
-    node_ptr start = _root;
-
-    // same iteration as insert with other intentions.
-    while (start != node_end) {
-      if (key_cmp(key, key_of_val(start->data))) {
-        start = start->left;
-      } else {
-        if (key == key_of_val(start->data)) {
-          break;
-        }
-        start = start->right;
-      }
-    }
-    // if we iterated until a leaf, rip.
-    if (start == node_end) {
-      return NULL;
-    }
-    return start;
-  }
-
   node_ptr erase(node_ptr n) {
 
     if (n->left != node_end
@@ -659,6 +549,114 @@ class rb_tree {
     destroy_node(n);
     --node_count;
     return node_end;
+  }
+
+  public:
+
+  node_ptr get_maximum() {
+    node_ptr p = _root;
+    while (p->right != node_end) {
+      p = p->right;
+    }
+    return p;
+  }
+
+  node_ptr get_minimum() {
+    node_ptr p = _root;
+    while (p->left != node_end) {
+      p = p->left;
+    }
+    return p;
+  }
+
+  iterator begin() {
+    return iterator(get_minimum(), node_end);
+  }
+
+  const_iterator begin() const {
+    return const_iterator(get_minimum(), node_end);
+  }
+
+  reverse_iterator rbegin() {
+    return reverse_iterator(iterator(get_maximum(), node_end));
+  }
+
+  const_reverse_iterator rbegin() const {
+    return const_reverse_iterator(iterator(get_maximum(), node_end));
+  }
+
+  iterator end() {
+    return iterator(node_end, node_end);
+  }
+
+  const_iterator end() const {
+    return const_iterator(node_end, node_end);
+  }
+
+  reverse_iterator rend() {
+    return reverse_iterator(end());
+  }
+
+  const_reverse_iterator rend() const {
+    return const_reverse_iterator(end());
+  }
+
+  bool insert(const Val& value) {
+
+    node_ptr n = construct_node(value, node_end);
+    node_ptr m = NULL;
+    
+    if ((m = find_and_insert(n, _root)) != n) {
+      destroy_node(n);
+      // return ft::pair<false, iterator(m); 
+      return false;
+    }
+    rebalance_after_insertion(n);
+    // return ft::pair<true, iterator(n)>
+    return true;
+  }
+
+  bool insert_with_hint(const iterator hint, const Val& value) {
+
+    node_ptr n = construct_node(value, node_end);
+    node_ptr m = NULL;
+
+    bool good_hint = check_insert_hint(hint, value);
+    if (good_hint) {
+      m = find_and_insert(n, hint.base());
+    } else {
+      m = find_and_insert(n, _root);
+    }
+    if (m != n) {
+      destroy_node(n);
+      // return ft::pair<false, iterator(m);
+      return false;
+    }
+    rebalance_after_insertion(n);
+    // return ft::pair<true, iterator(n)>;
+    return true;
+  }
+
+  node_ptr find(const Key& key) {
+
+    node_ptr start = _root;
+
+    // same iteration as insert with other intentions.
+    while (start != node_end) {
+      if (key_cmp(key, key_of_val(start->data))) {
+        start = start->left;
+      } else {
+        if (key == key_of_val(start->data)) {
+          break;
+        }
+        start = start->right;
+      }
+    }
+    // if we iterated until a leaf, rip.
+    if (start == node_end) {
+      return NULL;
+    }
+    return start;
   }
 
   void erase(const Key& key) {

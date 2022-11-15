@@ -63,7 +63,7 @@ class rb_tree_reverse_iterator {
    * THIS IS A TRICK !!! I do not want to implement a super structure
    * over the red black tree to manage dumb fucking dereferences on
    * reverse iterators as they are on vectors. This will work the same
-   * and save a thousand steps. Reverse iterators on the red black tree
+   * and save a thousand headaches. Reverse iterators on the red black tree
    * will just be normal iterators that call ++ when -- and viceversa.
    * Since the tree has an end at the left side of the minium and the
    * right side of the maximum, rend() can be initialized the same as

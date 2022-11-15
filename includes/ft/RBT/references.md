@@ -58,13 +58,10 @@ RED BLACK TREE RULES
 ​       of black nodes.
 
 
-
 NOTES:
 
 Why is default color in insertion RED ? 
 
 If (1) holds, and insertion is always on nil nodes, inserting RED never violates (3). By inserting red the only initial
-
 problem we deal with is (2). This is why, when inserting, we will always check if the parent is BLACK first, and when
-
 it is, no violation happens.

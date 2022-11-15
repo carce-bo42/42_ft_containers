@@ -31,6 +31,8 @@ int insert_hardcode() {
 }
   //std::map<int, std::string> map;
 
+// LEGACY CODE JUST TO SHOW THE EFFORT
+
 /*
  * The following tree insertions creates this tree:
  * 
@@ -180,6 +182,8 @@ int reverse_iteration() {
   ft::rb_tree<
     int,
     ft::pair<int, std::string> > tree;
+  
+  std::map<int, std::string> map;
 
   tree.insert(ft::pair<int, std::string>(13, "hello"));
   tree.insert(ft::pair<int, std::string>(1, "hello"));
@@ -197,13 +201,32 @@ int reverse_iteration() {
   tree.insert(ft::pair<int, std::string>(4, "hello"));
   tree.insert(ft::pair<int, std::string>(80, "hello"));
 
+  map.insert(std::pair<int, std::string>(13, "hello"));
+  map.insert(std::pair<int, std::string>(1, "hello"));
+  map.insert(std::pair<int, std::string>(60, "hello"));
+  map.insert(std::pair<int, std::string>(0, "hello"));
+  map.insert(std::pair<int, std::string>(-9, "hello"));
+  map.insert(std::pair<int, std::string>(2, "hello"));
+  map.insert(std::pair<int, std::string>(40, "hello"));
+  map.insert(std::pair<int, std::string>(-12, "hello"));
+  map.insert(std::pair<int, std::string>(-4, "hello"));
+  map.insert(std::pair<int, std::string>(12, "hello"));
+  map.insert(std::pair<int, std::string>(3, "hello"));
+  map.insert(std::pair<int, std::string>(11, "hello"));
+  map.insert(std::pair<int, std::string>(5, "hello"));
+  map.insert(std::pair<int, std::string>(4, "hello"));
+  map.insert(std::pair<int, std::string>(80, "hello"));
+
   ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator it = tree.rbegin();
 
   std::cout << "reverse iteration : " << std::endl;
 
+  std::map<int, std::string>::reverse_iterator it_ = map.rbegin();
   for (ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator it = tree.rbegin();
        it != tree.rend(); it++)
   {
+    std::cout << it_->first << std::endl;
+    it_++;
     std::cout << it->first << std::endl;
   }
 
@@ -357,7 +380,7 @@ int insert_performance() {
             << "% slower than stl" << std::endl;
   ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
-  for (int i = 0; i < 5; i++)  {
+  for (int i = 0; i < (int)map.size(); i++)  {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
@@ -718,39 +741,48 @@ int erase_performance() {
   return OK;
 }
 
-// insert 2 randoms, deletes 4. All random.
-// I delete twice as i insert to force deletion of existing
-// nodes.
-int insert_delete_behaviour_test() {
+// inserts TREE_SPONGE_MAX_SIZE, then deletes it entirely. Does this
+// <iterations> times. 
+int insert_delete_sponge_test() {
 
-  int iterations = 50000;
+#define TREE_SPONGE_MAX_SIZE 8192
+
+  int iterations = 100;
+  int save_insertions[TREE_SPONGE_MAX_SIZE] = {0};
 
   ft::rb_tree<int, ft::pair<int, std::string> > tree;
   std::map<int, std::string> map;
 
   srand(time(NULL));
 
-  for (int i = 0; i < iterations; i++) {
-    int i1 = rand();
-    tree.insert(ft::pair<int, std::string>(i1, "hello"));
-    map.insert(std::pair<int, std::string>(i1, "hello"));
-    int i2 = rand();
-    tree.insert(ft::pair<int, std::string>(i2, "hello"));
-    map.insert(std::pair<int, std::string>(i2, "hello"));
-    int d1 = rand();
-    int d2 = rand();
-    int d3 = rand();
-    int d4 = rand();
-    tree.erase(d1);
-    map.erase(d1);
-    tree.erase(d2);
-    map.erase(d2);
-    tree.erase(d3);
-    map.erase(d3);
-    tree.erase(d4);
-    map.erase(d4);
+  int insertions = 0;
+  bool invert_deletion = false; // alternates between deleting from 0 -> TREE_SPONGE_MAX_SIZE
+                                // and TREE_SPONGE_MAX_SIZE -> 0.
+  for (int i = 0; i < iterations * TREE_SPONGE_MAX_SIZE; i++) {
+    // delete all entries 
+    if (insertions == TREE_SPONGE_MAX_SIZE) {
+      if (!invert_deletion) {
+        for (int k = insertions - 1; k >= 0; k--) {
+          tree.erase(save_insertions[k]);
+          map.erase(save_insertions[k]);
+        }
+        invert_deletion = true;
+      } else {
+        for (int k = 0; k < insertions; k++) {
+          tree.erase(save_insertions[k]);
+          map.erase(save_insertions[k]);
+        }
+        invert_deletion = false;
+      }
+      insertions = 0;
+    }
+    int random_number = rand();
+    tree.insert(ft::pair<int, std::string>(random_number, "hello"));
+    map.insert(std::pair<int, std::string>(random_number, "hello"));
+    save_insertions[insertions++] = random_number;
   }
 
+  // Last loop ends up iterations at size = 8192.
   std::cout << map.size() << std::endl;
 
   // check equality between maps.

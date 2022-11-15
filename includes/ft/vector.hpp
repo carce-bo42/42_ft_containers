@@ -536,7 +536,6 @@ class vector {
     difference_type value_pos = pos.base() - _d_start;
     create_mem_hole_at(value_pos, count);
     for ( ; count > 0; count--) {
-
       _alloc.construct(_d_start + value_pos + count - 1, value);
     }
     return _d_start + value_pos;

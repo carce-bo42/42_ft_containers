@@ -36,14 +36,14 @@ int vector_test() {
 
 int rbtree_test() {
   if (insert_hardcode() != 0
-      || reverse_iteration() != 0)
+      || reverse_iteration() != 0
       //|| insert_no_fix() != 0
       //|| insert_with_fix_1() != 0
       //|| insert_performance() != 0
       //|| erase_1() != 0
       //|| erase_2() != 0
       //|| erase_performance() != 0
-      //|| insert_delete_behaviour_test() != 0)
+      || insert_delete_sponge_test() != 0)
   {
     return 1;
   }
@@ -127,8 +127,9 @@ int main() {
  * 
  */
 }
-/*
 {
+  {
+  // ITERATORS FOR MAP DEMONSTRATION
   std::map<int, std::string> a;
   std::map<int, std::string>::iterator i = a.begin();
   std::map<int, std::string>::iterator j = a.end();
@@ -145,11 +146,49 @@ int main() {
   } else {
     std::cout << "rbegin = rend in map of " << a.size() << " elements " << std::endl;
   }
+  }
+
+  // ITERATORS FOR MAP DEMONSTRATION
+  std::map<int, std::string> a;
+  a.insert(std::pair<int, std::string>(3, "aa"));
+  std::map<int, std::string>::iterator i = a.begin();
+  std::map<int, std::string>::iterator j = a.end();
+  std::map<int, std::string>::reverse_iterator k = a.rbegin();
+  std::map<int, std::string>::reverse_iterator l = a.rend();
+  std::cout << " aaaaaaaaa " << i->first << std::endl;
+  if (j != i) {
+    std::cout << "begin != end in map of " << a.size() << " elements" << std::endl;
+  } else {
+    std::cout << "begin == end in map of " << a.size() << " elements" << std::endl;
+  } 
+  if (k != l) {
+    std::cout << "rbegin != rend in map of " << a.size() << " elements " << std::endl;
+  } else {
+    std::cout << "rbegin = rend in map of " << a.size() << " elements " << std::endl;
+  }
+
+  std::cout << "MAP : " << std::endl;
+
+  std::cout << "rbegin ptr : " << k->first << std::endl;
+  std::cout << "rend ptr : " << l->first << std::endl;
+  std::cout << "end ptr : " << j->first << std::endl;
 
   ft::vector<int> lol;
   ft::vector<int>::iterator xd = lol.begin();
   ft::vector<int>::reverse_iterator dx = lol.rend();
+
+  ft::rb_tree<int, ft::pair<int, std::string> > aa;
+  aa.insert(ft::pair<int, std::string>(3, "aa"));
+  //ft::rb_tree<int, ft::pair<int, std::string> >::iterator i_ = aa.begin();
+  ft::rb_tree<int, ft::pair<int, std::string> >::iterator j_ = aa.end();
+  ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator k_ = aa.rbegin();
+  ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator l_ = aa.rend();
   //ft::vector<char>::iterator char_it(int_it); // Substitution failure
-}*/
+  std::cout << "TREE : " << std::endl;
+
+  std::cout << "rbegin ptr : " << k_->first << std::endl;
+  std::cout << "rend ptr : " << l_->first << std::endl;
+  std::cout << "end ptr : " << j_->first << std::endl;
+}
   return 0;
 }
