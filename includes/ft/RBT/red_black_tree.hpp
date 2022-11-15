@@ -13,10 +13,18 @@ namespace ft {
 // KeyOfVal functor for rb_tree
 template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
-struct get_key {
+struct map_get_key {
 
   Key operator()(const Val& value) {
     return value.first;
+  }
+};
+
+// As dumb as this is it is necessary.
+template < typename Key >
+struct set_get_key {
+  Key operator()(const Key& value) {
+    return value;
   }
 };
 
@@ -55,15 +63,15 @@ struct get_key {
 
 template < typename Key,
            typename Val, // Val is some implementation of a pair of values.
-           typename KeyOfVal = ft::get_key<const Key, Val>,
+           typename KeyOfVal,
                               // In stl, this is used presumably to generalize
                               // Val to any structure containing Key. With this
                               // functor you are supposed to operate on Val
                               // types to extract Keys.
                               // I like how this also hints how there must
                               // be a Key inside Val (Key Of Val).
-           typename Compare = std::less<Key>, // functor
-           typename Alloc = std::allocator<Val> >
+           typename Compare, // functor
+           typename Alloc >
 class rb_tree {
 
   protected:

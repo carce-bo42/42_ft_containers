@@ -26,11 +26,26 @@ class map {
   typedef const value_type&                          const_reference;
   typedef typename Allocator::pointer                pointer;
   typedef typename Allocator::const_pointer          const_pointer;
-  typedef rb_tree<Key, Val>                          tree_type;
+  typedef rb_tree<Key, Val,
+                  map_get_key<Key, Val>,
+                  Compare,
+                  Allocator >                        tree_type;
   typedef typename tree_type::iterator               iterator;
   typedef typename tree_type::const_iterator         const_iterator;
-  //typedef typename tree_type::reverse_iterator       reverse_iterator;
-  //typedef typename tree_type::const_reverse_iterator const_reverse_iterator;
+  typedef typename tree_type::reverse_iterator       reverse_iterator;
+  typedef typename tree_type::const_reverse_iterator const_reverse_iterator;
+
+  private:
+
+  tree_type tree;
+
+  public:
+
+  map()
+  :
+    tree()
+  {}
+
   
 }; // class ft::map
 

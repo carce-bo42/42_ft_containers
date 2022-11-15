@@ -65,7 +65,7 @@ int insert_hardcode() {
 
   ft::rb_tree<
     int,
-    ft::pair<int, std::string> > tree;
+    ft::pair<int, std, ft::map_get_key<int, ft::pair<int, std::string> >::string> > tree;
 
   // root.
   ft::rb_tree_node<ft::pair<int, std::string> > *_root =
@@ -179,9 +179,7 @@ int insert_hardcode() {
 
 int reverse_iteration() {
 
-  ft::rb_tree<
-    int,
-    ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
   
   std::map<int, std::string> map;
 
@@ -217,23 +215,29 @@ int reverse_iteration() {
   map.insert(std::pair<int, std::string>(4, "hello"));
   map.insert(std::pair<int, std::string>(80, "hello"));
 
-  ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator it = tree.rbegin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::reverse_iterator it = tree.rbegin();
 
   std::cout << "reverse iteration : " << std::endl;
 
+  int i = 0;
   std::map<int, std::string>::reverse_iterator it_ = map.rbegin();
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::reverse_iterator it = tree.rbegin();
+  for (ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::reverse_iterator it = tree.rbegin();
        it != tree.rend(); it++)
   {
-    std::cout << it_->first << std::endl;
+    if (it->first != it_->first) {
+      std::cout << "expected : " << it_->first
+                << " actual : " << it->first
+                << " at iteration " << i << std::endl;
+      return TEST_ERROR(KO_INSERT);
+    }
     it_++;
-    std::cout << it->first << std::endl;
+    i++;
   }
 
   std::cout << std::endl;
   std::cout << "normal iteration : " << std::endl;
 
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.begin();
+  for (ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator it = tree.begin();
        it != tree.end(); it++)
   {
     std::cout << it->first << std::endl;
@@ -258,9 +262,7 @@ int reverse_iteration() {
  */
 int insert_no_fix() {
 
-  ft::rb_tree<
-    int,
-    ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
 
   /*
   tree.insert(ft::pair<int, std::string>(4, "hello"));
@@ -299,13 +301,13 @@ int insert_no_fix() {
   tree.insert(ft::pair<int, std::string>(5, "hello"));
   tree.insert(ft::pair<int, std::string>(4, "hello"));
   tree.insert(ft::pair<int, std::string>(80, "hello"));
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.begin();
+  for (ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator it = tree.begin();
         it != tree.end(); it++)
   {
     std::cout << it->first << std::endl;
   }
   std::cout << "----------------" << std::endl;
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator a = tree.end();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator a = tree.end();
   a++;
   a++;
   std::cout << "end after 2 increments : " << a->first << std::endl;
@@ -314,8 +316,8 @@ int insert_no_fix() {
 }
 
 int empty_tree_iteration() {
-  ft::rb_tree<int, ft::pair<int, std::string> > tree; 
-  for (ft::rb_tree<int, ft::pair<int, std::string> >::iterator it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree; 
+  for (  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator it = tree.begin();
         it != tree.end(); it++)
   {
     std::cout << it->first << std::endl;
@@ -334,7 +336,7 @@ int insert_performance() {
   int nbr_insertions_mid = 25000;
 
   time_t ft_start = current_timestamp();
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
 
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
@@ -378,7 +380,7 @@ int insert_performance() {
 
   std::cout << "ft was " << (fabs(std_time - ft_time)/std_time)*100.0
             << "% slower than stl" << std::endl;
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     if (ft_it->first != std_it->first) {
@@ -396,7 +398,7 @@ int insert_performance() {
 
 int insert_with_hint() {
 
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
 
   tree.insert_with_hint(tree.begin(), ft::pair<int, std::string>(3, "hello"));
   tree.insert_with_hint(tree.begin(), ft::pair<int, std::string>(4, "hello"));
@@ -427,7 +429,7 @@ int insert_with_hint() {
  */
 int erase_1() {
 
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
 
   tree.insert(ft::pair<int, std::string>(4, "hello"));
   tree.insert(ft::pair<int, std::string>(13, "hello"));
@@ -485,7 +487,7 @@ int erase_1() {
   map.erase(5);
   map.erase(2);
 
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     if (ft_it->first != std_it->first) {
@@ -505,7 +507,7 @@ int erase_2() {
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
 
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
 
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
     tree.insert(ft::pair<int, std::string>(i, "hello"));
@@ -535,7 +537,7 @@ int erase_2() {
     map.insert(std::pair<int, std::string>(i, "hello"));
   }
 
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it_2 = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it_2 = tree.begin();
   std::map<int, std::string>::iterator std_it_2 = map.begin();
   for (int i = 0; i < (int)map.size(); i++) {
     //std::cout << "i : " << i << std::endl;
@@ -601,7 +603,7 @@ int erase_performance() {
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
 
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
   std::map<int, std::string> map;
 
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
@@ -630,7 +632,7 @@ int erase_performance() {
     map.insert(std::pair<int, std::string>(i, "hello"));
   }
   {
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     //std::cout << "i : " << i << std::endl;
@@ -645,16 +647,15 @@ int erase_performance() {
     ++std_it;
   }
   }
-
   // erase step, comparison step.
   for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
     tree.erase(i);
   }
-    for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
+  for (int i = nbr_insertions_mid; i < nbr_insertions; i++) {
     map.erase(i);
   }
   {
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     //std::cout << "i : " << i << std::endl;
@@ -677,7 +678,7 @@ int erase_performance() {
     map.erase(i);
   }
   {
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++) {
     //std::cout << "i : " << i << std::endl;
@@ -700,7 +701,7 @@ int erase_performance() {
     map.erase(i);
   }
   {
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     //std::cout << "i : " << i << std::endl;
@@ -723,7 +724,7 @@ int erase_performance() {
     map.erase(i);
   }
   {
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     //std::cout << "i : " << i << std::endl;
@@ -750,7 +751,7 @@ int insert_delete_sponge_test() {
   int iterations = 100;
   int save_insertions[TREE_SPONGE_MAX_SIZE] = {0};
 
-  ft::rb_tree<int, ft::pair<int, std::string> > tree;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > tree;
   std::map<int, std::string> map;
 
   srand(time(NULL));
@@ -786,7 +787,7 @@ int insert_delete_sponge_test() {
   std::cout << map.size() << std::endl;
 
   // check equality between maps.
-  ft::rb_tree<int, ft::pair<int, std::string> >::iterator ft_it = tree.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
   for (int i = 0; i < (int)map.size(); i++)  {
     if (ft_it->first != std_it->first) {
