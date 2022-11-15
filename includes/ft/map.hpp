@@ -40,13 +40,13 @@ class map {
 
   private:
 
-  typedef typename tree_type::node_ptr               node_ptr;
-
   // This allows map interface to use tree's private member variables
   // and functions. 
   template < typename A, typename B, typename C,
              typename D, typename E >
   friend class ft::rb_tree;
+
+  typedef typename tree_type::node_ptr               node_ptr;
 
   tree_type      tree;
   allocator_type allocator; // useless, but needed for get_allocator.
@@ -123,8 +123,9 @@ class map {
   T& operator[]( const Key& key ) {
     node_ptr n = tree.find(key);
     if (!n) {
-      tree.insert(value_type(key, T()));
+      return tree.insert(value_type(key, T())).first->second;
     }
+    return n->data->second;
   }
 
   void clear() {

@@ -75,8 +75,8 @@ template < typename Key,
            typename Allocator = std::allocator<Val> >
 class rb_tree {
 
-  protected:
-  
+  public:
+
   typedef rb_tree_node<Val>                        node_type;
   typedef node_type*                               node_ptr;
   typedef const node_type*                         const_node_ptr;
@@ -84,9 +84,6 @@ class rb_tree {
   // get another allocator.
   typedef typename Allocator::
           template rebind<node_type >::other       node_allocator;
-
-  public:
-
   typedef Key                                      key_type;
   typedef size_t                                   size_type;
   typedef rb_tree_iterator<Val>                    iterator;

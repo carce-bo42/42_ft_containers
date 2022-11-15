@@ -78,6 +78,7 @@ class Example {
 
 int main() {
 {
+  ft::map<int, std::string> ft_map;
   int a = 4;
   std::vector<int> vec(10, a);
 
