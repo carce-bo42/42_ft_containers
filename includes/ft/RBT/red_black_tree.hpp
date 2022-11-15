@@ -344,7 +344,7 @@ class rb_tree {
    * In none of these conditions are met, the hint is
    * malicious and must be disregarded. 
    */
-  bool check_insert_hint(const iterator hint, const Val& value) {
+  bool check_hint(const iterator hint, const Val& value) {
 
     node_ptr n = hint.base();
     
@@ -583,6 +583,10 @@ class rb_tree {
 
   public:
 
+  size_type max_size() const {
+    return node_alloc.max_size();
+  }
+
   node_ptr get_maximum() {
     node_ptr p = _root;
     while (p->right != node_end) {
@@ -599,35 +603,35 @@ class rb_tree {
     return p;
   }
 
-  iterator begin() {
+  inline iterator begin() {
     return iterator(get_minimum(), node_end);
   }
 
-  const_iterator begin() const {
+  inline const_iterator begin() const {
     return const_iterator(get_minimum(), node_end);
   }
 
-  reverse_iterator rbegin() {
+  inline reverse_iterator rbegin() {
     return reverse_iterator(iterator(get_maximum(), node_end));
   }
 
-  const_reverse_iterator rbegin() const {
+  inline const_reverse_iterator rbegin() const {
     return const_reverse_iterator(iterator(get_maximum(), node_end));
   }
 
-  iterator end() {
+  inline iterator end() {
     return iterator(node_end, node_end);
   }
 
-  const_iterator end() const {
+  inline const_iterator end() const {
     return const_iterator(node_end, node_end);
   }
 
-  reverse_iterator rend() {
+  inline reverse_iterator rend() {
     return reverse_iterator(end());
   }
 
-  const_reverse_iterator rend() const {
+  inline const_reverse_iterator rend() const {
     return const_reverse_iterator(end());
   }
 
@@ -650,7 +654,7 @@ class rb_tree {
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
 
-    bool good_hint = check_insert_hint(hint, value);
+    bool good_hint = check_hint(hint, value);
     if (good_hint) {
       m = find_and_insert(n, hint.base());
     } else {
@@ -686,12 +690,13 @@ class rb_tree {
     return start;
   }
 
-  void erase(const Key& key) {
+  bool erase(const Key& key) {
     node_ptr n = find(key);
     if (n) {
-      //std::cout << "ERASING EXISTING NODE " << key << std::endl;
       erase(n);
+      return true;
     }
+    return false;
   }
 
 }; // class rbtree

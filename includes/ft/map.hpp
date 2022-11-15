@@ -79,10 +79,7 @@ class map {
     tree(comp),
     allocator(alloc)
   {
-    while (first != last) {
-      tree.insert(*first);
-      first++;
-    }
+    insert(first, last);
   }
 
   map( const map& other )
@@ -96,8 +93,9 @@ class map {
   map& operator=( const map& other ) {
     if (this != &other) {
       clear();
-
+      insert(other.begin(), other.end());
     }
+    return *this;
   }
 
   allocator_type get_allocator() const {
@@ -128,15 +126,96 @@ class map {
     return n->data->second;
   }
 
-  void clear() {
+  inline iterator begin() {
+    return tree.begin();
+  }
+
+  inline const_iterator begin() const {
+    return tree.begin();
+  }
+
+  inline reverse_iterator rbegin() {
+    return tree.rbegin();
+  }
+
+  inline const_reverse_iterator rbegin() const {
+    return tree.rbegin();
+  }
+
+  inline iterator end() {
+    return tree.end();
+  }
+
+  inline const_iterator end() const {
+    return tree.end();
+  }
+
+  inline reverse_iterator rend() {
+    return tree.rend();
+  }
+
+  inline const_reverse_iterator rend() const {
+    return tree.rend();
+  }
+
+  bool empty() const {
+    return tree.node_count == 0;
+  }
+
+  size_type size() const {
+    return tree.node_count;
+  }
+
+  size_type max_size() const {
+    return tree.max_size();
+  }
+
+  inline void clear() {
     tree.delete_subtree(tree._root);
   }
 
+  ft::pair<iterator, bool> insert( const value_type& value ) {
+    return tree.insert(value);
+  }
 
+  iterator insert( iterator pos, const value_type& value ) {
+    return tree.insert_with_hint(pos, value);
+  }
 
+  template< class InputIt >
+  void insert( InputIt first, InputIt last,
+              typename ft::enable_if<
+                        ft::is_same_type<
+                typename InputIt::value_type,
+                          value_type>::value,
+                        value_type>::type* = 0 )
+  {
+    while (first != last) {
+      tree.insert(*first);
+      first++;
+    }
+  }
 
+  void erase( iterator pos ) {
+    erase(pos.base());
+  }
 
-
+  // This does not invalidate iterators because we substitute
+  // for inorder PREDECESSOR and an rb_tree iterator always ends
+  // up with greater key values when incrementing.
+  void erase( iterator first, iterator last ) {
+    while (first != last) {
+      tree.erase(first.base());
+      first++;
+    }
+  }
+  
+  size_type erase( const Key& key ) {
+    if (tree.erase(key)) {
+      return 1;
+    }
+    return 0;
+  }
 
   
 }; // class ft::map
