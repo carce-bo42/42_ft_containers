@@ -70,8 +70,8 @@ template < typename Key,
                               // types to extract Keys.
                               // I like how this also hints how there must
                               // be a Key inside Val (Key Of Val).
-           typename Compare, // functor
-           typename Alloc >
+           typename Compare = std::less<Key>, // functor
+           typename Allocator = std::allocator<Val> >
 class rb_tree {
 
   protected:
@@ -81,7 +81,7 @@ class rb_tree {
   typedef const node_type*                         const_node_ptr;
   typedef typename node_type::n_color              n_color;
   // get another allocator.
-  typedef typename Alloc::
+  typedef typename Allocator::
           template rebind<node_type >::other       node_allocator;
 
   public:
@@ -114,13 +114,29 @@ class rb_tree {
     node_count(0),
     node_alloc()
   {
-    // Node end acts as nil. Starts being root
-    node_end = construct_node(Val(), 0);
-    node_end->assign_parent(node_end);
-    node_end->assign_left_child(node_end);
-    node_end->assign_right_child(node_end);
-    node_end->color = black;
-    _root = node_end;
+    init_tree();
+  }
+
+  // Copy constructor is odd
+  rb_tree( const rb_tree& other )
+  :
+    _root(0),
+    node_count(0),
+    node_alloc(other.node_alloc)
+  {
+    init_tree();
+    node_ptr n = other._root;
+    for (rb_tree::iterator it = other.begin(); it != other.end(); it++) {
+      insert(*it);
+    }
+  }
+
+  rb_tree( const Compare& comp,
+           const Allocator& alloc = Allocator())
+  :
+    key_cmp(comp)
+  {
+    (void)alloc; // really why the fuck would I need this
   }
 
   ~rb_tree() {
@@ -129,6 +145,16 @@ class rb_tree {
   }
 
   private:
+
+  // Node end acts as nil. Starts being root
+  void init_tree() {
+    node_end = construct_node(Val(), 0);
+    node_end->assign_parent(node_end);
+    node_end->assign_left_child(node_end);
+    node_end->assign_right_child(node_end);
+    node_end->color = black;
+    _root = node_end;
+  }
 
   node_ptr construct_node(const Val& value, node_ptr node_end) {
     node_ptr new_node = node_alloc.allocate(1);

@@ -177,12 +177,12 @@ int main() {
   ft::vector<int>::iterator xd = lol.begin();
   ft::vector<int>::reverse_iterator dx = lol.rend();
 
-  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > > aa;
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > > aa;
   aa.insert(ft::pair<int, std::string>(3, "aa"));
-  //  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator i_ = aa.begin();
-  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::iterator j_ = aa.end();
-  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::reverse_iterator k_ = aa.rbegin();
-  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> >, std::less<int>, std::allocator<ft::pair<int, std::string> > >::reverse_iterator l_ = aa.rend();
+  //ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > >::iterator i_ = aa.begin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > >::iterator j_ = aa.end();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > >::reverse_iterator k_ = aa.rbegin();
+  ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > >::reverse_iterator l_ = aa.rend();
   //ft::vector<char>::iterator char_it(int_it); // Substitution failure
   std::cout << "TREE : " << std::endl;
 
