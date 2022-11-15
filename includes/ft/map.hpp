@@ -5,6 +5,7 @@
 #include <ft/RBT/red_black_tree.hpp>
 #include <ft/utils/pair.hpp>
 #include <ft/utils/utils.hpp>
+#include <stdexcept>
 
 namespace ft {
 
@@ -39,19 +40,30 @@ class map {
 
   private:
 
-  tree_type tree;
+  typedef typename tree_type::node_ptr               node_ptr;
+
+  // This allows map interface to use tree's private member variables
+  // and functions. 
+  template < typename A, typename B, typename C,
+             typename D, typename E >
+  friend class ft::rb_tree;
+
+  tree_type      tree;
+  allocator_type allocator; // useless, but needed for get_allocator.
 
   public:
 
   map()
   :
-    tree()
+    tree(),
+    allocator()
   {}
 
   explicit map( const Compare& comp,
                 const Allocator& alloc = Allocator())
   :
-    tree(comp, alloc)
+    tree(comp),
+    allocator(alloc)
   {}
 
   template< class InputIt >
@@ -64,7 +76,8 @@ class map {
                    value_type>::value,
                  value_type>::type* = 0 )
   :
-    tree(comp, alloc)
+    tree(comp),
+    allocator(alloc)
   {
     while (first != last) {
       tree.insert(*first);
@@ -74,10 +87,55 @@ class map {
 
   map( const map& other )
   :
-    tree(other.tree)
+    tree(other.tree),
+    allocator(other.alloc)
   {}
 
-  
+  ~map() {}
+
+  map& operator=( const map& other ) {
+    if (this != &other) {
+      clear();
+
+    }
+  }
+
+  allocator_type get_allocator() const {
+    return allocator;
+  }
+
+  T& at( const Key& key ) {
+    node_ptr n = tree.find(key);
+    if (!n) {
+      throw std::out_of_range("ft::map::at( const Key& Key )");
+    }
+    return n->data->second;
+  }
+
+  const T& at( const Key& key ) const {
+    node_ptr n = tree.find(key);
+    if (!n) {
+      throw std::out_of_range("ft::map::at( const Key& Key )");
+    }
+    return n->data->second;
+  }
+
+  T& operator[]( const Key& key ) {
+    node_ptr n = tree.find(key);
+    if (!n) {
+      tree.insert(value_type(key, T()));
+    }
+  }
+
+  void clear() {
+    tree.delete_subtree(tree._root);
+  }
+
+
+
+
+
+
 
   
 }; // class ft::map

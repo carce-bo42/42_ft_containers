@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <functional>
+#include "ft/utils/pair.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
@@ -20,7 +21,7 @@ struct map_get_key {
   }
 };
 
-// As dumb as this is it is necessary.
+// As dumb as this is it is necessary 
 template < typename Key >
 struct set_get_key {
   Key operator()(const Key& value) {
@@ -131,17 +132,31 @@ class rb_tree {
     }
   }
 
-  rb_tree( const Compare& comp,
-           const Allocator& alloc = Allocator())
+  rb_tree( const Compare& comp )
   :
     key_cmp(comp)
-  {
-    (void)alloc; // really why the fuck would I need this
-  }
+  {}
 
   ~rb_tree() {
     delete_subtree(_root);
     destroy_node(node_end);
+  }
+
+  /* 
+   * this destructor had to be, lets say, inspired from STL
+   * because the double recursive one made the stack explode
+   * for large trees.
+   * ulimit -a : shows system limits for a variety of `kernel shit`
+   * ulimits -s ; the one we are interested in.
+   */
+  void delete_subtree(node_ptr node) {
+    while (node != node_end) {
+      delete_subtree(node->right);
+      node_ptr save = node->left;
+      destroy_node(node);
+      --node_count;
+      node = save;
+    }
   }
 
   private:
@@ -165,22 +180,6 @@ class rb_tree {
   void destroy_node(node_ptr node) {
     node_alloc.destroy(node);
     node_alloc.deallocate(node, 1);
-  }
-
-  /* 
-   * this destructor had to be, lets say, inspired from STL
-   * because the double recursive one made the stack explode
-   * for large trees.
-   * ulimit -a : shows system limits for a variety of `kernel shit`
-   * ulimits -s ; the one we are interested in.
-   */
-  void delete_subtree(node_ptr node) {
-    while (node != node_end) {
-      delete_subtree(node->right);
-      node_ptr save = node->left;
-      destroy_node(node);
-      node = save;
-    }
   }
 
   /* 
@@ -635,23 +634,22 @@ class rb_tree {
     return const_reverse_iterator(end());
   }
 
-  bool insert(const Val& value) {
+  ft::pair<iterator, bool> insert(const Val& value) {
 
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
     
     if ((m = find_and_insert(n, _root)) != n) {
       destroy_node(n);
-      // return ft::pair<false, iterator(m); 
-      return false;
+      return ft::pair<iterator, bool>(iterator(m, node_end), false); 
     }
     rebalance_after_insertion(n);
-    // return ft::pair<true, iterator(n)>
-    return true;
+    return ft::pair<iterator, bool>(iterator(n, node_end), true);
   }
 
-  bool insert_with_hint(const iterator hint, const Val& value) {
-
+  ft::pair<iterator, bool> insert_with_hint(const iterator hint,
+                                            const Val& value)
+  {
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
 
@@ -663,12 +661,10 @@ class rb_tree {
     }
     if (m != n) {
       destroy_node(n);
-      // return ft::pair<false, iterator(m);
-      return false;
+      return ft::pair<iterator, bool>(iterator(m, node_end), false);
     }
     rebalance_after_insertion(n);
-    // return ft::pair<true, iterator(n)>;
-    return true;
+    return ft::pair<iterator, bool>(iterator(n, node_end), true);
   }
 
   node_ptr find(const Key& key) {

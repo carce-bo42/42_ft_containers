@@ -17,6 +17,8 @@ namespace ft {
 template <typename T>
 struct rb_tree_node {
 
+  public:
+
   typedef T                       value_type;
   typedef rb_tree_node*           node_ptr;
   typedef rb_tree_node_color       n_color;
