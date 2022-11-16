@@ -84,7 +84,12 @@ class rb_tree {
   // get another allocator.
   typedef typename Allocator::
           template rebind<node_type >::other       node_allocator;
+  
+
   typedef Key                                      key_type;
+  typedef Val                                      value_type;
+  typedef Compare                                  key_compare;
+  typedef KeyOfVal                                 key_extractor;
   typedef size_t                                   size_type;
   typedef rb_tree_iterator<Val>                    iterator;
   typedef rb_tree_iterator<const Val>              const_iterator;
@@ -101,8 +106,8 @@ class rb_tree {
   node_ptr       node_end;
   size_type      node_count;
   node_allocator node_alloc;
-  Compare        key_cmp;
-  KeyOfVal       key_of_val;
+  key_compare    key_cmp;
+  key_extractor  key_of_val;
 
   public:
 
@@ -582,6 +587,14 @@ class rb_tree {
   }
 
   public:
+
+  // allocator and key_cmp are dumb to swap, since 
+  // the other tree has the same types as this one.
+  void swap(rb_tree& other) {
+    ft::swap(_root, other._root);
+    ft::swap(node_end, other.node_end);
+    ft::swap(node_count, other.node_count);
+  }
 
   size_type max_size() const {
     return node_alloc.max_size();

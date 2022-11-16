@@ -20,7 +20,7 @@ class map {
 
   typedef Key                                        key_type;
   typedef T                                          mapped_type;
-  typedef ft::pair<const Key, T>                     value_type;
+  typedef Val                                        value_type;
   typedef size_t                                     size_type;
   typedef Compare                                    key_compare;
   typedef Allocator                                  allocator_type;
@@ -38,6 +38,14 @@ class map {
   typedef typename tree_type::reverse_iterator       reverse_iterator;
   typedef typename tree_type::const_reverse_iterator const_reverse_iterator;
 
+  typedef struct ValueCompare {
+
+    bool operator()(const value_type& x, const value_type& y) {
+      return key_compare(map_get_key<Key, Val>(x), map_get_key<Key, Val>(y));
+    }
+
+  } value_compare;
+
   private:
 
   // This allows map interface to use tree's private member variables
@@ -48,22 +56,26 @@ class map {
 
   typedef typename tree_type::node_ptr               node_ptr;
 
+
   tree_type      tree;
-  allocator_type allocator; // useless, but needed for get_allocator.
+  allocator_type allocator;
+  value_compare  v_cmp;
 
   public:
 
   map()
   :
     tree(),
-    allocator()
+    allocator(),
+    v_cmp()
   {}
 
   explicit map( const Compare& comp,
                 const Allocator& alloc = Allocator())
   :
     tree(comp),
-    allocator(alloc)
+    allocator(alloc),
+    v_cmp()
   {}
 
   template< class InputIt >
@@ -77,7 +89,8 @@ class map {
                  value_type>::type* = 0 )
   :
     tree(comp),
-    allocator(alloc)
+    allocator(alloc),
+    v_cmp()
   {
     insert(first, last);
   }
@@ -85,7 +98,8 @@ class map {
   map( const map& other )
   :
     tree(other.tree),
-    allocator(other.alloc)
+    allocator(other.alloc),
+    v_cmp(other.v_cmp)
   {}
 
   ~map() {}
@@ -216,6 +230,74 @@ class map {
     }
     return 0;
   }
+
+  void swap(map& other) {
+    ft::swap(allocator, other.allocator);
+    tree.swap(other.tree);
+  }
+
+  size_type count( const Key& key ) const {
+    node_ptr n = tree.find(key);
+    if (n) {
+      return 1;
+    }
+    return 0;
+  }
+
+  iterator find( const Key& key ) {
+    node_ptr n = tree.find(key);
+    if (n) {
+      return iterator(n, tree.node_end);
+    }
+    return end();
+  }
+
+  const_iterator find( const Key& key ) const {
+    node_ptr n = tree.find(key);
+    if (n) {
+      return const_iterator(n, tree.node_end);
+    }
+    return end();
+  }
+
+  /*
+   * Returns a range containing all elements with the given key in the
+   * container. The range is defined by two iterators, one pointing to
+   * the first element that is not less than key and another pointing
+   * to the first element greater than key
+   */
+  std::pair<iterator,iterator> equal_range( const Key& key ) {
+
+  }
+
+  std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
+
+  }
+
+  iterator lower_bound( const Key& key ) {
+
+  }
+
+  const_iterator lower_bound( const Key& key ) const {
+
+  }
+
+  iterator upper_bound( const Key& key ) {
+
+  }
+
+  const_iterator upper_bound( const Key& key ) const {
+
+  }
+
+  key_compare key_comp() const {
+    return tree.key_cmp;
+  }
+
+  value_compare value_comp() const {
+    return v_cmp;
+  }
+
 
   
 }; // class ft::map
