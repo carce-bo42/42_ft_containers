@@ -7,14 +7,10 @@
 #include <stdexcept>
 #include <limits>
 #include "limits.h"
-#include "../../test/debug.hpp" 
 
 #include "ft/utils/utils.hpp"
 #include "ft/utils/reverse_iterator.hpp"
 #include "ft/utils/random_access_iterator.hpp"
-
-// debug
-#include <iostream>
 
 /*
  * INFO : REFS
@@ -62,7 +58,7 @@ class vector {
   typedef typename Allocator::reference                reference;
   typedef typename Allocator::const_reference          const_reference;
   typedef typename Allocator::size_type                size_type;
-  typedef typename Allocator::difference_type          difference_type;
+  typedef typename Allocator::difference_type          difference_type; 
   
   typedef ft::random_access_iterator<pointer>          iterator;
   typedef ft::random_access_iterator<const_pointer>    const_iterator;
@@ -317,7 +313,7 @@ class vector {
                                   InputIt>::type* = 0 )
   {
     clear();
-    difference_type diff = distance(first, last);
+    size_type diff = distance(first, last);
     if (diff > _capacity) {
       reserve(diff);
     }
@@ -339,14 +335,14 @@ class vector {
     if (!(pos < size())) {
       throw std::out_of_range("ft::vector::at( size_type )");
     }
-    return this[pos];
+    return *(_d_start + pos);
   }
 
   const_reference at( size_type pos ) const {
     if (!(pos < size())) {
       throw std::out_of_range("ft::vector::at( size_type ) const");
     }
-    return this[pos];
+    return *(_d_start + pos);
   }
 
   reference operator[]( size_type pos ) {

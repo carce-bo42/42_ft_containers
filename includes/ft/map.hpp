@@ -114,7 +114,7 @@ class map {
     if (!n) {
       throw std::out_of_range("ft::map::at( const Key& Key )");
     }
-    return n->data->second;
+    return n->data.second;
   }
 
   const T& at( const Key& key ) const {
@@ -122,7 +122,7 @@ class map {
     if (!n) {
       throw std::out_of_range("ft::map::at( const Key& Key )");
     }
-    return n->data->second;
+    return n->data.second;
   }
 
   T& operator[]( const Key& key ) {
@@ -130,7 +130,7 @@ class map {
     if (!n) {
       return tree.insert(value_type(key, T())).first->second;
     }
-    return n->data->second;
+    return n->data.second;
   }
 
   inline iterator begin() {
@@ -166,11 +166,11 @@ class map {
   }
 
   bool empty() const {
-    return tree.node_count == 0;
+    return tree.empty();
   }
 
   size_type size() const {
-    return tree.node_count;
+    return tree.size();
   }
 
   size_type max_size() const {
@@ -178,7 +178,7 @@ class map {
   }
 
   inline void clear() {
-    tree.delete_subtree(tree._root);
+    tree.delete_subtree(tree.get_root());
   }
 
   ft::pair<iterator, bool> insert( const value_type& value ) {

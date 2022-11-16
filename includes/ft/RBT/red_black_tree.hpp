@@ -16,7 +16,7 @@ template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
 struct map_get_key {
 
-  Key operator()(const Val& value) {
+  const Key operator()(const Val& value) const {
     return value.first;
   }
 };
@@ -24,7 +24,7 @@ struct map_get_key {
 // As dumb as this is it is necessary 
 template < typename Key >
 struct set_get_key {
-  Key operator()(const Key& value) {
+  const Key operator()(const Key& value) const {
     return value;
   }
 };
@@ -145,6 +145,10 @@ class rb_tree {
 
   node_ptr get_node_end() const {
     return node_end;
+  }
+
+  node_ptr get_root() const {
+    return _root;
   }
 
   /* 
@@ -647,7 +651,7 @@ class rb_tree {
     return const_iterator(upper_bound(key));
   }
 
-  node_ptr get_maximum() {
+  node_ptr get_maximum() const {
     node_ptr p = _root;
     while (p->right != node_end) {
       p = p->right;
@@ -655,7 +659,7 @@ class rb_tree {
     return p;
   }
 
-  node_ptr get_minimum() {
+  node_ptr get_minimum() const {
     node_ptr p = _root;
     while (p->left != node_end) {
       p = p->left;
@@ -695,6 +699,14 @@ class rb_tree {
     return const_reverse_iterator(end());
   }
 
+  inline bool empty() const {
+    return node_count == 0;
+  }
+
+  inline size_type size() const {
+    return node_count;
+  }
+
   ft::pair<iterator, bool> insert(const Val& value) {
 
     node_ptr n = construct_node(value, node_end);
@@ -728,7 +740,7 @@ class rb_tree {
     return ft::pair<iterator, bool>(iterator(n, node_end), true);
   }
 
-  node_ptr find(const Key& key) {
+  node_ptr find(const Key& key) const {
 
     node_ptr start = _root;
 

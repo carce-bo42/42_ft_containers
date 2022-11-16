@@ -49,6 +49,12 @@ struct is_same_type : false_type {};
 template < typename T >
 struct is_same_type<T,T> : true_type {};
 
+template < typename T >
+struct is_same_type<T, const T> : true_type {};
+
+template < typename T >
+struct is_same_type<const T, T> : true_type {};
+
 /*
   * is_integral 
   *

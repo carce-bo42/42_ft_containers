@@ -2,6 +2,7 @@
 # define CONTAINERS_RBT_NODE_HPP
 
 #include <string.h>
+#include <iostream>
 
 enum rb_tree_node_color {
   red = false,

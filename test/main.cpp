@@ -8,6 +8,7 @@
 #include <iostream>
 #include "vector/vector_test.hpp"
 #include "map/rbtree_test.hpp"
+#include "map/map_test.hpp"
 
 #include "ft/RBT/red_black_tree.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
@@ -43,7 +44,8 @@ int rbtree_test() {
       //|| erase_1() != 0
       //|| erase_2() != 0
       //|| erase_performance() != 0
-      || insert_delete_sponge_test() != 0)
+      //|| insert_delete_sponge_test() != 0
+      || map_reverse_iteration() != 0)
   {
     return 1;
   }

@@ -19,12 +19,12 @@ class rb_tree_iterator {
   typedef value_type& reference;
   typedef value_type* pointer;
   typedef size_t      size_type;
-  typedef Node        node_type;
+  typedef Node*       node_ptr;
 
   private:
 
-  node_type* node;
-  node_type* node_end;
+  node_ptr node;
+  node_ptr node_end;
 
   public:
 
@@ -41,13 +41,13 @@ class rb_tree_iterator {
     node(it.node)
   {}
 
-  rb_tree_iterator(node_type* start, node_type* end)
+  rb_tree_iterator(node_ptr start, node_ptr end)
   :
     node(start),
     node_end(end)
   {}
 
-  node_type* base() const {
+  node_ptr base() const {
     return node;
   }
 
@@ -92,7 +92,7 @@ class rb_tree_iterator {
       }
     // else, go up until we are a node which is not its parents' right child
     } else {
-      node_type* maybe_next = node->parent;
+      node_ptr maybe_next = node->parent;
       while (maybe_next->right == node) {
         node = maybe_next;
         maybe_next = maybe_next->parent;
@@ -123,7 +123,7 @@ class rb_tree_iterator {
     // else, go up until we are a node which
     // is not its parents' left child
     } else {
-      node_type* maybe_next = node->parent;
+      node_ptr maybe_next = node->parent;
       while (maybe_next->left == node) {
         node = maybe_next;
         maybe_next = maybe_next->parent;

@@ -19,7 +19,7 @@ class rb_tree_reverse_iterator {
   typedef typename iterator_type::value_type  value_type;
   typedef typename iterator_type::reference   reference;
   typedef typename iterator_type::pointer     pointer;
-  typedef typename iterator_type::node_type   node_type;
+  typedef typename iterator_type::node_ptr    node_ptr;
   typedef typename iterator_type::size_type   size_type;
 
   private:
@@ -48,7 +48,7 @@ class rb_tree_reverse_iterator {
 
   virtual ~rb_tree_reverse_iterator() {}
 
-  node_type* base() const {
+  node_ptr base() const {
     return iter.base();
   }
 

@@ -1,7 +1,8 @@
 NAME		=	containers_test
 SRCS		=	test/main.cpp \
 				test/vector/vector_test.cpp \
-				test/map/rbtree_test.cpp
+				test/map/rbtree_test.cpp \
+				test/map/map_test.cpp
 
 CXX			=	g++ 
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3 -Wno-c++0x-compat -fsanitize=address
