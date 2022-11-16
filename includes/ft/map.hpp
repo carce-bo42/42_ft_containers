@@ -48,14 +48,7 @@ class map {
 
   private:
 
-  // This allows map interface to use tree's private member variables
-  // and functions. 
-  template < typename A, typename B, typename C,
-             typename D, typename E >
-  friend class ft::rb_tree;
-
   typedef typename tree_type::node_ptr               node_ptr;
-
 
   tree_type      tree;
   allocator_type allocator;
