@@ -84,7 +84,6 @@ class rb_tree {
   // get another allocator.
   typedef typename Allocator::
           template rebind<node_type >::other       node_allocator;
-  
 
   typedef Key                                      key_type;
   typedef Val                                      value_type;
@@ -99,11 +98,11 @@ class rb_tree {
   private:
 
   node_ptr       _root;
+  node_ptr       node_end;
   // node end is the dummy node used for end() and rend().
   // it contains no parent, no childs, and is appended to
   // the right of the max and to the left of the min. If
   // the tree is empty, is equal to root.
-  node_ptr       node_end;
   size_type      node_count;
   node_allocator node_alloc;
   key_compare    key_cmp;
@@ -142,6 +141,10 @@ class rb_tree {
   ~rb_tree() {
     delete_subtree(_root);
     destroy_node(node_end);
+  }
+
+  node_ptr get_node_end() const {
+    return node_end;
   }
 
   /* 
@@ -598,6 +601,50 @@ class rb_tree {
 
   size_type max_size() const {
     return node_alloc.max_size();
+  }
+
+  /*
+   * Returns an iterator pointing to the first element that is not
+   * less than (i.e. greater or equal to) key.
+   */
+  iterator lower_bound(const Key& key) {
+    iterator it = iterator(get_minimum(), node_end);
+    while (it.base() != node_end) {
+      // if it->first is less than key
+      if (key_cmp(it->first, key)) {
+        ++it;
+      } else {
+        break;
+      }
+    }
+    return it;
+  }
+
+  const_iterator lower_bound(const Key& key) const {
+    return const_iterator(lower_bound(key));
+  }
+
+  /*
+   * Returns an iterator pointing to the first element that is
+   * greater than key.
+   */
+  iterator upper_bound(const Key& key) {
+    iterator it = iterator(get_minimum(), node_end);
+    while (it.base() != node_end) {
+      // if it->first is less than key
+      if (!key_cmp(it->first, key)
+          && it->first != key)
+      {
+        ++it;
+      } else {
+        break;
+      }
+    }
+    return it;
+  }
+
+  const_iterator upper_bound(const Key& key) const {
+    return const_iterator(upper_bound(key));
   }
 
   node_ptr get_maximum() {

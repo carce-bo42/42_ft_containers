@@ -240,7 +240,7 @@ class map {
   iterator find( const Key& key ) {
     node_ptr n = tree.find(key);
     if (n) {
-      return iterator(n, tree.node_end);
+      return iterator(n, tree.get_node_end());
     }
     return end();
   }
@@ -248,7 +248,7 @@ class map {
   const_iterator find( const Key& key ) const {
     node_ptr n = tree.find(key);
     if (n) {
-      return const_iterator(n, tree.node_end);
+      return const_iterator(n, tree.get_node_end());
     }
     return end();
   }
@@ -259,28 +259,37 @@ class map {
    * the first element that is not less than key and another pointing
    * to the first element greater than key
    */
-  std::pair<iterator,iterator> equal_range( const Key& key ) {
-
+  ft::pair<iterator,iterator> equal_range( const Key& key ) {
+    return ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
   }
 
-  std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
-
+  ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
+    return ft::pair<const_iterator,
+                    const_iterator>(lower_bound(key), upper_bound(key));
   }
 
-  iterator lower_bound( const Key& key ) {
-
+  /*
+   * Returns an iterator pointing to the first element that is not
+   * less than (i.e. greater or equal to) key.
+   */
+  inline iterator lower_bound( const Key& key ) {
+    return tree.lower_bound(key);
   }
 
-  const_iterator lower_bound( const Key& key ) const {
-
+  inline const_iterator lower_bound( const Key& key ) const {
+    return tree.lower_bound(key);
   }
 
-  iterator upper_bound( const Key& key ) {
-
+  /*
+   * Returns an iterator pointing to the first element that is
+   * greater than key.
+   */
+  inline iterator upper_bound( const Key& key ) {
+    return tree.upper_bound(key);
   }
 
-  const_iterator upper_bound( const Key& key ) const {
-
+  inline const_iterator upper_bound( const Key& key ) const {
+    return tree.upper_bound(key);
   }
 
   key_compare key_comp() const {
@@ -290,10 +299,60 @@ class map {
   value_compare value_comp() const {
     return v_cmp;
   }
-
-
   
 }; // class ft::map
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator==( const ft::map<Key,T,Compare,Alloc>& x,
+                 const ft::map<Key,T,Compare,Alloc>& y )
+{
+  return x.size() == y.size()
+         && ft::equal(x.begin(), x.end(), y.begin());
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator!=( const ft::map<Key,T,Compare,Alloc>& x,
+                 const ft::map<Key,T,Compare,Alloc>& y )
+{
+  return !(x == y);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator<( const ft::map<Key,T,Compare,Alloc>& x,
+                const ft::map<Key,T,Compare,Alloc>& y )
+{
+  return ft::lexicographical_compare(x.begin(), x.end(),
+                                     y.begin(), y.end());
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator>( const ft::map<Key,T,Compare,Alloc>& x,
+                const ft::map<Key,T,Compare,Alloc>& y )
+{
+  return y < x;
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator<=( const ft::map<Key,T,Compare,Alloc>& x,
+                 const ft::map<Key,T,Compare,Alloc>& y )
+{
+  return !(x > y);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool operator>=( const ft::map<Key,T,Compare,Alloc>& x,
+                 const ft::map<Key,T,Compare,Alloc>& y )
+{
+  return !(x < y);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+void swap( ft::map<Key,T,Compare,Alloc>& x,
+           ft::map<Key,T,Compare,Alloc>& y )
+{
+  return ft::swap(x, y);
+}
+
 
 } // namespace 
 
