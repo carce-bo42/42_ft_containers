@@ -107,11 +107,11 @@ class random_access_iterator {
       return _tmp;
     }
 
-    random_access_iterator operator+(difference_type n) {
+    random_access_iterator operator+(difference_type n) const {
       return random_access_iterator(_ptr + n);
     }
 
-    random_access_iterator operator-(difference_type n) {
+    random_access_iterator operator-(difference_type n) const {
       return random_access_iterator(_ptr - n);
     }
 
@@ -167,6 +167,45 @@ bool operator<=(const random_access_iterator<U>& lhs,
                 const random_access_iterator<V>& rhs)
 {
   return lhs.base() <= rhs.base();
+}
+
+/*
+ * Allows :
+ * (it1 +/- it2) to work as an arithmetic value.
+ * Two typenames are included for const T / T workarounds.
+ */
+
+template < typename U > 
+typename random_access_iterator<U>::difference_type
+operator+(const random_access_iterator<U>& lhs,
+          const random_access_iterator<U>& rhs)
+{
+  return (lhs.base() + rhs.base());
+}
+
+template < typename U > 
+typename random_access_iterator<U>::difference_type
+operator-(const random_access_iterator<U>& lhs,
+          const random_access_iterator<U>& rhs)
+{
+  return (lhs.base() - rhs.base());
+}
+
+// Reorder arguments to call inner operator- (iterator at left)
+template <typename T>
+random_access_iterator<T>
+operator-(typename ft::random_access_iterator<T>::difference_type n,
+          random_access_iterator<T> it)
+{
+  return (it - n);
+}
+
+template <typename T>
+random_access_iterator<T>
+operator+(typename ft::random_access_iterator<T>::difference_type n,
+          random_access_iterator<T> it)
+{
+  return (it + n);
 }
 
 } /* namespace ft */

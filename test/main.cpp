@@ -84,7 +84,6 @@ int main() {
   ft_map.find(2);
   int a = 4;
   std::vector<int> vec(10, a);
-
   ft::vector<int> asd;
 
   asd.assign(3, 7);

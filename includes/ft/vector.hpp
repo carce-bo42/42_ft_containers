@@ -43,6 +43,41 @@
  * time insertion and deletion at the end. BUT the initial capacity
  * is implementation dependent.
  * 
+ * 
+ * On the <method>_dispatch : 
+ * methods with a signature
+ * 
+ * ret func name(size_type, const value_type&)   (1)
+ * 
+ * that have an overload of the kind:
+ *
+ * template <typename InputIt>
+ * ret func_name(InputIt, InputIt)     (2)
+ * 
+ * represent a problem when value_type = int, and the method is called
+ * like so :
+ * 
+ * vector.func_name(10, 3); (3) // for a vector<int>. 
+ * 
+ * Because 10 has the same type as 3, and both are integers, the compiler
+ * substitutes (2) in expression (3), when it should call (1). Notice how
+ * SFINAE constructions of the type
+ * 
+ *    typename enable_if<is_integral<typename InputIt::value_type>::value,
+ *                        InputIt>::type* = 0
+ * 
+ * Do not work on a general way, because the argument for is_integral does not
+ * make sense when InputIt = int. One could then suggest the following other
+ * SFINAE argument constructior : 
+ * 
+ *    typename enable_if<is_integral<It>::value, It>::type* = 0
+ * 
+ * But this wont work with iterators because iterators are not themselves integral,
+ * it is its internal typedef value_type which is.
+ * The problem is solved with the dispatch method. When the wrong function is
+ * called, there is a type resolution for InputIt. If it is of type int,
+ * the call is dispatched to the normal "fill method (size_t, const value_type&)".
+ * Else, the appropiate "range_method (InputIt, InputIt)" is called.
  */
 
 namespace ft {
@@ -89,7 +124,7 @@ class vector {
     * Only for constructor. This way we optimize multiplication by 2
     * by just shifting.
     */
-  static value_type get_first_capacity( size_type new_capacity ) {
+  static size_type get_first_capacity( size_type new_capacity ) {
     
     return new_capacity; // create_mem_hole_at doesnt work without this.
                          // construct must be called in order for T 
@@ -172,7 +207,7 @@ class vector {
   template <typename InputIt>
   void assign_dispatch(InputIt first, InputIt last, false_type) {
     clear();
-    size_type diff = distance(first, last);
+    size_type diff = ft::distance(first, last);
     if (diff > _capacity) {
       reserve(diff);
     }
@@ -355,16 +390,6 @@ class vector {
     * argument is an iterator into *this.
     * Once again this only makes sense if the iterator
     * is of an integral type.
-    * 
-    * SOOOOOOOO this is evil. STL KNOWS assign(3, 7) will call this
-    * on integer type vectors, because the eralier function has 
-    * size_type and const valuetype& as arguments. So they do a trick
-    * where they check, once inside the function, wether InputIt is
-    * an integer, and if it is, they call the OTHER assign. I almost
-    * lost my mind with this until I saw they also ran into the problem.
-    * 
-    * I did learn an insane trick and what a good kept secret about
-    * template programming.
     */
   template< class InputIt >
   void assign( InputIt first, InputIt last) {

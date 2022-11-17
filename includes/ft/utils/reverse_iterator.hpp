@@ -147,6 +147,87 @@ class reverse_iterator {
 
 }; /* class reverse_iterator */
 
+template < typename U, typename V >
+bool operator!=(const reverse_iterator<U>& lhs,
+                const reverse_iterator<V>& rhs)
+{
+  return lhs.base() != rhs.base();
+}
+
+template < typename U, typename V >
+bool operator==(const reverse_iterator<U>& lhs,
+                const reverse_iterator<V>& rhs)
+{
+  return lhs.base() == rhs.base();
+}
+
+template < typename U, typename V >
+bool operator>(const reverse_iterator<U>& lhs,
+                const reverse_iterator<V>& rhs)
+{
+  return lhs.base() > rhs.base();
+}
+
+template < typename U, typename V >
+bool operator<(const reverse_iterator<U>& lhs,
+                const reverse_iterator<V>& rhs)
+{
+  return lhs.base() < rhs.base();
+}
+
+template < typename U, typename V >
+bool operator>=(const reverse_iterator<U>& lhs,
+                const reverse_iterator<V>& rhs)
+{
+  return lhs.base() >= rhs.base();
+}
+
+template < typename U, typename V >
+bool operator<=(const reverse_iterator<U>& lhs,
+                const reverse_iterator<V>& rhs)
+{
+  return lhs.base() <= rhs.base();
+}
+
+/*
+ * Allows :
+ * (rit1 +/- rit2) to work as an arithmetic value.
+ * Two typenames are included for const T / T workarounds.
+ */
+
+template < typename U, typename V > 
+typename reverse_iterator<U>::difference_type
+operator+(const reverse_iterator<U>& lhs,
+          const reverse_iterator<V>& rhs)
+{
+  return (lhs.base() + rhs.base());
+}
+
+template < typename U, typename V > 
+typename reverse_iterator<U>::difference_type
+operator-(const reverse_iterator<U>& lhs,
+          const reverse_iterator<V>& rhs)
+{
+  return (lhs.base() - rhs.base());
+}
+
+// Reorder arguments to call inner operator- (iterator at left)
+template <typename T>
+reverse_iterator<T>
+operator-(typename ft::reverse_iterator<T>::difference_type n,
+          reverse_iterator<T> it)
+{
+  return (it - n);
+}
+
+template <typename T>
+reverse_iterator<T>
+operator+(typename ft::reverse_iterator<T>::difference_type n,
+          reverse_iterator<T> it)
+{
+  return (it + n);
+}
+
 } /* namespace ft */
 
 #endif /* REVERSE_ITERATOR_HPP */
