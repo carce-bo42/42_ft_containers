@@ -55,6 +55,12 @@ struct is_same_type<T, const T> : true_type {};
 template < typename T >
 struct is_same_type<const T, T> : true_type {};
 
+template <typename T > 
+struct is_integer : false_type {};
+
+template <>
+struct is_integer<int> : true_type {};
+
 /*
   * is_integral 
   *
@@ -242,8 +248,8 @@ const class nullptr_t {
 template<class It>
 typename ft::iterator_traits<It>::difference_type
     distance(It first, It last,
-        typename enable_if<is_integral<typename It::value_type>::value,
-                          It>::type = 0)
+        typename enable_if<is_integral<typename ft::iterator_traits<It>::value_type>::value,
+                          It>::type* = 0)
 {
     typename ft::iterator_traits<It>::difference_type result = 0;
     while (first != last) {

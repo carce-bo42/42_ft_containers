@@ -69,7 +69,7 @@ int insert_point_single_test() {
 int insert_range_value_single_test() {
   for (int vector_size = 0; vector_size < 25; vector_size++) {
     for (int insert_point = 0; insert_point < vector_size + 1; insert_point++) {
-      for (int insert_length = 0; insert_length < 3; insert_length++) {
+      for (size_t insert_length = 0; insert_length < 3; insert_length++) {
       
         ft::vector<TEST_TYPE> ft_vec(vector_size, 0);
         ft_vec.insert(ft_vec.begin() + insert_point, insert_length, 1); 

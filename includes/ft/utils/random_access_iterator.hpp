@@ -2,6 +2,7 @@
 # define CONTAINERS_RANDOM_ACCESS_ITERATOR_HPP
 #pragma once
 
+#include <iterator>
 #include "ft/utils/iterator_traits.hpp"
 #include <stddef.h> /* NULL */
 
@@ -106,20 +107,20 @@ class random_access_iterator {
       return _tmp;
     }
 
-    random_access_iterator operator+(difference_type n) const {
+    random_access_iterator operator+(difference_type n) {
       return random_access_iterator(_ptr + n);
     }
 
-    random_access_iterator operator-(difference_type n) const {
+    random_access_iterator operator-(difference_type n) {
       return random_access_iterator(_ptr - n);
     }
 
-    random_access_iterator& operator+=(difference_type n) const {
+    random_access_iterator& operator+=(difference_type n) {
       _ptr += n;
       return *this;
     }
 
-    random_access_iterator& operator-=(difference_type n) const {
+    random_access_iterator& operator-=(difference_type n) {
       _ptr -= n;
       return *this;
     }

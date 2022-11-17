@@ -53,12 +53,12 @@ class vector {
   public:
   typedef T                                            value_type;
   typedef Allocator                                    allocator_type;
-  typedef typename Allocator::pointer                  pointer;
-  typedef typename Allocator::const_pointer            const_pointer;
+  typedef T*                                           pointer;
+  typedef const T*                                     const_pointer;
   typedef typename Allocator::reference                reference;
   typedef typename Allocator::const_reference          const_reference;
-  typedef typename Allocator::size_type                size_type;
-  typedef typename Allocator::difference_type          difference_type; 
+  typedef std::size_t                                  size_type;
+  typedef ptrdiff_t                                    difference_type; 
   
   typedef ft::random_access_iterator<pointer>          iterator;
   typedef ft::random_access_iterator<const_pointer>    const_iterator;
@@ -97,7 +97,7 @@ class vector {
                          // vector(int) generate more than int allocated
                          // bytes is a problem because it ends up with
                          // T() initialized entries that are valid.
-
+    /*
     if (!new_capacity) {
       return 0;
     }
@@ -110,6 +110,7 @@ class vector {
       return 1UL << ((sizeof(size_type)*CHAR_BIT)
                       - __builtin_clzl(new_capacity-1));
     }
+    */
   }
   
   /*
@@ -167,6 +168,24 @@ class vector {
     }
   }
 
+  template <typename InputIt>
+  void assign_dispatch(InputIt first, InputIt last, false_type) {
+    clear();
+    size_type diff = distance(first, last);
+    if (diff > _capacity) {
+      reserve(diff);
+    }
+    while (first != last) {
+      push_back(*first);
+      ++first;
+    }
+  }
+
+  template <typename InputIt>
+  void assign_dispatch(InputIt first, InputIt last, true_type) {
+    assign((size_type)first, last);
+  }
+
   public:
 
   /* Default constructor. Constructs an empty container
@@ -213,7 +232,7 @@ class vector {
   vector( InputIt first, InputIt last,
         const Allocator& alloc = Allocator(),
         typename enable_if<is_integral<typename InputIt::value_type>::value,
-                           InputIt>::type = 0 )
+                           InputIt>::type* = 0 )
   :
     _alloc(alloc),
     _d_start(0),
@@ -287,9 +306,9 @@ class vector {
   }
 
   /* Replaces the contents of the container. 
-    * Replaces the contents with count copies of value value.
-    */
-  void assign( size_type count, const T& value ) {
+   * Replaces the contents with count copies of value value.
+   */
+  void assign( size_type count, const value_type& value ) {
     clear();
     if (count > _capacity) {
       reserve(count);
@@ -306,21 +325,22 @@ class vector {
     * argument is an iterator into *this.
     * Once again this only makes sense if the iterator
     * is of an integral type.
+    * 
+    * SOOOOOOOO this is evil. STL KNOWS assign(3, 7) will call this
+    * on integer type vectors, because the eralier function has 
+    * size_type and const valuetype& as arguments. So they do a trick
+    * where they check, once inside the function, wether InputIt is
+    * an integer, and if it is, they call the OTHER assign. I almost
+    * lost my mind with this until I saw they also ran into the problem.
+    * 
+    * I did learn an insane trick and what a good kept secret about
+    * template programming.
     */
   template< class InputIt >
-  void assign( InputIt first, InputIt last,
-               typename enable_if<is_integral<typename InputIt::value_type>::value,
-                                  InputIt>::type* = 0 )
-  {
-    clear();
-    size_type diff = distance(first, last);
-    if (diff > _capacity) {
-      reserve(diff);
-    }
-    while (first != last) {
-      push_back(*first);
-      ++first;
-    }
+  void assign( InputIt first, InputIt last) {
+    
+    typedef typename ft::is_integer<InputIt> Integer;
+    assign_dispatch(first, last, Integer());
   }
 
   allocator_type get_allocator() const {
@@ -542,8 +562,8 @@ class vector {
     */
   template< class InputIt >
   iterator insert( const_iterator pos, InputIt first, InputIt last,
-        typename enable_if<is_integral<typename InputIt::value_type>::value,
-                          InputIt>::type = 0 )
+        typename enable_if<is_integral<typename ft::iterator_traits<InputIt>::value_type>::value,
+                          InputIt>::type* = 0 )
   {
     difference_type value_pos = pos.base() - _d_start;
     create_mem_hole_at(value_pos, ft::distance(first, last));
