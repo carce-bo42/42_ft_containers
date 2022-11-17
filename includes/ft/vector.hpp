@@ -168,6 +168,7 @@ class vector {
     }
   }
 
+  // Must See assign(InputIt first, InputIt last) comment
   template <typename InputIt>
   void assign_dispatch(InputIt first, InputIt last, false_type) {
     clear();
@@ -184,6 +185,57 @@ class vector {
   template <typename InputIt>
   void assign_dispatch(InputIt first, InputIt last, true_type) {
     assign((size_type)first, last);
+  }
+
+  template <typename InputIt>
+  iterator insert_dispatch(const_iterator pos,
+                       InputIt first, InputIt last, false_type)
+  {
+    difference_type value_pos = pos.base() - _d_start;
+    create_mem_hole_at(value_pos, ft::distance(first, last));
+    for (size_type i = value_pos; first != last; first++) {
+      _alloc.construct(_d_start + i, *first);
+      i++;
+    }
+    return _d_start + value_pos;
+  }
+
+  template <typename InputIt>
+  iterator insert_dispatch(const_iterator pos,
+                       InputIt first, InputIt last, true_type)
+  {
+    return insert(pos, (size_type)first, last);
+  }
+
+  template <typename InputIt>
+  void constructor_dispatch(InputIt first, InputIt last, false_type) {
+    _capacity = get_first_capacity(ft::distance(first, last));
+    if (_capacity) {
+      _d_start = _alloc.allocate(_capacity);
+      _d_end = _d_start;
+      while (first != last) {
+        _alloc.construct(_d_end, *first);
+        ++_d_end;
+        ++first;  
+      }
+    }
+  }
+
+  template <typename InputIt>
+  void constructor_dispatch(InputIt first, InputIt last, true_type) {
+    init_fill_vector((size_type)first, last);
+  }
+
+  void init_fill_vector(size_type count, const T& value = T()) {
+    _capacity = get_first_capacity(count);
+    if (_capacity) {
+      _d_start = _alloc.allocate(_capacity);
+      _d_end = _d_start;
+      while (count--) {
+        _alloc.construct(_d_end, value);
+        ++_d_end;
+      }
+    }
   }
 
   public:
@@ -204,51 +256,29 @@ class vector {
     */
   explicit vector( size_type count, const T& value = T(),
                   const Allocator& alloc = Allocator() )
-  :
-    _alloc(alloc),
-    _d_start(0),
-    _d_end(0),
-    _capacity(0)
   {
-    _capacity = get_first_capacity(count);
-    if (_capacity) {
-      _d_start = _alloc.allocate(_capacity);
-      _d_end = _d_start;
-      while (count--) {
-        _alloc.construct(_d_end, value);
-        ++_d_end;
-      }
-    }
+    _alloc = alloc;
+    _d_start = 0;
+    _d_end = 0;
+    init_fill_vector(count, value);
   }
 
   /* Constructs the container with the contents of the
-    * range [ first, last ).
-    *
-    * See:
-    * https://en.cppreference.com/w/cpp/memory/allocator/allocate
-    * https://en.cppreference.com/w/cpp/memory/allocator/construct
-    */
+  * range [ first, last ).
+  *
+  * See:
+  * https://en.cppreference.com/w/cpp/memory/allocator/allocate
+  * https://en.cppreference.com/w/cpp/memory/allocator/construct
+  */
   template< class InputIt >
   vector( InputIt first, InputIt last,
-        const Allocator& alloc = Allocator(),
-        typename enable_if<is_integral<typename InputIt::value_type>::value,
-                           InputIt>::type* = 0 )
-  :
-    _alloc(alloc),
-    _d_start(0),
-    _d_end(0),
-    _capacity(0)
+        const Allocator& alloc = Allocator())
   {
-    _capacity = get_first_capacity(ft::distance(first, last));
-    if (_capacity) {
-      _d_start = _alloc.allocate(_capacity);
-      _d_end = _d_start;
-      while (first != last) {
-        _alloc.construct(_d_end, *first);
-        ++_d_end;
-        ++first;  
-      }
-    }
+    _alloc = alloc;
+    _d_start = 0;
+    _d_end = 0;
+    typedef typename ft::is_integer<InputIt> Integer;
+    constructor_dispatch(first, last, Integer());
   }
 
   vector( const vector& other )
@@ -338,7 +368,6 @@ class vector {
     */
   template< class InputIt >
   void assign( InputIt first, InputIt last) {
-    
     typedef typename ft::is_integer<InputIt> Integer;
     assign_dispatch(first, last, Integer());
   }
@@ -561,17 +590,9 @@ class vector {
     * Inserts values from first to last starting at pos.
     */
   template< class InputIt >
-  iterator insert( const_iterator pos, InputIt first, InputIt last,
-        typename enable_if<is_integral<typename ft::iterator_traits<InputIt>::value_type>::value,
-                          InputIt>::type* = 0 )
-  {
-    difference_type value_pos = pos.base() - _d_start;
-    create_mem_hole_at(value_pos, ft::distance(first, last));
-    for (size_type i = value_pos; first != last; first++) {
-      _alloc.construct(_d_start + i, *first);
-      i++;
-    }
-    return _d_start + value_pos;
+  iterator insert( const_iterator pos, InputIt first, InputIt last) {
+    typedef typename ft::is_integer<InputIt> Integer;
+    return insert_dispatch(pos, first, last, Integer());
   }
 
   /*
