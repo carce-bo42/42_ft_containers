@@ -22,7 +22,8 @@ struct rb_tree_node {
 
   typedef T                       value_type;
   typedef rb_tree_node*           node_ptr;
-  typedef rb_tree_node_color       n_color;
+  typedef const rb_tree_node*     const_node_ptr;
+  typedef rb_tree_node_color      n_color;
   
   node_ptr         parent;
   node_ptr         left;

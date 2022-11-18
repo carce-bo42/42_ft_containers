@@ -788,9 +788,10 @@ int insert_delete_sponge_test() {
   std::cout << map.size() << std::endl;
 
   // check equality between maps.
+  
   ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > >::iterator ft_it = tree.begin();
   std::map<int, std::string>::iterator std_it = map.begin();
-  for (int i = 0; i < (int)map.size(); i++)  {
+  for (int i = 0; i < (int)map.size(); i++) {
     if (ft_it->first != std_it->first) {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first

@@ -52,34 +52,8 @@ int rbtree_test() {
   return 0;
 }
 
-class Example {
-
-  public:
-
-  Example(int a, int b)
-  :
-    i(a),
-    j(b)
-  {}
-  ~Example() {
-    i = 0;
-    j = 0;
-  }
-
-  int i;
-  int j;
-
-  void print_numbers() {
-    std::cout << "i = " << i
-              << ", j = " << j
-              << std::endl;
-  }
-
-
-};
-
 int main() {
-{
+
   //ft::map<int, std::string> ft_map;
   //ft_map.find(2);
   /*int a = 4;
@@ -88,28 +62,28 @@ int main() {
 
   asd.assign(3, 7);*/
 
-  ft::vector<int>::size_type sz;
+  ft::map<char,int> foo,bar;
+  foo['a']=100;
+  foo['b']=200;
+  bar['a']=10;
+  bar['z']=1000;
 
-  ft::vector<int> foo;
-  sz = foo.capacity();
-  std::cout << "making foo grow:\n";
-  for (int i=0; i<100; ++i) {
-    std::cout << "i " << i << std::endl;
-    foo.push_back(i);
-    if (sz!=foo.capacity()) {
-      sz = foo.capacity();
-      std::cout << "capacity changed: " << sz << '\n';
-    }
-  }
-
-
+  // foo ({{a,100},{b,200}}) vs bar ({a,10},{z,1000}}):
+  if (foo==bar) std::cout << "foo and bar are equal\n";
+  if (foo!=bar) std::cout << "foo and bar are not equal\n";
+  if (foo< bar) std::cout << "foo is less than bar\n";
+  if (foo> bar) std::cout << "foo is greater than bar\n";
+  if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
+  if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
+  return 0;
+}
   //printf("%lu \n", vec.capacity());
   //printf("%lu \n", vec.size());
 
   //printf("%lu \n", vec.capacity());
   //printf("%lu \n", vec.size());
   //printf("%i \n", vec.front()); segfaultea.
-}/*
+  /*
   if (vector_test() != 0) {
     return 1;
   }
@@ -179,6 +153,6 @@ int main() {
   std::cout << "rend ptr : " << l_->first << std::endl;
   std::cout << "end ptr : " << j_->first << std::endl;
 }
-*/
   return 0;
 }
+*/

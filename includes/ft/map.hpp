@@ -350,7 +350,7 @@ template< class Key, class T, class Compare, class Alloc >
 void swap( ft::map<Key,T,Compare,Alloc>& x,
            ft::map<Key,T,Compare,Alloc>& y )
 {
-  return ft::swap(x, y);
+  return x.swap(y);
 }
 
 

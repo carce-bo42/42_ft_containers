@@ -7,6 +7,7 @@
 #include "ft/utils/pair.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
+#include "ft/RBT/red_black_tree_const_iterator.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
 namespace ft {
@@ -78,12 +79,13 @@ class rb_tree {
   public:
 
   typedef rb_tree_node<Val>                        node_type;
-  typedef node_type*                               node_ptr;
-  typedef const node_type*                         const_node_ptr;
+  typedef rb_tree_node<const Val>                  const_node_type;
   typedef typename node_type::n_color              n_color;
   // get another allocator.
   typedef typename Allocator::
           template rebind<node_type >::other       node_allocator;
+  typedef typename node_allocator::pointer         node_ptr;
+  typedef typename node_allocator::const_pointer   const_node_ptr;
 
   typedef Key                                      key_type;
   typedef Val                                      value_type;
@@ -91,7 +93,7 @@ class rb_tree {
   typedef KeyOfVal                                 key_extractor;
   typedef size_t                                   size_type;
   typedef rb_tree_iterator<Val>                    iterator;
-  typedef rb_tree_iterator<const Val>              const_iterator;
+  typedef rb_tree_const_iterator<Val>              const_iterator;
   typedef rb_tree_reverse_iterator<iterator>       reverse_iterator;
   typedef rb_tree_reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -651,7 +653,7 @@ class rb_tree {
     return const_iterator(upper_bound(key));
   }
 
-  node_ptr get_maximum() const {
+  node_ptr get_maximum() {
     node_ptr p = _root;
     while (p->right != node_end) {
       p = p->right;
@@ -659,8 +661,24 @@ class rb_tree {
     return p;
   }
 
-  node_ptr get_minimum() const {
+  const_node_ptr get_maximum() const {
+    const_node_ptr p = _root;
+    while (p->right != node_end) {
+      p = p->right;
+    }
+    return p;
+  }
+
+  node_ptr get_minimum() {
     node_ptr p = _root;
+    while (p->left != node_end) {
+      p = p->left;
+    }
+    return p;
+  }
+
+  const_node_ptr get_minimum() const {
+    const_node_ptr p = _root;
     while (p->left != node_end) {
       p = p->left;
     }
