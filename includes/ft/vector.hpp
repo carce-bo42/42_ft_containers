@@ -107,47 +107,6 @@ class vector {
     pointer         _d_end;   // where the empty data begins
     size_type       _capacity;  // allocated objects
 
-  /* 
-    * Function that returns the smallest size_type number higher than 
-    * new_capacity that is a power of two.
-    * 
-    * Check out: 
-    * https://stackoverflow.com/questions/364985
-    * 
-    * __builtin_clz Counts Leading Zero bits on a variable, its 
-    * a gcc builtin, check:
-    * https://stackoverflow.com/questions/9353973
-    * 
-    * The -1 at the argument in __builtin_clz is to return new_capacity
-    * in case the number is already a power of 2.
-    * 
-    * Only for constructor. This way we optimize multiplication by 2
-    * by just shifting.
-    */
-  static size_type get_first_capacity( size_type new_capacity ) {
-    
-    return new_capacity; // create_mem_hole_at doesnt work without this.
-                         // construct must be called in order for T 
-                         // assignment operator to work. So having
-                         // vector(int) generate more than int allocated
-                         // bytes is a problem because it ends up with
-                         // T() initialized entries that are valid.
-    /*
-    if (!new_capacity) {
-      return 0;
-    }
-    // using uint as size_type (32-bit)
-    if (sizeof(size_type) == 4) {
-      return 1 << ((sizeof(size_type)*CHAR_BIT)
-                      - __builtin_clzl(new_capacity-1));
-    // using ulong as size_type (64-bit)
-    } else {
-      return 1UL << ((sizeof(size_type)*CHAR_BIT)
-                      - __builtin_clzl(new_capacity-1));
-    }
-    */
-  }
-  
   /*
     * This function is assumed to never be called when
     * new_capacity = 0 or new_capacity < _capacity.
@@ -156,9 +115,15 @@ class vector {
     * Does it have to deal with size_type overflow ?
     */
   size_type get_new_capacity( size_type new_capacity) {
+    
+    if (!_capacity) {
+      return new_capacity;
+    }
+
     if (!new_capacity || _capacity > new_capacity) {
       return _capacity;
     }
+    
     while (new_capacity > _capacity) {
       _capacity *= 2;
     }
@@ -166,9 +131,9 @@ class vector {
   }
 
   /* 
-    * Creates a memory hole inside the vector. Used for 
-    * insertion.
-    */
+   * Creates a memory hole inside the vector. Used for 
+   * insertion.
+   */
   void create_mem_hole_at( size_type pos, size_type hole_size ) {
     
     if (hole_size == 0) {
@@ -178,12 +143,12 @@ class vector {
     size_type new_size = size() + hole_size;
 
     if (new_size > _capacity) {
-      ft::vector<T> new_v(get_first_capacity(new_size));
-        /*
-        * Two iterations :
-        * 1. values before hole
-        * 2. values after hole.
-        */
+      ft::vector<T> new_v(new_size);
+      /*
+       * Two iterations :
+       * 1. values before hole
+       * 2. values after hole.
+       */
       for (size_type i = 0; i < pos; i++) {
         new_v[i] = (*this)[i];
       }
@@ -193,8 +158,8 @@ class vector {
       (*this) = new_v;
     } else {
       /* shift end contents hole_size positions positions,
-        * starting from the end to pos
-        */
+       * starting from the end to pos
+      */
       for (size_type i = new_size - 1; i >= pos + hole_size; i--) {
         _alloc.construct(_d_start + i, _d_start[i - hole_size]);
         _alloc.destroy(_d_start + i - hole_size);
@@ -244,7 +209,7 @@ class vector {
 
   template <typename InputIt>
   void constructor_dispatch(InputIt first, InputIt last, false_type) {
-    _capacity = get_first_capacity(ft::distance(first, last));
+    _capacity = (size_type)ft::distance(first, last);
     if (_capacity) {
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
@@ -262,7 +227,7 @@ class vector {
   }
 
   void init_fill_vector(size_type count, const T& value = T()) {
-    _capacity = get_first_capacity(count);
+    _capacity = count;
     if (_capacity) {
       _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
@@ -557,7 +522,7 @@ class vector {
     // free then assign and allocate new capacity
     clear();
     _alloc.deallocate(_d_start, _capacity);
-    _capacity = get_first_capacity(new_cap);
+    _capacity = new_cap;
     _d_start = _alloc.allocate(_capacity);
     _d_end = _d_start;
     // copy contents back
@@ -621,9 +586,9 @@ class vector {
   }
 
   /*
-    * Removes the element at position pos.
-    * Experimentally, capacity does never change with an erase call.
-    */
+   * Removes the element at position pos.
+   * Experimentally, capacity does never change with an erase call.
+   */
   iterator erase( iterator pos ) {
     difference_type value_pos = pos.base() - _d_start;
     size_type current_size = size();
@@ -776,7 +741,7 @@ template< class T, class Alloc >
 void swap( ft::vector<T,Alloc>& x,
             ft::vector<T,Alloc>& y )
 {
-  ft::swap(x, y);
+  x.swap(y);
 }
 
 } /* namespace ft */
