@@ -16,6 +16,7 @@ class rb_tree_iterator {
   public:
 
   typedef Val         value_type;
+  typedef ptrdiff_t   difference_type;
   typedef value_type& reference;
   typedef value_type* pointer;
   typedef size_t      size_type;
@@ -197,6 +198,44 @@ bool operator<=(const rb_tree_iterator<KeyX,ValX>& x,
                 const rb_tree_iterator<KeyY,ValY>& y)
 {
   return !(x.base() > y.base());
+}
+
+/*
+ * Allows :
+ * (rit1 +/- rit2) to work as an arithmetic value.
+ * Two typenames are included for const T / T workarounds.
+ */
+template < typename U, typename V > 
+typename rb_tree_iterator<U>::difference_type
+operator+(const rb_tree_iterator<U>& lhs,
+          const rb_tree_iterator<V>& rhs)
+{
+  return (lhs.base() + rhs.base());
+}
+
+template < typename U, typename V > 
+typename rb_tree_iterator<U>::difference_type
+operator-(const rb_tree_iterator<U>& lhs,
+          const rb_tree_iterator<V>& rhs)
+{
+  return (lhs.base() - rhs.base());
+}
+
+// Reorder arguments to call inner operator- (iterator at left)
+template <typename T>
+rb_tree_iterator<T>
+operator-(typename ft::rb_tree_iterator<T>::difference_type n,
+          rb_tree_iterator<T> it)
+{
+  return (it - n);
+}
+
+template <typename T>
+rb_tree_iterator<T>
+operator+(typename ft::rb_tree_iterator<T>::difference_type n,
+          rb_tree_iterator<T> it)
+{
+  return (it + n);
 }
 
 } // namespace ft

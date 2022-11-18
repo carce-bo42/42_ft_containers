@@ -194,7 +194,6 @@ bool operator<=(const reverse_iterator<U>& lhs,
  * (rit1 +/- rit2) to work as an arithmetic value.
  * Two typenames are included for const T / T workarounds.
  */
-
 template < typename U, typename V > 
 typename reverse_iterator<U>::difference_type
 operator+(const reverse_iterator<U>& lhs,

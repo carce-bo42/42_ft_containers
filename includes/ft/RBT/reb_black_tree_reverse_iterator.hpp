@@ -15,12 +15,13 @@ class rb_tree_reverse_iterator {
 
   public:
 
-  typedef Iterator                            iterator_type;
-  typedef typename iterator_type::value_type  value_type;
-  typedef typename iterator_type::reference   reference;
-  typedef typename iterator_type::pointer     pointer;
-  typedef typename iterator_type::node_ptr    node_ptr;
-  typedef typename iterator_type::size_type   size_type;
+  typedef Iterator                                iterator_type;
+  typedef typename iterator_type::value_type      value_type;
+  typedef typename iterator_type::difference_type difference_type;
+  typedef typename iterator_type::reference       reference;
+  typedef typename iterator_type::pointer         pointer;
+  typedef typename iterator_type::node_ptr        node_ptr;
+  typedef typename iterator_type::size_type       size_type;
 
   private:
 
@@ -151,6 +152,45 @@ bool operator<=(const rb_tree_reverse_iterator<X>& x,
                 const rb_tree_reverse_iterator<Y>& y)
 {
   return !(x.base() > y.base());
+}
+
+/*
+ * Allows :
+ * (rit1 +/- rit2) to work as an arithmetic value.
+ * Two typenames are included for const T / T workarounds.
+ */
+
+template < typename U, typename V > 
+typename rb_tree_reverse_iterator<U>::difference_type
+operator+(const rb_tree_reverse_iterator<U>& lhs,
+          const rb_tree_reverse_iterator<V>& rhs)
+{
+  return (lhs.base() + rhs.base());
+}
+
+template < typename U, typename V > 
+typename rb_tree_reverse_iterator<U>::difference_type
+operator-(const rb_tree_reverse_iterator<U>& lhs,
+          const rb_tree_reverse_iterator<V>& rhs)
+{
+  return (lhs.base() - rhs.base());
+}
+
+// Reorder arguments to call inner operator- (iterator at left)
+template <typename T>
+rb_tree_reverse_iterator<T>
+operator-(typename ft::rb_tree_reverse_iterator<T>::difference_type n,
+          rb_tree_reverse_iterator<T> it)
+{
+  return (it - n);
+}
+
+template <typename T>
+rb_tree_reverse_iterator<T>
+operator+(typename ft::rb_tree_reverse_iterator<T>::difference_type n,
+          rb_tree_reverse_iterator<T> it)
+{
+  return (it + n);
 }
 
 } // namespace ft
