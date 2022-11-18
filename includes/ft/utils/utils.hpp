@@ -107,7 +107,7 @@ struct is_integral<unsigned long> : true_type {};
  * https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare
  *
  * checks wether the first range [ first1, last1 ] is 
- * lexicographically less than the second range [ first2, last2].
+ * lexicographically greater than the second range [ first2, last2].
  * 
  * InputIt refers, quite cleverly, to Input Iterator.
  * This means the class to be used has to at least
@@ -129,14 +129,15 @@ template< class InputIt1, class InputIt2 >
 bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
                               InputIt2 first2, InputIt2 last2 )
 {
-  while (first1 != last1) {
-    if (first2 == last2 || *first1 < *first2 ) {
-      break ;
-    } else if (*first1 > *first2) {
+  for (;first1 != last1 && first2 != last2;) {
+    if (*first1 < *first2) {
       return true;
     }
-    ++first1;
+    if (*first2 < *first1) {
+      return false;
+    }
     ++first2;
+    ++first1;
   }
   return (first1 == last1) && (first2 != last2);
 }
@@ -151,14 +152,15 @@ bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
                               InputIt2 first2, InputIt2 last2,
                               Compare comp )
 {
-  while (first1 != last1) {
-    if (first2 == last2 || comp(*first1, *first2)) {
-      break ;
-    } else if (comp(*first2, *first1)) {
+  for (;first1 != last1 && first2 != last2;) {
+    if (comp(*first1, *first2)) {
       return true;
     }
-    ++first1;
+    if (comp(*first2, *first1)) {
+      return false;
+    }
     ++first2;
+    ++first1;
   }
   return (first1 == last1) && (first2 != last2);
 }

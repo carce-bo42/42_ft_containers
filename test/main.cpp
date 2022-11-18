@@ -82,11 +82,25 @@ int main() {
 {
   //ft::map<int, std::string> ft_map;
   //ft_map.find(2);
-  int a = 4;
+  /*int a = 4;
   std::vector<int> vec(10, a);
   ft::vector<int> asd;
 
-  asd.assign(3, 7);
+  asd.assign(3, 7);*/
+
+  ft::vector<int>::size_type sz;
+
+  ft::vector<int> foo;
+  sz = foo.capacity();
+  std::cout << "making foo grow:\n";
+  for (int i=0; i<100; ++i) {
+    std::cout << "i " << i << std::endl;
+    foo.push_back(i);
+    if (sz!=foo.capacity()) {
+      sz = foo.capacity();
+      std::cout << "capacity changed: " << sz << '\n';
+    }
+  }
 
 
   //printf("%lu \n", vec.capacity());

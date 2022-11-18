@@ -165,28 +165,28 @@ template < typename U, typename V >
 bool operator>(const reverse_iterator<U>& lhs,
                 const reverse_iterator<V>& rhs)
 {
-  return lhs.base() > rhs.base();
+  return lhs.base() < rhs.base();
 }
 
 template < typename U, typename V >
 bool operator<(const reverse_iterator<U>& lhs,
                 const reverse_iterator<V>& rhs)
 {
-  return lhs.base() < rhs.base();
+  return lhs.base() > rhs.base();
 }
 
 template < typename U, typename V >
 bool operator>=(const reverse_iterator<U>& lhs,
                 const reverse_iterator<V>& rhs)
 {
-  return lhs.base() >= rhs.base();
+  return lhs.base() <= rhs.base();
 }
 
 template < typename U, typename V >
 bool operator<=(const reverse_iterator<U>& lhs,
                 const reverse_iterator<V>& rhs)
 {
-  return lhs.base() <= rhs.base();
+  return lhs.base() >= rhs.base();
 }
 
 /*

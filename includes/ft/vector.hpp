@@ -8,6 +8,8 @@
 #include <limits>
 #include "limits.h"
 
+#include <iostream>
+
 #include "ft/utils/utils.hpp"
 #include "ft/utils/reverse_iterator.hpp"
 #include "ft/utils/random_access_iterator.hpp"
@@ -124,10 +126,33 @@ class vector {
       return _capacity;
     }
     
-    while (new_capacity > _capacity) {
-      _capacity *= 2;
+    if (new_capacity > _capacity) {
+      if (size() * 2 >= new_capacity) {
+        return size() * 2;
+      } else if (_capacity * 2 >= new_capacity) {
+        return _capacity * 2;
+      } else {
+        return new_capacity;
+      }
     }
     return _capacity;
+  }
+
+  /* constructor that reserves capacity, but allocs empty 
+   * size elements
+   */
+  vector( size_type capacity, size_type size, const T& value = T()) {
+    if (capacity == size) {
+      init_fill_vector(size);
+    } else {
+      _capacity = capacity;
+      _d_start = _alloc.allocate(_capacity);
+      _d_end = _d_start;
+      while (--size) {
+        _alloc.construct(_d_end, value);
+        ++_d_end;
+      }
+    }
   }
 
   /* 
@@ -143,29 +168,17 @@ class vector {
     size_type new_size = size() + hole_size;
 
     if (new_size > _capacity) {
-      ft::vector<T> new_v(new_size);
-      /*
-       * Two iterations :
-       * 1. values before hole
-       * 2. values after hole.
-       */
-      for (size_type i = 0; i < pos; i++) {
-        new_v[i] = (*this)[i];
-      }
-      for (size_type i = pos; i < size(); i++) {
-        new_v[i + hole_size] = (*this)[i];
-      }
-      (*this) = new_v;
-    } else {
-      /* shift end contents hole_size positions positions,
-       * starting from the end to pos
-      */
-      for (size_type i = new_size - 1; i >= pos + hole_size; i--) {
-        _alloc.construct(_d_start + i, _d_start[i - hole_size]);
-        _alloc.destroy(_d_start + i - hole_size);
-      }
-      _d_end += hole_size; // resize
+      size_type new_capacity = get_new_capacity(new_size);
+      reserve(new_capacity);
     }
+    /* shift end contents hole_size positions positions,
+     * starting from the end to pos
+     */
+    for (size_type i = new_size - 1; i >= pos + hole_size; i--) {
+      _alloc.construct(_d_start + i, _d_start[i - hole_size]);
+      _alloc.destroy(_d_start + i - hole_size);
+    }
+    _d_end += hole_size; // resize
   }
 
   // Must See assign(InputIt first, InputIt last) comment
@@ -202,7 +215,7 @@ class vector {
 
   template <typename InputIt>
   iterator insert_dispatch(const_iterator pos,
-                       InputIt first, InputIt last, true_type)
+                           InputIt first, InputIt last, true_type)
   {
     return insert(pos, (size_type)first, last);
   }
@@ -320,13 +333,15 @@ class vector {
     if (this != &other) {
       /* destroy all elements constructed and deallocate */
       clear();
-      _alloc.deallocate(_d_start, _capacity);
-      _capacity = other.capacity();
-      /* allocate and construct all new elements */
-      _d_start = _alloc.allocate(_capacity);
+      if (other.capacity() > _capacity) {
+        _alloc.deallocate(_d_start, _capacity);
+        _capacity = other.capacity();
+        /* allocate and construct all new elements */
+        _d_start = _alloc.allocate(_capacity);
+      }
       _d_end = _d_start;
       size_type current = 0;
-      while (_d_end != _d_start + _capacity) {
+      while (_d_end != _d_start + other.size()) {
         _alloc.construct(_d_end, other[current]);
         ++_d_end;
         ++current;
@@ -514,7 +529,7 @@ class vector {
     if (new_cap > max_size()) {
       throw std::length_error("42");
     }
-    if (new_cap <= _capacity) {
+    if (new_cap < _capacity) {
       return ;
     }
     // save current content on aux
@@ -634,8 +649,9 @@ class vector {
     * Changes capacity if necessary.
     */
   void push_back( const T& value ) {
-    if (size() == _capacity) {
-      reserve(size() + 1);
+    if (size() + 1 >= _capacity) {
+      size_type new_capacity = get_new_capacity(size() + 1);
+      reserve(new_capacity);
     }
     _alloc.construct(_d_end, value);
     ++_d_end;
@@ -653,7 +669,7 @@ class vector {
   }
 
   /*
-    * Forces size to be count. Adds new empty elements 
+    * Forces size to be count. Adds new empzty elements 
     * or removes elements stored.
     */
   void resize( size_type count, T value = T() ) {
@@ -665,8 +681,9 @@ class vector {
       }
       _d_end -= size() - count;
     } else {
-      if (count >= _capacity) {
-        reserve(count);
+      if (count > _capacity) {
+        size_type new_capacity = get_new_capacity(count);
+        reserve(new_capacity);
       }
       for (size_type i = size(); i < count; i++) {
         _alloc.construct(_d_start + i, value);
