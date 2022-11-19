@@ -204,7 +204,7 @@ class map {
   }
 
   void erase( iterator pos ) {
-    erase(pos.base());
+    return tree.erase(pos);
   }
 
   // This does not invalidate iterators because we substitute
@@ -212,7 +212,7 @@ class map {
   // up with greater key values when incrementing.
   void erase( iterator first, iterator last ) {
     while (first != last) {
-      tree.erase(first.base());
+      tree.erase(first);
       first++;
     }
   }

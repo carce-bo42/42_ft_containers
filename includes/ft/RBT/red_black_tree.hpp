@@ -83,7 +83,7 @@ class rb_tree {
   typedef typename node_type::n_color              n_color;
   // get another allocator.
   typedef typename Allocator::
-          template rebind<node_type >::other       node_allocator;
+          template rebind<node_type>::other        node_allocator;
   typedef typename node_allocator::pointer         node_ptr;
   typedef typename node_allocator::const_pointer   const_node_ptr;
 
@@ -377,6 +377,30 @@ class rb_tree {
     return true;
   }
 
+  /*
+   * To swap values, since val = pair <const Key, Val>, it is not doable
+   * with some swap method. The value data iside the node pointer must be
+   * destructed, and reconstructed.
+   * mantaining allocated space is crucial. So we clone,
+   * destroy, then construct as we please, without calling deallocate
+   */
+  void swap_node_values(node_ptr n1, node_ptr n2) {
+    node_type n1_tmp_clone(*n1); // cannot use assignment because of const Key
+    node_type n2_tmp_clone(*n2);
+    node_alloc.destroy(n1);
+    node_alloc.destroy(n2);
+    node_alloc.construct(n1, node_type(n2_tmp_clone.data,
+                                      n1_tmp_clone.parent,
+                                      n1_tmp_clone.left,
+                                      n1_tmp_clone.right,
+                                      n1_tmp_clone.color));
+    node_alloc.construct(n2, node_type(n1_tmp_clone.data,
+                                      n2_tmp_clone.parent,
+                                      n2_tmp_clone.left,
+                                      n2_tmp_clone.right,
+                                      n2_tmp_clone.color));
+  }
+
   node_ptr switch_with_inorder_predecessor(node_ptr n) {
 
     node_ptr r = n->left;
@@ -384,7 +408,7 @@ class rb_tree {
     while (r->right != node_end) {
       r = r->right;
     }
-    r->swap_values(n);
+    swap_node_values(r, n);
     return r;
   }
 
@@ -790,6 +814,13 @@ class rb_tree {
       return NULL;
     }
     return start;
+  }
+
+  void erase(iterator pos) {
+    node_ptr n = pos.base();
+    if (n) {
+      erase(n);
+    }
   }
 
   bool erase(const Key& key) {

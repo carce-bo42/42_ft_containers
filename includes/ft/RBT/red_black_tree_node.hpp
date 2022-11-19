@@ -39,6 +39,20 @@ struct rb_tree_node {
     color(red)
   {}
 
+  /*
+   * Trick: This is not a copy constructor. This is used to bypass 
+   * Key being const and be able to swap nodes more easily
+   */
+  rb_tree_node(const T& value, node_ptr parent, node_ptr left,
+                               node_ptr right, n_color c)
+  :
+    parent(parent),
+    left(left),
+    right(right),
+    data(value),
+    color(c)
+  {}
+
   template <typename V>
   rb_tree_node(const rb_tree_node<T>& node)
   :
