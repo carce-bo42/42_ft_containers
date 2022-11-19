@@ -774,8 +774,7 @@ class rb_tree {
     return ft::pair<iterator, bool>(iterator(n, node_end), true);
   }
 
-  ft::pair<iterator, bool> insert_with_hint(const iterator hint,
-                                            const Val& value)
+  iterator insert_with_hint( iterator hint, const Val& value)
   {
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
@@ -788,10 +787,10 @@ class rb_tree {
     }
     if (m != n) {
       destroy_node(n);
-      return ft::pair<iterator, bool>(iterator(m, node_end), false);
+      return iterator(m, node_end);
     }
     rebalance_after_insertion(n);
-    return ft::pair<iterator, bool>(iterator(n, node_end), true);
+    return iterator(n, node_end);
   }
 
   node_ptr find(const Key& key) const {
