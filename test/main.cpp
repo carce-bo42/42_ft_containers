@@ -61,6 +61,9 @@ int main() {
   ft::vector<int> asd;
 
   asd.assign(3, 7);*/
+
+
+  /*
 {
 	ft::pair<int, std::string> my_pair(8, "salut");
 	ft::map<int, std::string>	 test;
@@ -97,7 +100,8 @@ int main() {
   {
     std::cout << a->first << std::endl;
   }
-}
+}*/
+/*
 {
   ft::map<char,int> mymap;
 
@@ -131,13 +135,9 @@ int main() {
 	std::cout << "marker1\n";
 
 	ti--;
-	std::cout << "marker2\n";
 	--ti;
-	std::cout << "marker3\n";
 	++ti;
-	std::cout << "marker4\n";
 	ti++;
-	std::cout << "marker5\n";
 
 	ti = it;
 
@@ -149,9 +149,49 @@ int main() {
 		it++;
 	}
 
-  return 0;
 }
+{
+  std::cout << std::endl;
+  std::cout << std::endl;
+  ft::map<char,int> mymap;
 
+  mymap['b'] = 100;
+  mymap['a'] = 200;
+  mymap['c'] = 300;
+
+  // show content:
+  for (ft::map<char,int>::iterator it=mymap.begin(); it!=mymap.end(); ++it)
+    std::cout << it->first << " => " << it->second << '\n';
+
+std::cout << "\n\n========\n\n";
+
+  ft::map<char,int>::iterator it = mymap.end();
+  std::cout << "end : " << it->first << '\n';
+  it--;
+  std::cout << "end - 1 " << it->first << '\n';
+  for (it = --mymap.end(); it!=mymap.begin(); --it)
+    std::cout << it->first << " => " << it->second << '\n';
+  std::cout << it->first << " => " << it->second << '\n';
+
+  return 0;
+
+}
+*/
+{
+  ft::map<char,int> foo,bar;
+  foo['a']=100;
+  foo['b']=200;
+  bar['a']=10;
+  bar['z']=1000;
+
+  // foo ({{a,100},{b,200}}) vs bar ({a,10},{z,1000}}):
+  if (foo==bar) std::cout << "foo and bar are equal\n";
+  if (foo!=bar) std::cout << "foo and bar are not equal\n";
+  if (foo< bar) std::cout << "foo is less than bar\n";
+  if (foo> bar) std::cout << "foo is greater than bar\n";
+  if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
+  if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
+}
 /*
   ft::map<char,int> foo,bar;
   foo['a']=100;

@@ -51,42 +51,49 @@ template <typename T1, typename T2>
 bool operator==(const pair<T1, T2>& lhs,
                 const pair<T1, T2>& rhs)
 {
-  return (lhs.first == rhs.first) && (lhs.second == rhs.second); 
+  return (lhs.first == rhs.first && lhs.second == rhs.second);
 }
 
 template <typename T1, typename T2>
 bool operator!=(const pair<T1, T2>& lhs,
                 const pair<T1, T2>& rhs)
 {
-  return (lhs.first != rhs.first) && (lhs.second != rhs.second); 
+  return !(lhs == rhs);
 }
 
+/*
+ * Note:
+ * lhs.first < rhs.first is false if lhs == rhs.first. This is why,
+ * one the second condition, !(rhs.first < lhs.first) makes sure
+ * we are only comparing second in case lhs is equal to first.
+ */
 template <typename T1, typename T2>
 bool operator<(const pair<T1, T2>& lhs,
                 const pair<T1, T2>& rhs)
 {
-  return (lhs.first < rhs.first) && (lhs.second < rhs.second); 
-}
-
-template <typename T1, typename T2>
-bool operator<=(const pair<T1, T2>& lhs,
-                const pair<T1, T2>& rhs)
-{
-  return (lhs.first <= rhs.first) && (lhs.second <= rhs.second); 
+  return lhs.first < rhs.first
+         || (!(rhs.first < lhs.first) && lhs.second < rhs.second); 
 }
 
 template <typename T1, typename T2>
 bool operator>(const pair<T1, T2>& lhs,
                 const pair<T1, T2>& rhs)
 {
-  return (lhs.first > rhs.first) && (lhs.second > rhs.second); 
+  return !(lhs < rhs);
+}
+
+template <typename T1, typename T2>
+bool operator<=(const pair<T1, T2>& lhs,
+                const pair<T1, T2>& rhs)
+{
+  return !(lhs > rhs);
 }
 
 template <typename T1, typename T2>
 bool operator>=(const pair<T1, T2>& lhs,
                 const pair<T1, T2>& rhs)
 {
-  return (lhs.first >= rhs.first) && (lhs.second >= rhs.second); 
+  return !(lhs < rhs);
 }
 
 } /* namespace ft */

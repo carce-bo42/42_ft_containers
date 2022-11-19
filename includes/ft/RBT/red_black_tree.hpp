@@ -316,6 +316,7 @@ class rb_tree {
     if (node_count == 0) {
       new_node->assign_parent(node_end);
       node_end->assign_right_child(new_node);
+      node_end->assign_left_child(new_node);
       _root = new_node;
       ++node_count;
       return new_node;
@@ -344,11 +345,14 @@ class rb_tree {
     // once start == node_end, insert after parent
     new_node->assign_parent(parent);
     if (at_right) {
-      parent->assign_right_child(new_node);
       if (parent == get_maximum()) {
         node_end->assign_right_child(new_node);
       }
+      parent->assign_right_child(new_node);
     } else {
+      if (parent == get_minimum()) {
+        node_end->assign_left_child(new_node);
+      }
       parent->assign_left_child(new_node);
     }
     ++node_count;
@@ -636,7 +640,8 @@ class rb_tree {
 
   void clear() {
     delete_subtree(_root);
-    _root = node_end;
+    destroy_node(node_end);
+    init_tree();
   }
 
   size_type max_size() const {
@@ -650,10 +655,9 @@ class rb_tree {
   iterator lower_bound(const Key& key) {
     iterator it = iterator(get_minimum(), node_end);
     while (it.base() != node_end) {
-      // if it->first is less than key
       if (key_cmp(it->first, key)) {
         ++it;
-      } else {
+      } else { // not less than key 
         break;
       }
     }
@@ -671,12 +675,11 @@ class rb_tree {
   iterator upper_bound(const Key& key) {
     iterator it = iterator(get_minimum(), node_end);
     while (it.base() != node_end) {
-      // if it->first is less than key
-      if (!key_cmp(it->first, key)
-          && it->first != key)
+      if (key_cmp(it->first, key)
+          || it->first == key)
       {
         ++it;
-      } else {
+      } else { // not less than key or equal
         break;
       }
     }
@@ -827,7 +830,7 @@ class rb_tree {
 
   void erase(iterator pos) {
     node_ptr n = pos.base();
-    if (n) {
+    if (n && n != node_end) {
       erase(n);
     }
   }
