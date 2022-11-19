@@ -61,6 +61,7 @@ int main() {
   ft::vector<int> asd;
 
   asd.assign(3, 7);*/
+{
 	ft::pair<int, std::string> my_pair(8, "salut");
 	ft::map<int, std::string>	 test;
 	ft::map<int, std::string>::iterator	it;
@@ -96,6 +97,60 @@ int main() {
   {
     std::cout << a->first << std::endl;
   }
+}
+{
+  ft::map<char,int> mymap;
+
+
+	if (mymap.begin() != mymap.end())
+		std::cout << "This should not happen\n";
+
+  mymap['b'] = 100;
+  mymap['a'] = 200;
+  mymap['c'] = 300;
+
+	if (mymap.begin() == mymap.end())
+		std::cout << "This is wrong\n";
+  // show content:
+  for (ft::map<char,int>::iterator it=mymap.begin(); it!=mymap.end(); it++)
+    std::cout << it->first << " => " << it->second << '\n';
+
+	std::cout << "Hello there\n";
+	for (ft::map<char,int>::const_iterator it=mymap.begin(); it!=mymap.end(); it++)
+    std::cout << it->first << " => " << it->second << '\n';
+	std::cout << "General Kenobi\n";
+
+	ft::map<char, int>::const_iterator it = mymap.begin();
+	ft::map<char, int>::const_iterator ti = mymap.end();
+	std::cout << "Wupwup\n";
+
+	it++;
+	++it;
+	it--;
+	--it;
+	std::cout << "marker1\n";
+
+	ti--;
+	std::cout << "marker2\n";
+	--ti;
+	std::cout << "marker3\n";
+	++ti;
+	std::cout << "marker4\n";
+	ti++;
+	std::cout << "marker5\n";
+
+	ti = it;
+
+	std::cout << "Trump is a kiddo\n";
+	ft::map<char, int>::iterator end = mymap.end();
+	while(it != end)
+	{
+    	std::cout << it->first << " => " << it->second << '\n';
+		it++;
+	}
+
+  return 0;
+}
 
 /*
   ft::map<char,int> foo,bar;

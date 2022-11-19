@@ -107,10 +107,11 @@ class rb_tree {
   // the tree is empty, is equal to root.
   size_type      node_count;
   node_allocator node_alloc;
-  key_compare    key_cmp;
-  key_extractor  key_of_val;
 
   public:
+
+  key_compare    key_cmp;
+  key_extractor  key_of_val;
 
   rb_tree()
   :
@@ -314,6 +315,7 @@ class rb_tree {
   
     if (node_count == 0) {
       new_node->assign_parent(node_end);
+      node_end->assign_right_child(new_node);
       _root = new_node;
       ++node_count;
       return new_node;
@@ -343,6 +345,9 @@ class rb_tree {
     new_node->assign_parent(parent);
     if (at_right) {
       parent->assign_right_child(new_node);
+      if (parent == get_maximum()) {
+        node_end->assign_right_child(new_node);
+      }
     } else {
       parent->assign_left_child(new_node);
     }
@@ -627,6 +632,11 @@ class rb_tree {
     ft::swap(_root, other._root);
     ft::swap(node_end, other.node_end);
     ft::swap(node_count, other.node_count);
+  }
+
+  void clear() {
+    delete_subtree(_root);
+    _root = node_end;
   }
 
   size_type max_size() const {

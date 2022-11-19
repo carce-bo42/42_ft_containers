@@ -121,6 +121,7 @@ class rb_tree_iterator {
   */
   self& operator--() {
     if (node == node_end) {
+      node = node->right;
       return *this;
     }
     if (node->left != node_end) {

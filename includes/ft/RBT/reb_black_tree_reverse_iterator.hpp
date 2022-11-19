@@ -23,17 +23,13 @@ class rb_tree_reverse_iterator {
   typedef typename iterator_type::node_ptr        node_ptr;
   typedef typename iterator_type::size_type       size_type;
 
-  private:
-
   iterator_type iter;
-
-  public:
 
   rb_tree_reverse_iterator() {}
 
   explicit rb_tree_reverse_iterator(iterator_type x)
   :
-    iter(x)
+    iter(x.base(), x.get_node_end())
   {}
 
   template < typename U >
@@ -44,7 +40,7 @@ class rb_tree_reverse_iterator {
                                value_type>::value,
                              value_type>::type* = 0)
   :
-    iter(x)
+    iter(x.iter)
   {}
 
   virtual ~rb_tree_reverse_iterator() {}

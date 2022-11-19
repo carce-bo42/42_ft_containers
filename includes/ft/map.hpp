@@ -40,8 +40,11 @@ class map {
 
   typedef struct ValueCompare {
 
+    map_get_key<Key, Val> get_key;
+    key_compare           key_cmp;
+
     bool operator()(const value_type& x, const value_type& y) {
-      return key_compare(map_get_key<Key, Val>(x), map_get_key<Key, Val>(y));
+      return key_cmp(get_key(x), get_key(y));
     }
 
   } value_compare;
@@ -52,7 +55,7 @@ class map {
 
   tree_type      tree;
   allocator_type allocator;
-  value_compare  v_cmp;
+  value_compare  value_cmp;
 
   public:
 
@@ -60,7 +63,7 @@ class map {
   :
     tree(),
     allocator(),
-    v_cmp()
+    value_cmp()
   {}
 
   explicit map( const Compare& comp,
@@ -68,7 +71,7 @@ class map {
   :
     tree(comp),
     allocator(alloc),
-    v_cmp()
+    value_cmp()
   {}
 
   template< class InputIt >
@@ -83,7 +86,7 @@ class map {
   :
     tree(comp),
     allocator(alloc),
-    v_cmp()
+    value_cmp()
   {
     insert(first, last);
   }
@@ -92,7 +95,7 @@ class map {
   :
     tree(other.tree),
     allocator(other.alloc),
-    v_cmp(other.v_cmp)
+    value_cmp(other.value_cmp)
   {}
 
   ~map() {}
@@ -178,7 +181,7 @@ class map {
   }
 
   inline void clear() {
-    tree.delete_subtree(tree.get_root());
+    tree.clear();
   }
 
   ft::pair<iterator, bool> insert( const value_type& value ) {
@@ -297,7 +300,7 @@ class map {
   }
 
   value_compare value_comp() const {
-    return v_cmp;
+    return value_cmp;
   }
   
 }; // class ft::map
