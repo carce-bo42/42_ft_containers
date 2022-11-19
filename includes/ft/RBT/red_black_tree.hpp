@@ -176,8 +176,8 @@ class rb_tree {
   void init_tree() {
     node_end = construct_node(Val(), 0);
     node_end->assign_parent(node_end);
-    node_end->assign_left_child(node_end);
-    node_end->assign_right_child(node_end);
+    node_end->assign_left_child(0);
+    node_end->assign_right_child(0);
     node_end->color = black;
     _root = node_end;
   }
@@ -214,7 +214,7 @@ class rb_tree {
    */
   inline void switch_with_parent(node_ptr n, node_ptr parent) {
     if (parent == _root) {
-      _root = n;  
+      _root = n;
     } else if (parent->is_left_child()) {
       parent->parent->assign_left_child(n);
     } else if (parent->is_right_child()) {
@@ -654,6 +654,9 @@ class rb_tree {
   }
 
   node_ptr get_maximum() {
+    if (_root == node_end) {
+      return node_end;
+    }
     node_ptr p = _root;
     while (p->right != node_end) {
       p = p->right;
@@ -662,6 +665,9 @@ class rb_tree {
   }
 
   const_node_ptr get_maximum() const {
+    if (_root == node_end) {
+      return node_end;
+    }
     const_node_ptr p = _root;
     while (p->right != node_end) {
       p = p->right;
@@ -670,6 +676,9 @@ class rb_tree {
   }
 
   node_ptr get_minimum() {
+    if (_root == node_end) {
+      return node_end;
+    }
     node_ptr p = _root;
     while (p->left != node_end) {
       p = p->left;
@@ -678,6 +687,9 @@ class rb_tree {
   }
 
   const_node_ptr get_minimum() const {
+    if (_root == node_end) {
+      return node_end;
+    }
     const_node_ptr p = _root;
     while (p->left != node_end) {
       p = p->left;
@@ -690,7 +702,7 @@ class rb_tree {
   }
 
   inline const_iterator begin() const {
-    return const_iterator(get_minimum(), node_end);
+    return const_iterator(get_minimum(),node_end);
   }
 
   inline reverse_iterator rbegin() {

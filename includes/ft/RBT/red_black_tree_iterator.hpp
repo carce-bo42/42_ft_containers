@@ -1,5 +1,6 @@
 #ifndef RBT_NODE_ITERATOR
 # define RBT_NODE_ITERATOR
+# pragma once
 
 #include "ft/utils/iterator_traits.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
@@ -18,10 +19,10 @@ class rb_tree_iterator {
   typedef Val                             value_type;
   typedef value_type&                     reference;
   typedef value_type*                     pointer;
-  typedef ptrdiff_t                       difference_type;
   typedef bidirectional_iterator_tag      iterator_category;
+  typedef ptrdiff_t                       difference_type;
   typedef rb_tree_iterator<Val>           self;
-  typedef Node*                           node_ptr;
+  typedef typename Node::node_ptr         node_ptr;
   typedef size_t                          size_type;
 
   private:
@@ -41,7 +42,8 @@ class rb_tree_iterator {
                               value_type>::value,
                             value_type>::type* = 0 )
   :
-    node(it.base())
+    node(it.base()),
+    node_end(it.get_node_end())
   {}
 
   rb_tree_iterator(node_ptr start, node_ptr end)
@@ -54,9 +56,14 @@ class rb_tree_iterator {
     return node;
   }
 
+  node_ptr get_node_end() const {
+    return node_end;
+  }
+
   self& operator=( const self& other) {
     if (this != &other) {
       this->node = other.node;
+      this->node_end = other.node_end;
     }
     return *this;
   }

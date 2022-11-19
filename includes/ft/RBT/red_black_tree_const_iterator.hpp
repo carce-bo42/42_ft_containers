@@ -1,10 +1,12 @@
 #ifndef RBT_NODE_CONST_ITERATOR
 # define RBT_NODE_CONST_ITERATOR
+# pragma once
 
 #include "ft/utils/iterator_traits.hpp"
-#include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/utils/utils.hpp"
 #include "ft/RBT/red_black_tree.hpp"
+#include "ft/RBT/red_black_tree_node.hpp"
+#include "ft/RBT/red_black_tree_iterator.hpp"
 
 namespace ft {
 
@@ -14,16 +16,17 @@ template <typename Val, typename Node = rb_tree_node<Val> >
 class rb_tree_const_iterator {
 
   public:
-
   
-  typedef Val                              value_type;
-  typedef const value_type&                reference;
-  typedef const value_type*                pointer;
-  typedef ptrdiff_t                        difference_type;
-  typedef bidirectional_iterator_tag       iterator_category;
-  typedef rb_tree_const_iterator<Val>      self;
-  typedef const Node*                      node_ptr;
-  typedef size_t                           size_type;
+  typedef Val                                    value_type;
+  typedef const value_type&                      reference;
+  typedef const value_type*                      pointer;
+  typedef ptrdiff_t                              difference_type;
+  typedef bidirectional_iterator_tag             iterator_category;
+  typedef rb_tree_const_iterator<Val>            self;
+
+  typedef const typename Node::const_node_ptr    node_ptr;
+  typedef size_t                                 size_type;
+  typedef rb_tree_iterator<Val>                  iterator;
 
   private:
 
@@ -42,7 +45,15 @@ class rb_tree_const_iterator {
                               value_type>::value,
                             value_type>::type* = 0 )
   :
-    node(it.base())
+    node(it.base()),
+    node_end(it.get_node_end())
+  {}
+
+  template < typename U >
+  rb_tree_const_iterator(const iterator& it)
+  :
+    node(it.base()),
+    node_end(it.get_node_end())
   {}
 
   rb_tree_const_iterator(node_ptr start, node_ptr end)
@@ -53,6 +64,10 @@ class rb_tree_const_iterator {
 
   node_ptr base() const {
     return node;
+  }
+
+  node_ptr get_node_end() const {
+    return node_end;
   }
 
   self& operator=( const self& other) {

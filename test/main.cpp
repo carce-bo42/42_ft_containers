@@ -61,7 +61,41 @@ int main() {
   ft::vector<int> asd;
 
   asd.assign(3, 7);*/
+	ft::pair<int, std::string> my_pair(8, "salut");
+	ft::map<int, std::string>	 test;
+	ft::map<int, std::string>::iterator	it;
 
+	test.insert(my_pair);
+	test.insert(ft::pair<int, std::string>(-4, "bar"));
+	test.insert(ft::pair<int, std::string>(2, "machin"));
+	test.insert(ft::pair<int, std::string>(3, "foo"));
+	test.insert(ft::pair<int, std::string>(746, "Marcel"));
+	test.insert(ft::pair<int, std::string>(1, "truc"));
+  it = test.begin();
+	std::cout << '\n';
+
+  std::cout << "size : " << test.size() << std::endl;
+	while (it != test.end())
+	{
+		// std::cout << "start of while\n";
+		std::cout << it->first << ", " << it->second << '\n';
+		it++;
+// 		std::cout << "iterator incremented\n";
+
+// #ifndef STD
+// 		std::cout << it.getPointer() << '\n';
+// 		std::cout << test.end().getPointer() << '\n';
+// #endif
+
+	}
+	std::cout << "End of display loop\n";
+
+
+  ft::map<int, std::string>::const_iterator a = test.begin();
+  std::cout << std::endl;
+  std::cout << a->first << std::endl;
+
+/*
   ft::map<char,int> foo,bar;
   foo['a']=100;
   foo['b']=200;
@@ -76,6 +110,7 @@ int main() {
   if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
   if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
   return 0;
+*/
 }
   //printf("%lu \n", vec.capacity());
   //printf("%lu \n", vec.size());

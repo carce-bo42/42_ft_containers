@@ -21,8 +21,8 @@ struct rb_tree_node {
   public:
 
   typedef T                       value_type;
-  typedef rb_tree_node*           node_ptr;
-  typedef const rb_tree_node*     const_node_ptr;
+  typedef rb_tree_node<T>*        node_ptr;
+  typedef const rb_tree_node<T>*  const_node_ptr;
   typedef rb_tree_node_color      n_color;
   
   node_ptr         parent;
@@ -33,7 +33,7 @@ struct rb_tree_node {
 
   rb_tree_node(const T& value, node_ptr node_end)
   :
-    parent(0),
+    parent(node_end),
     left(node_end),
     right(node_end),
     data(value),
