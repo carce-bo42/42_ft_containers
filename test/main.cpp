@@ -218,7 +218,6 @@ std::cout << "\n\n========\n\n";
   it=mymap.find ('e');
   std::cout << "erase by range 'e' to end\n";
   mymap.erase ( it, mymap.end() );    // erasing by range
-
   std::cout << " display :\n";
   // show content:
   for (it=mymap.begin(); it!=mymap.end(); ++it)

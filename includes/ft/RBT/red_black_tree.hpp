@@ -375,7 +375,7 @@ class rb_tree {
       return false;
     }
     if (n->is_left_child()) { // n < parent
-      if (key_of_val(value) > key_of_val(n->parent->data)) {
+      if (key_of_val(value) >= key_of_val(n->parent->data)) {
         return false;
       }
     } else { // n > parent
@@ -576,9 +576,6 @@ class rb_tree {
 
     bool update_min = n == node_end->left;
     bool update_max = n == node_end->right;
-
-    //std::cout << "update_min : " << update_min <<  std::endl;
-    //std::cout << "update_max : " << update_max << std::endl;
 
     if (n->left != node_end
         && n->right != node_end)
@@ -809,11 +806,15 @@ class rb_tree {
     node_ptr n = construct_node(value, node_end);
     node_ptr m = NULL;
 
-    bool good_hint = check_hint(hint, value);
-    if (good_hint) {
-      m = find_and_insert(n, hint.base());
-    } else {
+    if (hint == end()) {
       m = find_and_insert(n, _root);
+    } else {
+      bool good_hint = check_hint(hint, value);
+      if (good_hint) {
+        m = find_and_insert(n, hint.base());
+      } else {
+        m = find_and_insert(n, _root);
+      }
     }
     if (m != n) {
       destroy_node(n);
