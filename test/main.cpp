@@ -91,9 +91,11 @@ int main() {
 	std::cout << "End of display loop\n";
 
 
-  ft::map<int, std::string>::const_iterator a = test.begin();
-  std::cout << std::endl;
-  std::cout << a->first << std::endl;
+  for (ft::map<int, std::string>::const_iterator a = test.begin();
+       a != test.end(); a++)
+  {
+    std::cout << a->first << std::endl;
+  }
 
 /*
   ft::map<char,int> foo,bar;

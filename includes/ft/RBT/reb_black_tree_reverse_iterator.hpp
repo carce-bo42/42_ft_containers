@@ -53,6 +53,10 @@ class rb_tree_reverse_iterator {
     return iter.base();
   }
 
+  node_ptr get_node_end() const {
+    return iter.get_node_end();
+  }
+
   rb_tree_reverse_iterator& operator=(const rb_tree_reverse_iterator& other) {
     if (this != &other) {
       iter = other.iter;

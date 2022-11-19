@@ -7,7 +7,7 @@
 #include "ft/utils/pair.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
-#include "ft/RBT/red_black_tree_const_iterator.hpp"
+//#include "ft/RBT/red_black_tree_const_iterator.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
 namespace ft {
@@ -92,8 +92,8 @@ class rb_tree {
   typedef Compare                                  key_compare;
   typedef KeyOfVal                                 key_extractor;
   typedef size_t                                   size_type;
-  typedef rb_tree_iterator<Val>                    iterator;
-  typedef rb_tree_const_iterator<Val>              const_iterator;
+  typedef rb_tree_iterator<Val, node_ptr>          iterator;
+  typedef rb_tree_iterator<const Val, const_node_ptr>  const_iterator;
   typedef rb_tree_reverse_iterator<iterator>       reverse_iterator;
   typedef rb_tree_reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -710,7 +710,7 @@ class rb_tree {
   }
 
   inline const_reverse_iterator rbegin() const {
-    return const_reverse_iterator(iterator(get_maximum(), node_end));
+    return const_reverse_iterator(const_iterator(get_maximum(), node_end));
   }
 
   inline iterator end() {

@@ -11,7 +11,7 @@ namespace ft {
 
 //  https://www.geeksforgeeks.org/implementing-forward-iterator-in-bst/ 
 // why use nil https://cs.stackexchange.com/questions/44422/what-is-the-purpose-of-using-nil-for-representing-null-nodes
-template <typename Val, typename Node = rb_tree_node<Val> > 
+template <typename Val, typename Node > 
 class rb_tree_iterator {
 
   public:
@@ -21,8 +21,8 @@ class rb_tree_iterator {
   typedef value_type*                     pointer;
   typedef bidirectional_iterator_tag      iterator_category;
   typedef ptrdiff_t                       difference_type;
-  typedef rb_tree_iterator<Val>           self;
-  typedef typename Node::node_ptr         node_ptr;
+  typedef rb_tree_iterator<Val, Node>     self;
+  typedef Node                            node_ptr;
   typedef size_t                          size_type;
 
   private:
@@ -34,13 +34,8 @@ class rb_tree_iterator {
 
   rb_tree_iterator() {}
 
-  template < typename U >
-  rb_tree_iterator(const rb_tree_iterator<U>& it,
-                   typename ft::enable_if<
-                            ft::is_same_type<
-                     typename rb_tree_iterator<U>::value_type,
-                              value_type>::value,
-                            value_type>::type* = 0 )
+  template < typename UVal, typename UPtr >
+  rb_tree_iterator(const rb_tree_iterator<UVal, UPtr>& it)
   :
     node(it.base()),
     node_end(it.get_node_end())
@@ -52,6 +47,15 @@ class rb_tree_iterator {
     node_end(end)
   {}
 
+  template <typename UVal, typename UPtr>
+  rb_tree_iterator& operator=( const rb_tree_iterator<UVal, UPtr>& other) {
+    if (this != &other) {
+      this->node = other.node;
+      this->node_end = other.node_end;
+    }
+    return *this;
+  }
+
   node_ptr base() const {
     return node;
   }
@@ -60,13 +64,7 @@ class rb_tree_iterator {
     return node_end;
   }
 
-  self& operator=( const self& other) {
-    if (this != &other) {
-      this->node = other.node;
-      this->node_end = other.node_end;
-    }
-    return *this;
-  }
+
 
   reference operator*() const {
     return node->data;
@@ -167,46 +165,18 @@ class rb_tree_iterator {
 
 };
 
-template <typename KeyX, typename KeyY, typename ValX, typename ValY>
-bool	operator==(const rb_tree_iterator<KeyX,ValX>& x,
-                  const rb_tree_iterator<KeyY,ValY>& y)
+template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
+bool operator==(const rb_tree_iterator<UVal, UPtr>& lhs,
+          const rb_tree_iterator<VVal, VPtr>& rhs)
 {
-  return x.base() == y.base();
+  return lhs.base() == rhs.base();
 }
 
-template <typename KeyX, typename KeyY, typename ValX, typename ValY>
-bool  operator!=(const rb_tree_iterator<KeyX,ValX>& x,
-                 const rb_tree_iterator<KeyY,ValY>& y)
+template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
+bool operator!=(const rb_tree_iterator<UVal, UPtr>& lhs,
+          const rb_tree_iterator<VVal, VPtr>& rhs)
 {
-  return x.base() != y.base();
-}
-
-template <typename KeyX, typename KeyY, typename ValX, typename ValY>
-bool  operator>(const rb_tree_iterator<KeyX,ValX>& x,
-                const rb_tree_iterator<KeyY,ValY>& y)
-{
-  return x.base() > y.base();
-}
-
-template <typename KeyX, typename KeyY, typename ValX, typename ValY>
-bool operator<(const rb_tree_iterator<KeyX,ValX>& x,
-                const rb_tree_iterator<KeyY,ValY>& y)
-{
-  return x.base() < y.base();
-}
-
-template <typename KeyX, typename KeyY, typename ValX, typename ValY>
-bool operator>=(const rb_tree_iterator<KeyX,ValX>& x,
-                const rb_tree_iterator<KeyY,ValY>& y)
-{
-  return !(x.base() < y.base());
-}
-
-template <typename KeyX, typename KeyY, typename ValX, typename ValY>
-bool operator<=(const rb_tree_iterator<KeyX,ValX>& x,
-                const rb_tree_iterator<KeyY,ValY>& y)
-{
-  return !(x.base() > y.base());
+  return lhs.base() != rhs.base();
 }
 
 /*
@@ -214,38 +184,39 @@ bool operator<=(const rb_tree_iterator<KeyX,ValX>& x,
  * (rit1 +/- rit2) to work as an arithmetic value.
  * Two typenames are included for const T / T workarounds.
  */
-template < typename U, typename V > 
-typename rb_tree_iterator<U>::difference_type
-operator+(const rb_tree_iterator<U>& lhs,
-          const rb_tree_iterator<V>& rhs)
+template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
+typename rb_tree_iterator<UVal, UPtr>::difference_type
+operator+(const rb_tree_iterator<UVal, UPtr>& lhs,
+          const rb_tree_iterator<VVal, VPtr>& rhs)
 {
   return (lhs.base() + rhs.base());
 }
 
-template < typename U, typename V > 
-typename rb_tree_iterator<U>::difference_type
-operator-(const rb_tree_iterator<U>& lhs,
-          const rb_tree_iterator<V>& rhs)
+template < typename UVal, typename UPtr, typename VVal, typename VPtr >  
+typename rb_tree_iterator<UVal, UPtr>::difference_type
+operator-(const rb_tree_iterator<UVal, UPtr>& lhs,
+          const rb_tree_iterator<VVal, VPtr>& rhs)
 {
   return (lhs.base() - rhs.base());
 }
 
 // Reorder arguments to call inner operator- (iterator at left)
-template <typename T>
-rb_tree_iterator<T>
-operator-(typename ft::rb_tree_iterator<T>::difference_type n,
-          rb_tree_iterator<T> it)
+template <typename TVal, typename TPtr>
+rb_tree_iterator<TVal, TPtr>
+operator-(typename ft::rb_tree_iterator<TVal, TPtr>::difference_type n,
+          rb_tree_iterator<TVal, TPtr> it)
 {
   return (it - n);
 }
 
-template <typename T>
-rb_tree_iterator<T>
-operator+(typename ft::rb_tree_iterator<T>::difference_type n,
-          rb_tree_iterator<T> it)
+template <typename TVal, typename TPtr>
+rb_tree_iterator<TVal, TPtr>
+operator+(typename ft::rb_tree_iterator<TVal, TPtr>::difference_type n,
+          rb_tree_iterator<TVal, TPtr> it)
 {
   return (it + n);
 }
+
 
 } // namespace ft
 

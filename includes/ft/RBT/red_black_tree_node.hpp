@@ -21,8 +21,7 @@ struct rb_tree_node {
   public:
 
   typedef T                       value_type;
-  typedef rb_tree_node<T>*        node_ptr;
-  typedef const rb_tree_node<T>*  const_node_ptr;
+  typedef rb_tree_node*           node_ptr;
   typedef rb_tree_node_color      n_color;
   
   node_ptr         parent;
@@ -38,6 +37,16 @@ struct rb_tree_node {
     right(node_end),
     data(value),
     color(red)
+  {}
+
+  template <typename V>
+  rb_tree_node(const rb_tree_node<T>& node)
+  :
+    parent(node.parent),
+    left(node.left),
+    right(node.right),
+    data(node.data),
+    color(node.color)
   {}
 
   ~rb_tree_node() {
