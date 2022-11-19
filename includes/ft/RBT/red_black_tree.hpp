@@ -399,15 +399,15 @@ class rb_tree {
     node_alloc.destroy(n1);
     node_alloc.destroy(n2);
     node_alloc.construct(n1, node_type(n2_tmp_clone.data,
-                                      n1_tmp_clone.parent,
-                                      n1_tmp_clone.left,
-                                      n1_tmp_clone.right,
-                                      n1_tmp_clone.color));
+                                       n1_tmp_clone.parent,
+                                       n1_tmp_clone.left,
+                                       n1_tmp_clone.right,
+                                       n1_tmp_clone.color));
     node_alloc.construct(n2, node_type(n1_tmp_clone.data,
-                                      n2_tmp_clone.parent,
-                                      n2_tmp_clone.left,
-                                      n2_tmp_clone.right,
-                                      n2_tmp_clone.color));
+                                       n2_tmp_clone.parent,
+                                       n2_tmp_clone.left,
+                                       n2_tmp_clone.right,
+                                       n2_tmp_clone.color));
   }
 
   node_ptr switch_with_inorder_predecessor(node_ptr n) {
@@ -574,6 +574,12 @@ class rb_tree {
 
   node_ptr erase(node_ptr n) {
 
+    bool update_min = n == node_end->left;
+    bool update_max = n == node_end->right;
+
+    //std::cout << "update_min : " << update_min <<  std::endl;
+    //std::cout << "update_max : " << update_max << std::endl;
+
     if (n->left != node_end
         && n->right != node_end)
     {
@@ -622,6 +628,17 @@ class rb_tree {
       } else {
         _root = substitute;
       }
+    }
+    /*
+     * Update min/max node (for iterators). Note that at this point
+     * n is not reachable from the tree, so get_minimum/maximum() gives
+     * the new minimum/maximum.
+     */
+    if (update_min) {
+      node_end->assign_left_child(get_minimum());
+    }
+    if (update_max) {
+      node_end->assign_right_child(get_maximum());
     }
     destroy_node(n);
     --node_count;

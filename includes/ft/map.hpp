@@ -215,8 +215,7 @@ class map {
   // up with greater key values when incrementing.
   void erase( iterator first, iterator last ) {
     while (first != last) {
-      tree.erase(first);
-      first++;
+      tree.erase(first++);
     }
   }
   

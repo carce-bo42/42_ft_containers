@@ -89,7 +89,6 @@ class rb_tree_iterator {
    */
   self& operator++() {
     if (node == node_end) {
-      //std::cout << "node is end and node->left is : " << std::endl;
       node = node->left; // node_end->left contains de minimum value
       return *this;
     }
@@ -121,7 +120,6 @@ class rb_tree_iterator {
   */
   self& operator--() {
     if (node == node_end) {
-      //std::cout << "node is end and node->left is : " << std::endl;
       node = node->right; // node_end->right contains the maximum value.
       return *this;
     }
