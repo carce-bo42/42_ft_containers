@@ -7,7 +7,6 @@
 #include "ft/utils/pair.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
 #include "ft/RBT/red_black_tree_iterator.hpp"
-//#include "ft/RBT/red_black_tree_const_iterator.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
 namespace ft {
@@ -138,8 +137,13 @@ class rb_tree {
 
   rb_tree( const Compare& comp )
   :
+    _root(0),
+    node_count(0),
+    node_alloc(),
     key_cmp(comp)
-  {}
+  {
+    init_tree();
+  }
 
   ~rb_tree() {
     delete_subtree(_root);
@@ -312,7 +316,7 @@ class rb_tree {
   }
 
   node_ptr find_and_insert(node_ptr new_node, node_ptr init) {
-  
+
     if (node_count == 0) {
       new_node->assign_parent(node_end);
       node_end->assign_right_child(new_node);
@@ -669,7 +673,7 @@ class rb_tree {
   iterator lower_bound(const Key& key) {
     iterator it = iterator(get_minimum(), node_end);
     while (it.base() != node_end) {
-      if (key_cmp(it->first, key)) {
+      if (key_cmp(key_of_val(*it), key)) {
         ++it;
       } else { // not less than key 
         break;
@@ -689,8 +693,8 @@ class rb_tree {
   iterator upper_bound(const Key& key) {
     iterator it = iterator(get_minimum(), node_end);
     while (it.base() != node_end) {
-      if (key_cmp(it->first, key)
-          || it->first == key)
+      if (key_cmp(key_of_val(*it), key)
+          || key_of_val(*it) == key)
       {
         ++it;
       } else { // not less than key or equal
