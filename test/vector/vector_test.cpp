@@ -23,9 +23,16 @@ void vector_test() {
 // and also allows me to add capacity comparison.
 template <typename T>
 inline bool Vector_Equality_Check(std::vector<T> v, ft::vector<T> u) {
-  return ft::equal(u.begin(), u.end(), v.begin())
-         && u.capacity() == v.capacity()
-         && u.size() == v.size();
+  if (!ft::equal(u.begin(), u.end(), v.begin())) {
+    return ft::equal_diff(u.begin(), u.end(), v.begin());
+  }
+  if (u.capacity() != v.capacity()) {
+    return ft::show_diff(u.capacity(), v.capacity());
+  }
+  if (u.size() != v.size()) {
+    return ft::show_diff(u.size(), v.size());
+  }
+  return true;
 }
 
 static void constructors_test() {
@@ -116,7 +123,7 @@ static void insert_point_test() {
 static void insert_range_value_test() {
   for (int vector_size = 0; vector_size < 25; vector_size++) {
     for (int insert_point = 0; insert_point < vector_size + 1; insert_point++) {
-      for (size_t insert_length = 0; insert_length < 3; insert_length++) {
+      for (int insert_length = 0; insert_length < 3; insert_length++) {
       
         ft::vector<int> ft_vec(vector_size, 0);
         ft_vec.insert(ft_vec.begin() + insert_point, insert_length, 1); 
@@ -163,7 +170,7 @@ static void insert_range_iterators_test() {
       std_vec.insert(std_vec.begin() + insert_point,
                    std_vec_input.begin(), std_vec_input.end());
 
-      if (Vector_Equality_Check(std_vec, ft_vec)) {
+      if (!Vector_Equality_Check(std_vec, ft_vec)) {
         return VECTOR_TEST_ERROR(KO_ERASE);
       }
     }

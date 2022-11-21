@@ -15,8 +15,8 @@
 #define INSERT_TAG "INSERT"
 #define ERASE_TAG "ERASE"
 
-static std::map<int, std::string> vector_errors;
-static std::map<std::string, std::map<int, std::string> > error_map;
+static std::map<int, std::string> vector_errors; // { errno, string }
+static std::map<std::string, std::map<int, std::string> > error_map; // { TAG, { errno, string } }
 
 typedef enum {
   OK = 0,
@@ -68,5 +68,34 @@ static void printTestOk(const char* tag, const char* container) {
         printTestError(result, SET_TAG, __LINE__, __FILE__);
 #define SET_TEST_OK(test_tag) \
         printTestOk(test_tag, SET_TAG);
+
+namespace ft {
+
+  template< class InputIt1, class InputIt2 >
+  bool equal_diff( InputIt1 first1, InputIt1 last1,
+              InputIt2 first2 )
+  {
+    while (first1 != last1) {
+      if (*first1 != *first2) {
+        std::cout << "expected : " << *first1
+                  << " actual : " << *first2
+                  << " at iteration " << std::endl;
+        return false;
+      }
+      ++first1;
+      ++first2;
+    }
+    return true;
+  }
+
+  template < typename T >
+  bool show_diff( T cap1, T cap2) {
+    std::cout << "expected : " << cap1
+              << " actual : " << cap2
+              << " at iteration " << std::endl;
+    return false;
+  }
+
+}
 
 #endif
