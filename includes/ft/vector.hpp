@@ -135,7 +135,7 @@ class vector {
   }
 
   /* constructor that reserves capacity, but allocs empty 
-   * size elements
+   * size elements. This is used 
    */
   vector( size_type capacity, size_type size, const T& value = T()) {
     if (capacity == size) {

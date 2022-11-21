@@ -10,7 +10,7 @@
 #include <cmath>
 #include <stdlib.h>
 
-#include "../debug.hpp"
+#include "../test_utils.hpp"
 
 // from https://stackoverflow.com/questions/3756323/how-to-get-the-current-time-in-milliseconds-from-c-in-linux
 long current_timestamp() {
@@ -21,13 +21,13 @@ long current_timestamp() {
 }
 
 typedef enum {
-  OK = 0,
-  KO_INSERT = 1,
-  KO_ERASE = 2
+  TREE_OK = 0,
+  TREE_KO_INSERT = 1,
+  TREE_KO_ERASE = 2
 } RBTREE_TEST_RESULT;
 
-int insert_hardcode() {
-  return OK;
+void insert_hardcode() {
+  MAP_TEST_OK(MAP_TAG);
 }
   //std::map<int, std::string> map;
 
@@ -172,12 +172,12 @@ int insert_hardcode() {
     std::cout << it_->first << std::endl;;
     it_--;
   }
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 */
 
 
-int reverse_iteration() {
+void reverse_iteration() {
 
   ft::rb_tree<int,ft::pair<int, std::string>,ft::map_get_key<int, ft::pair<int, std::string> > > tree;
   
@@ -228,7 +228,7 @@ int reverse_iteration() {
       std::cout << "expected : " << it_->first
                 << " actual : " << it->first
                 << " at iteration " << i << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     it_++;
     i++;
@@ -243,7 +243,7 @@ int reverse_iteration() {
     std::cout << it->first << std::endl;
   }
   
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
 
@@ -260,7 +260,7 @@ int reverse_iteration() {
  *    /   \     /   \     /   \     /   \
  *  -12   -4   1    3    5    12  40    80
  */
-int insert_no_fix() {
+void insert_no_fix() {
 
   ft::rb_tree<int,ft::pair<int, std::string>,
     ft::map_get_key<int, ft::pair<int, std::string> > > tree;
@@ -313,10 +313,10 @@ int insert_no_fix() {
   a++;
   std::cout << "end after 2 increments : " << a->first << std::endl;
   std::cout << "----------------" << std::endl;
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
-int empty_tree_iteration() {
+void empty_tree_iteration() {
   ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > > tree; 
   for (ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > >::iterator it = tree.begin();
         it != tree.end(); it++)
@@ -324,14 +324,14 @@ int empty_tree_iteration() {
     std::cout << it->first << std::endl;
   }
   std::cout << "----------------" << std::endl;
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
 /*
  * Inserting a range form (1, n) in order is essentially fucking up 
  * the tree every 2 insertions (0 chill insertion). 
  */
-int insert_performance() {
+void insert_performance() {
 
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
@@ -388,16 +388,16 @@ int insert_performance() {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
 
-int insert_with_hint() {
+void insert_with_hint() {
 
   ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > > tree;
 
@@ -413,7 +413,7 @@ int insert_with_hint() {
   tree.insert_with_hint(tree.begin() + 7, ft::pair<int, std::string>(23, "hello"));
   tree.insert_with_hint(tree.begin() + 9, ft::pair<int, std::string>(7, "hello"));
 
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
 /*
@@ -428,7 +428,7 @@ int insert_with_hint() {
  *  -12   -4   1    3    5    12  40    80
  *
  */
-int erase_1() {
+void erase_1() {
 
   ft::rb_tree<int, ft::pair<int, std::string>, ft::map_get_key<int, ft::pair<int, std::string> > > tree;
 
@@ -495,15 +495,15 @@ int erase_1() {
       std::cout << "expected : " << std_it->first
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
-int erase_2() {
+void erase_2() {
 
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
@@ -546,7 +546,7 @@ int erase_2() {
       std::cout << "expected : " << std_it_2->first
                 << " actual : " << ft_it_2->first
                 << " at iterator pos " << i << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it_2;
     ++std_it_2;
@@ -595,11 +595,11 @@ int erase_2() {
 
   std::cout << "ft was " << (fabs(std_time - ft_time)/std_time)*100.0
             << "% slower than stl" << std::endl;
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
 
-int erase_performance() {
+void erase_performance() {
 
   int nbr_insertions = 50000;
   int nbr_insertions_mid = 25000;
@@ -642,7 +642,7 @@ int erase_performance() {
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i
                 << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
@@ -665,7 +665,7 @@ int erase_performance() {
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i
                 << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
@@ -688,7 +688,7 @@ int erase_performance() {
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i
                 << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
@@ -711,7 +711,7 @@ int erase_performance() {
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i
                 << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
@@ -734,18 +734,18 @@ int erase_performance() {
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i
                 << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
   }
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }
 
 // inserts TREE_SPONGE_MAX_SIZE, then deletes it entirely. Does this
 // <iterations> times. 
-int insert_delete_sponge_test() {
+void insert_delete_sponge_test() {
 
 #define TREE_SPONGE_MAX_SIZE 8192
 
@@ -797,10 +797,10 @@ int insert_delete_sponge_test() {
                 << " actual : " << ft_it->first
                 << " at iterator pos " << i
                 << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR(TREE_KO_INSERT);
     }
     ++ft_it;
     ++std_it;
   }
-  return OK;
+  MAP_TEST_OK(MAP_TAG);
 }

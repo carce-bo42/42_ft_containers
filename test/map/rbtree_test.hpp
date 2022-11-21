@@ -2,15 +2,15 @@
 # define CONTAINERS_RBTREE_TEST
 #pragma once
 
-int reverse_iteration();
-int insert_hardcode();
-int insert_no_fix();
-int empty_tree_iteration();
-int insert_performance();
-int erase_1();
-int erase_2();
-int erase_performance();
-int insert_delete_sponge_test();
-int normal_iteration();
+void reverse_iteration();
+void insert_hardcode();
+void insert_no_fix();
+void empty_tree_iteration();
+void insert_performance();
+void erase_1();
+void erase_2();
+void erase_performance();
+void insert_delete_sponge_test();
+void normal_iteration();
 
 #endif

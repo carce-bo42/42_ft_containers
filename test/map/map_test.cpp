@@ -1,15 +1,15 @@
 #include <ft/map.hpp>
 #include <map>
 #include <iostream>
-#include "../debug.hpp"
+#include "../test_utils.hpp"
 
 typedef enum {
-  OK = 0,
-  KO_INSERT = 1,
-  KO_ERASE = 2
+  MAP_OK = 0,
+  MAP_KO_INSERT = 1,
+  MAP_KO_ERASE = 2
 } MAP_TEST_RESULT;
 
-int map_reverse_iteration() {
+void map_reverse_iteration() {
 
   ft::map<int, std::string> mymap;
   
@@ -60,7 +60,7 @@ int map_reverse_iteration() {
       std::cout << "expected : " << it_->first
                 << " actual : " << it->first
                 << " at iteration " << i << std::endl;
-      return TEST_ERROR(KO_INSERT);
+      return MAP_TEST_ERROR (KO_INSERT);
     }
     it_++;
     i++;
@@ -75,5 +75,5 @@ int map_reverse_iteration() {
     std::cout << it->first << std::endl;
   }
   
-  return OK;
+  return MAP_TEST_OK(MAP_TAG);
 }

@@ -2,14 +2,18 @@
 #include "ft/stack.hpp"
 #include "ft/map.hpp"
 #include "ft/set.hpp"
-#include "debug.hpp"
+
 #include <vector>
-#include <stdio.h>
 #include <map>
+#include <stdio.h>
 #include <iostream>
-#include "vector/vector_test.hpp"
 #include "map/rbtree_test.hpp"
 #include "map/map_test.hpp"
+
+// static declarations and unused functions :
+// #include "test_utils.hpp"
+
+#include "test.hpp"
 
 #include "ft/RBT/red_black_tree.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
@@ -18,24 +22,7 @@
 #include "ft/utils/utils.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
-int Test_Error(int result, int line, const char* file) {
-  std::cout << "ERROR at line " << line << " from test "
-            << file << std::endl;
-  return result;
-}
-
-int vector_test() {
-  if (insert_point_single_test() != 0
-      || insert_range_value_single_test() != 0
-      || insert_range_iterators_single_test() != 0
-      || erase_range_single_test() != 0
-      || erase_pos_single_test() != 0)
-  {
-    return 1;
-  }
-  return 0;
-}
-
+/*
 int rbtree_test() {
   if (insert_hardcode() != 0
       || reverse_iteration() != 0
@@ -52,9 +39,12 @@ int rbtree_test() {
   }
   return 0;
 }
+*/
 
 int main() {
 
+  vector_test();
+  /*
   int myints[] = {75,23,65,42,13};
   ft::set<int> myset (myints,myints+5);
 
@@ -65,6 +55,7 @@ int main() {
   std::cout << '\n';
 
   return 0;
+  */
   //ft::map<int, std::string> ft_map;
   //ft_map.find(2);
   /*int a = 4;

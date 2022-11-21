@@ -2,6 +2,6 @@
 # define CONTAINERS_MAP_TEST
 #pragma once
 
-int map_reverse_iteration();
+void map_reverse_iteration();
 
 #endif
