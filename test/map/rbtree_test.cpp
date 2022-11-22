@@ -6,19 +6,13 @@
 #include "ft/utils/pair.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 #include <map>
-#include <sys/time.h>
 #include <cmath>
 #include <stdlib.h>
+#include "../test.hpp"
 
 #include "../test_utils.hpp"
 
 // from https://stackoverflow.com/questions/3756323/how-to-get-the-current-time-in-milliseconds-from-c-in-linux
-long current_timestamp() {
-    struct timeval te; 
-    gettimeofday(&te, NULL);
-    long milliseconds = te.tv_sec*1000L + te.tv_usec/1000;
-    return milliseconds;
-}
 
 typedef enum {
   TREE_OK = 0,

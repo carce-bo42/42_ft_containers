@@ -356,7 +356,6 @@ class vector {
       reserve(count);
     }
     while (count) {
-      std::cout << "jere" << std::endl;
       push_back(value);
       --count;
     }

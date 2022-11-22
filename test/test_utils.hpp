@@ -106,6 +106,13 @@ namespace ft {
     return false;
   }
 
+  template < typename T >
+  void fuck_unused_functions(const T& value) {
+    (void)value;
+    (void)&printTestOk;
+    (void)&printTestError;
+  }
+
 }
 
 #endif

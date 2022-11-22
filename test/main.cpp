@@ -44,6 +44,7 @@ int rbtree_test() {
 int main() {
 
   vector_test();
+  vector_performance();
   /*
   int myints[] = {75,23,65,42,13};
   ft::set<int> myset (myints,myints+5);
