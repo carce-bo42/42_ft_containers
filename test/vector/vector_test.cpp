@@ -4,6 +4,11 @@
 #include "../test_utils.hpp"
 
 static void constructors_test();
+static void assignment_operator_test();
+static void iterators_test();
+static void assign_test();
+static void frog_on_well_test();
+static void reserve_test();
 static void insert_point_test();
 static void insert_range_value_test();
 static void insert_range_iterators_test();
@@ -12,6 +17,11 @@ static void erase_pos_test();
 
 void vector_test() {
   constructors_test();
+  assignment_operator_test();
+  iterators_test();
+  frog_on_well_test();
+  assign_test();
+  reserve_test();
   insert_point_test();
   insert_range_value_test();
   insert_range_iterators_test();
@@ -73,6 +83,172 @@ static void constructors_test() {
   return VECTOR_TEST_OK(CONSTRUCTOR_TAG);
 }
 
+static void iterators_test() {
+
+  int matrix[9] = { 0, 1, 2, 3, 4, 3, 2, 1, 0};
+// normal iterators.
+{
+  ft::vector<int> ft_v(matrix, matrix + 9);
+
+  ft::vector<int>::iterator it_ = ft_v.begin();
+  ft::vector<int>::iterator it_end = ft_v.end();
+  ft::vector<int>::reverse_iterator ti_ = ft_v.rbegin();
+  ft::vector<int>::reverse_iterator ti_end = ft_v.rend();
+
+  for (; ti_ != ti_end && it_ != it_end; ++it_, ++ti_) {
+    if (*ti_ != *it_) {
+      return VECTOR_TEST_ERROR(KO_ITERATORS);
+    }
+  }
+  if (ti_ != ti_end
+      || it_ != it_end)
+  {
+    return VECTOR_TEST_ERROR(KO_ITERATORS);
+  }
+}
+// const iterators
+{
+  ft::vector<int> ft_v(matrix, matrix + 9);
+
+  ft::vector<int>::const_iterator it_ = ft_v.begin();
+  ft::vector<int>::const_iterator it_end = ft_v.end();
+  ft::vector<int>::const_reverse_iterator ti_ = ft_v.rbegin();
+  ft::vector<int>::const_reverse_iterator ti_end = ft_v.rend();
+
+  for (; ti_ != ti_end && it_ != it_end; ++it_, ++ti_) {
+    if (*ti_ != *it_) {
+      return VECTOR_TEST_ERROR(KO_ITERATORS);
+    }
+  }
+  // check if both ended at the same time
+  if (ti_ != ti_end
+      || it_ != it_end)
+  {
+    return VECTOR_TEST_ERROR(KO_ITERATORS);
+  }
+}
+  return VECTOR_TEST_OK(ITERATOR_TAG);
+}
+
+
+static void assignment_operator_test() {
+// assign to nothing
+{
+  ft::vector<int> ft_vec_1(10);
+  ft::vector<int> ft_vec_2;
+
+  std::vector<int> std_vec_1(10);
+  std::vector<int> std_vec_2;
+
+  ft_vec_1 = ft_vec_2;
+  std_vec_1 = std_vec_2;
+
+  if (!Vector_Equality_Check(std_vec_1, ft_vec_1)) {
+    return VECTOR_TEST_ERROR(KO_ASSIGNMENT);
+  }
+}
+// normal assign (swap)
+{  
+  ft::vector<int> ft_vec_1(10);
+  ft::vector<int> ft_vec_2(9);
+
+  std::vector<int> std_vec_1(10);
+  std::vector<int> std_vec_2(9);
+
+  ft::vector<int> tmp;
+  tmp = ft_vec_2;
+  ft_vec_2 = ft_vec_1;
+  ft_vec_1 = tmp;
+
+  std::vector<int> tmp_;
+  tmp_ = std_vec_2;
+  std_vec_2 = std_vec_1;
+  std_vec_1 = tmp_;
+
+  if (!Vector_Equality_Check(std_vec_1, ft_vec_1)) {
+    return VECTOR_TEST_ERROR(KO_ASSIGNMENT);
+  }
+  if (!Vector_Equality_Check(std_vec_2, ft_vec_2)) {
+    return VECTOR_TEST_ERROR(KO_ASSIGNMENT);
+  }
+}
+  return VECTOR_TEST_OK(ASSIGNMENT_TAG);
+}
+
+
+static void assign_test() {
+{
+  ft::vector<int> ft_vec(30);
+  ft_vec.assign(0, 0); // XD
+}
+
+  int matrix[10] = {0,1,2,3,4,5,6,7,8,9};
+
+  ft::vector<int> ft_parent(matrix, matrix + 9);
+  std::vector<int> std_parent(matrix, matrix + 9);
+
+  for (int i = 0; i < 25; i++) {
+    ft::vector<int> ft_vec(i);
+    ft_vec.assign(ft_parent.begin(), ft_parent.end());
+
+    std::vector<int> std_vec(i);
+    std_vec.assign(std_parent.begin(), std_parent.end());
+
+    if (!Vector_Equality_Check(std_vec, ft_vec)) {
+      return VECTOR_TEST_ERROR(KO_ASSIGN);
+    }
+  }
+  return VECTOR_TEST_OK(ASSIGN_TAG)
+}
+
+static void frog_on_well_test() {
+
+#define WELL_HEIGHT 2000
+
+  ft::vector<int> ft_vec;
+  std::vector<int> std_vec;
+
+  int size = ft_vec.size();
+
+  while ( size < WELL_HEIGHT ) {
+    ft_vec.push_back(666);
+    ft_vec.push_back(999);
+    ft_vec.pop_back();
+    std_vec.push_back(666);
+    std_vec.push_back(999);
+    std_vec.pop_back();
+    if (!Vector_Equality_Check(std_vec, ft_vec)) {
+      std::cout << "at size : " << size << std::endl;
+      return VECTOR_TEST_ERROR(KO_FROG);
+    }
+    size = ft_vec.size();
+  }
+  if (!Vector_Equality_Check(std_vec, ft_vec)) {
+    return VECTOR_TEST_ERROR(KO_FROG);
+  }
+  return VECTOR_TEST_OK(FROG_ON_WELL);
+}
+
+
+static void reserve_test() {
+
+  ft::vector<int> ft_vec;
+  std::vector<int> std_vec;
+
+  int reserve_max = 1000;
+
+  for (int i = 1; i< reserve_max; i++) {
+    ft_vec.reserve(i);
+    std_vec.reserve(i);
+    ft_vec.push_back(420);
+    std_vec.push_back(420);
+    if (!Vector_Equality_Check(std_vec, ft_vec)) {
+      return VECTOR_TEST_ERROR(KO_FROG);
+    }
+  }
+  return VECTOR_TEST_OK(RESERVE_TAG);
+}
+
 /*
  * Inserts the value 1 into all possible positions in
  * all vectors from size 0 to 24.
@@ -92,7 +268,6 @@ static void insert_point_test() {
       }
     }
   }
-
   // weird test i wanted to do. It works so I wont complain.
   ft::vector<int> ft_vec;
   std::vector<int> std_vec;
@@ -126,7 +301,7 @@ static void insert_range_value_test() {
       for (int insert_length = 0; insert_length < 3; insert_length++) {
       
         ft::vector<int> ft_vec(vector_size, 0);
-        ft_vec.insert(ft_vec.begin() + insert_point, insert_length, 1); 
+        ft_vec.insert(ft_vec.begin() + insert_point, insert_length, 1);
 
         std::vector<int> std_vec(vector_size, 0);
         std_vec.insert(std_vec.begin() + insert_point, insert_length, 1);
@@ -175,7 +350,6 @@ static void insert_range_iterators_test() {
       }
     }
   }
-
   return VECTOR_TEST_OK(INSERT_TAG);
 }
 

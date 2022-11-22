@@ -5,6 +5,7 @@
 #include <memory> /* std::allocator, std::allocator_traits. */
 #include <cstddef> /* std::size_t, std::ptrdiff_t */
 #include <stdexcept>
+#include <iostream>
 
 #include "ft/utils/utils.hpp"
 #include "ft/utils/reverse_iterator.hpp"
@@ -355,6 +356,7 @@ class vector {
       reserve(count);
     }
     while (count) {
+      std::cout << "jere" << std::endl;
       push_back(value);
       --count;
     }

@@ -12,6 +12,11 @@
 #define SET_TAG "SET"
 
 #define CONSTRUCTOR_TAG "CONSTRUCTOR"
+#define ITERATOR_TAG "ITERATOR"
+#define ASSIGNMENT_TAG "OPERATOR="
+#define ASSIGN_TAG "ASSIGN"
+#define FROG_ON_WELL "🐸 on 🚰"
+#define RESERVE_TAG "RESERVE"
 #define INSERT_TAG "INSERT"
 #define ERASE_TAG "ERASE"
 
@@ -20,9 +25,14 @@ static std::map<std::string, std::map<int, std::string> > error_map; // { TAG, {
 
 typedef enum {
   OK = 0,
-  KO_INSERT = 1,
-  KO_ERASE = 2,
-  KO_CONSTRUCTOR = 3
+  KO_INSERT,
+  KO_ERASE,
+  KO_CONSTRUCTOR,
+  KO_ITERATORS,
+  KO_ASSIGNMENT,
+  KO_ASSIGN,
+  KO_FROG,
+  KO_RESERVE
 } VECTOR_TEST_RESULT;
 
 # define BLUE_BOLD "\e[1;34m"
@@ -36,10 +46,10 @@ typedef enum {
 static void printTestError(int result, const char* container,
                           int line, const char* file)
 {
-  // ToDo finish error mappper (test_utils.cpp)
   (void)result;
   std::cout << BLUE_BOLD << "["<< container << "]: "
-            << UNSET << RED_BOLD << " ERROR at "
+            << UNSET << RED_BOLD << (error_map[container])[result]
+            << " ERROR at "
             << file << ":" << line << UNSET << std::endl;
 }
 
