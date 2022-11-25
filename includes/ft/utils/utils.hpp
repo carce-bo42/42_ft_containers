@@ -14,6 +14,16 @@ struct true_type {
     static const bool value = true;
 };
 
+template <typename T>
+struct UnConst {
+    static T& value(T& value) { return value; }
+};
+
+template <typename T>
+struct UnConst <const T> {
+    static T& value(const T& value) { return const_cast<T&>(value); }
+};
+
 /* 
  * enable_if
  *
@@ -41,7 +51,6 @@ struct enable_if
 template < typename T >
 struct enable_if<true, T>
 { typedef T type; };
-
 
 template < typename T, typename V > 
 struct is_same_type : false_type {};

@@ -6,6 +6,7 @@
 #include <ft/utils/pair.hpp>
 #include <ft/utils/utils.hpp>
 #include <stdexcept>
+#include <map>
 
 namespace ft {
 
@@ -94,7 +95,7 @@ class map {
   map( const map& other )
   :
     tree(other.tree),
-    allocator(other.alloc),
+    allocator(other.allocator),
     value_cmp(other.value_cmp)
   {}
 

@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <iostream>
 #include "map/rbtree_test.hpp"
-#include "map/map_test.hpp"
 
 // static declarations and unused functions :
 // #include "test_utils.hpp"

@@ -121,7 +121,6 @@ class rb_tree {
     init_tree();
   }
 
-  // Copy constructor is odd
   rb_tree( const rb_tree& other )
   :
     _root(0),
@@ -129,8 +128,7 @@ class rb_tree {
     node_alloc(other.node_alloc)
   {
     init_tree();
-    node_ptr n = other._root;
-    for (rb_tree::iterator it = other.begin(); it != other.end(); it++) {
+    for (rb_tree::const_iterator it = other.begin(); it != other.end(); it++) {
       insert(*it);
     }
   }
@@ -709,44 +707,32 @@ class rb_tree {
   }
 
   node_ptr get_maximum() {
-    if (_root == node_end) {
-      return node_end;
-    }
     node_ptr p = _root;
-    while (p->right != node_end) {
+    while (p->right && p->right != node_end) {
       p = p->right;
     }
     return p;
   }
 
   const_node_ptr get_maximum() const {
-    if (_root == node_end) {
-      return node_end;
-    }
     const_node_ptr p = _root;
-    while (p->right != node_end) {
+    while (p->right && p->right != node_end) {
       p = p->right;
     }
     return p;
   }
 
   node_ptr get_minimum() {
-    if (_root == node_end) {
-      return node_end;
-    }
     node_ptr p = _root;
-    while (p->left != node_end) {
+    while (p->left && p->left != node_end) {
       p = p->left;
     }
     return p;
   }
 
   const_node_ptr get_minimum() const {
-    if (_root == node_end) {
-      return node_end;
-    }
     const_node_ptr p = _root;
-    while (p->left != node_end) {
+    while (p->left && p->left != node_end) {
       p = p->left;
     }
     return p;
