@@ -10,6 +10,7 @@
 #include "ft/utils/reverse_iterator.hpp"
 #include "ft/utils/random_access_iterator.hpp"
 #include <sys/queue.h>
+#include <iostream>
 
 /*
  * INFO : REFS
@@ -124,10 +125,15 @@ class vector {
     }
     
     if (new_capacity > _capacity) {
+#ifndef __clang__
       if (size() * 2 >= new_capacity) {
         return size() * 2;
       } else if (_capacity * 2 >= new_capacity) {
         return _capacity * 2;
+#else
+      if (_capacity * 2 >= new_capacity) {
+        return _capacity * 2;
+#endif
       } else {
         return new_capacity;
       }
@@ -283,10 +289,11 @@ class vector {
   template< class InputIt >
   vector( InputIt first, InputIt last,
         const Allocator& alloc = Allocator())
+  :
+    _alloc(alloc),
+    _d_start(0),
+    _d_end(0)
   {
-    _alloc = alloc;
-    _d_start = 0;
-    _d_end = 0;
     typedef typename ft::is_integer<InputIt> Integer;
     constructor_dispatch(first, last, Integer());
   }
@@ -299,7 +306,7 @@ class vector {
     _capacity(other._capacity)
   {
     if (_capacity) {
-      _d_start = _alloc.allocate(other._capacity);
+      _d_start = _alloc.allocate(_capacity);
       _d_end = _d_start;
       _capacity = other._d_end - other._d_start;
       size_type current = 0;
