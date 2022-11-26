@@ -547,6 +547,8 @@ void insert_delete_sponge_test() {
     save_insertions[insertions++] = random_number;
   }
 
+#undef TREE_SPONGE_MAX_SIZE
+
   // Last loop ends up iterations at size = 8192.
   std::cout << map.size() << std::endl;
 

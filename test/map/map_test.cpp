@@ -23,6 +23,9 @@ inline bool Map_Equality_Check(std::map<T, U> v, ft::map<T, U> u) {
 
 static void insert_no_fix();
 static void delete_no_fix();
+static void insert_random();
+static void erase_random();
+
 static void insert_delete_sponge_test();
 static void constructors_test();
 static void assignment_operator_test();
@@ -32,6 +35,9 @@ void map_test() {
 
   insert_no_fix();
   delete_no_fix();
+  insert_random();
+  erase_random();
+
   insert_delete_sponge_test();
   constructors_test();
   reverse_iteration();
@@ -99,6 +105,59 @@ static void delete_no_fix() {
   return MAP_TEST_OK(ERASE_TAG);
 }
 
+static void insert_random() {
+
+#define RANDOM_ITERATIONS_NBR 10000
+
+  ft::map<int, std::string> ft_map;
+  std::map<int , std::string> std_map;
+
+  srand(time(NULL));
+
+  for (int i = 0; i < RANDOM_ITERATIONS_NBR; i++) {
+    int rand_nb = rand();
+    ft_map.insert(ft::pair<int, std::string>(rand_nb, "a"));
+    std_map.insert(std::pair<int, std::string>(rand_nb, "a"));
+  }
+
+  if (!Map_Equality_Check(std_map, ft_map)) {
+    return MAP_TEST_ERROR(KO_INSERT);
+  }
+#undef RANDOM_ITERATIONS_NBR
+return MAP_TEST_OK(INSERT_TAG);
+}
+
+static void erase_random() {
+
+#define RANDOM_ITERATIONS_NBR 10000
+
+  ft::map<int, std::string> ft_map;
+  std::map<int , std::string> std_map;
+
+  int values[RANDOM_ITERATIONS_NBR] = {0};
+
+  srand(time(NULL));
+
+  for (int i = 0; i < RANDOM_ITERATIONS_NBR; i++) {
+    int rand_nb = rand();
+    ft_map.insert(ft::pair<int, std::string>(rand_nb, "a"));
+    std_map.insert(std::pair<int, std::string>(rand_nb, "a"));
+    values[i] = rand_nb;
+  }
+
+  // erasing in order of insertion does not make it easier,
+  // the values are randomly distributed
+  for (int i = 0; i < RANDOM_ITERATIONS_NBR; i++) {
+    ft_map.erase(values[i]);
+    std_map.erase(values[i]);
+  }
+
+  if (!Map_Equality_Check(std_map, ft_map)) {
+    return MAP_TEST_ERROR(KO_ERASE);
+  }
+#undef RANDOM_ITERATIONS_NBR
+return MAP_TEST_OK(INSERT_TAG);
+}
 
 static void assignment_operator_test() {
 

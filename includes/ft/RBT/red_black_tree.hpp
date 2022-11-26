@@ -579,6 +579,15 @@ class rb_tree {
     bool update_min = n == node_end->left;
     bool update_max = n == node_end->right;
 
+    if (n == _root && node_count == 1) {
+      destroy_node(n);
+      --node_count;
+      node_end->assign_left_child(0);
+      node_end->assign_right_child(0);
+      _root = node_end;
+      return node_end;
+    }
+
     if (n->left != node_end
         && n->right != node_end)
     {
@@ -743,7 +752,7 @@ class rb_tree {
   }
 
   inline const_iterator begin() const {
-    return const_iterator(get_minimum(),node_end);
+    return const_iterator(get_minimum(), node_end);
   }
 
   inline reverse_iterator rbegin() {
