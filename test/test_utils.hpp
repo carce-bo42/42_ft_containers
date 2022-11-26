@@ -20,9 +20,9 @@
 #define RESERVE_TAG "RESERVE"
 #define INSERT_TAG "INSERT"
 #define ERASE_TAG "ERASE"
+#define RANGE_TAG "RANGE"
 
-static std::map<int, std::string> vector_errors; // { errno, string }
-static std::map<std::string, std::map<int, std::string> > error_map; // { TAG, { errno, string } }
+extern std::map<int, std::string> error_map;
 
 typedef enum {
   OK = 0,
@@ -33,7 +33,8 @@ typedef enum {
   KO_ASSIGNMENT,
   KO_ASSIGN,
   KO_FROG,
-  KO_RESERVE
+  KO_RESERVE,
+  KO_RANGE
 } TEST_RESULT;
 
 // why static:
@@ -43,7 +44,7 @@ static void printTestError(int result, const char* container,
 {
   (void)result;
   std::cout << BLUE_BOLD << "["<< container << "]: "
-            << UNSET << RED_BOLD << (error_map[container])[result]
+            << UNSET << RED_BOLD << error_map[result]
             << " ERROR at "
             << file << ":" << line << UNSET << std::endl;
 }

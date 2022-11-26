@@ -25,22 +25,26 @@ static void insert_no_fix();
 static void delete_no_fix();
 static void insert_random();
 static void erase_random();
+static void insert_with_hint();
 static void sponge_test();
 static void frog_on_well();
 static void constructors_test();
 static void assignment_operator_test();
 static void reverse_iteration();
+static void range_and_bounds_test();
 
 void map_test() {
   insert_no_fix();
   delete_no_fix();
   insert_random();
   erase_random();
+  insert_with_hint();
   sponge_test();
   frog_on_well();
   constructors_test();
   reverse_iteration();
   assignment_operator_test();
+  range_and_bounds_test();
 }
 
 /*
@@ -75,6 +79,22 @@ static void insert_no_fix() {
 // Same tree as before, now deleting just the base
 // The others need fixing XD
 static void delete_no_fix() {
+// quick check for erasing unexisting numbers / root
+{
+  ft::map<int, std::string> ft_map;
+
+  ft_map.erase(1);
+  ft_map.erase(2);
+
+  if (!ft_map.insert(ft::pair<int, std::string>(1, "a")).second) {
+    return MAP_TEST_ERROR(KO_ERASE);
+  }
+  ft_map.erase(1);
+  if (!ft_map.insert(ft::pair<int, std::string>(1, "b")).second) {
+    return MAP_TEST_ERROR(KO_ERASE);
+  }
+}
+
   ft::map<int, std::string> ft_map;
   std::map<int , std::string> std_map;
 
@@ -157,6 +177,45 @@ static void erase_random() {
   return MAP_TEST_OK(ERASE_TAG);
 }
 
+
+static void insert_with_hint() {
+
+  ft::map<int, std::string> ft_map;
+
+  ft_map.insert(ft_map.end(), ft::pair<int, std::string>(3, "hello"));
+  ft_map.insert(ft_map.begin(), ft::pair<int, std::string>(4, "hello"));
+  ft_map.insert(++ft_map.begin(), ft::pair<int, std::string>(5, "he ,mllo"));
+  ft_map.insert(--ft_map.end(), ft::pair<int, std::string>(6, "hello"));
+  ft_map.insert(ft_map.begin(), ft::pair<int, std::string>(123, "hello"));
+  ft_map.insert(ft_map.end(), ft::pair<int, std::string>(32, "hello"));
+  ft_map.insert(++(++ft_map.begin()), ft::pair<int, std::string>(2, "hello"));
+  ft_map.insert(--(--ft_map.end()), ft::pair<int, std::string>(-32, "hello"));
+  ft_map.insert(ft_map.begin(), ft::pair<int, std::string>(-42, "hello"));
+  ft_map.insert(ft_map.end(), ft::pair<int, std::string>(23, "hello"));
+  ft_map.insert(++(++(++ft_map.begin())), ft::pair<int, std::string>(7, "hello"));
+  ft_map.insert(--(--(--ft_map.end())), ft::pair<int, std::string>(424242, "XD"));
+
+  std::map<int, std::string> std_map;
+
+  std_map.insert(std_map.end(), std::pair<int, std::string>(3, "hello"));
+  std_map.insert(std_map.begin(), std::pair<int, std::string>(4, "hello"));
+  std_map.insert(++std_map.begin(), std::pair<int, std::string>(5, "he ,mllo"));
+  std_map.insert(--std_map.end(), std::pair<int, std::string>(6, "hello"));
+  std_map.insert(std_map.begin(), std::pair<int, std::string>(123, "hello"));
+  std_map.insert(std_map.end(), std::pair<int, std::string>(32, "hello"));
+  std_map.insert(++(++std_map.begin()), std::pair<int, std::string>(2, "hello"));
+  std_map.insert(--(--std_map.end()), std::pair<int, std::string>(-32, "hello"));
+  std_map.insert(std_map.begin(), std::pair<int, std::string>(-42, "hello"));
+  std_map.insert(std_map.end(), std::pair<int, std::string>(23, "hello"));
+  std_map.insert(++(++(++std_map.begin())), std::pair<int, std::string>(7, "hello"));
+  std_map.insert(--(--(--std_map.end())), std::pair<int, std::string>(424242, "XD"));
+
+  if (!Map_Equality_Check(std_map, ft_map)) {
+    return MAP_TEST_ERROR(KO_INSERT);
+  }
+  return MAP_TEST_OK(INSERT_TAG);
+}
+
 static void assignment_operator_test() {
 
   int matrix[11] = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
@@ -198,7 +257,6 @@ static void assignment_operator_test() {
   }
   return MAP_TEST_OK(ASSIGNMENT_TAG);
 }
-
 
 static void constructors_test() {
 // empty
@@ -410,4 +468,26 @@ static void frog_on_well() {
 #undef ITERATIONS
 
   return MAP_TEST_OK(FROG_ON_WELL);
+}
+
+static void range_and_bounds_test() {
+
+  ft::map<int, std::string> ft_map;
+  std::map<int , std::string> std_map;
+
+  int matrix[15] = {4, 13, 0, -9, 2, -12, -4, 1, 3, 11, 60, 5, 12, 40, 80};
+
+  for (int i = 0; i < 15; i++) {
+    ft_map.insert(ft::pair<int, std::string>(matrix[i], "a"));
+    std_map.insert(std::pair<int, std::string>(matrix[i], "a"));
+  }
+
+  if (ft_map.equal_range(-4).first->first != std_map.equal_range(-4).first->first) {
+    return MAP_TEST_ERROR(KO_RANGE);
+  }
+
+
+
+
+
 }

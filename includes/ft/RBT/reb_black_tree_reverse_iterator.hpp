@@ -102,14 +102,6 @@ class rb_tree_reverse_iterator {
     return tmp;
   }
 
-  rb_tree_reverse_iterator operator+(size_type n) const {
-    return rb_tree_reverse_iterator(iter - n);
-  }
-
-  rb_tree_reverse_iterator operator-(size_type n) const {
-    return rb_tree_reverse_iterator(iter + n);
-  }
-
 };
 
 template <typename X, typename Y>
@@ -152,45 +144,6 @@ bool operator<=(const rb_tree_reverse_iterator<X>& x,
                 const rb_tree_reverse_iterator<Y>& y)
 {
   return !(x.base() > y.base());
-}
-
-/*
- * Allows :
- * (rit1 +/- rit2) to work as an arithmetic value.
- * Two typenames are included for const T / T workarounds.
- */
-
-template < typename U, typename V > 
-typename rb_tree_reverse_iterator<U>::difference_type
-operator+(const rb_tree_reverse_iterator<U>& lhs,
-          const rb_tree_reverse_iterator<V>& rhs)
-{
-  return (lhs.base() + rhs.base());
-}
-
-template < typename U, typename V > 
-typename rb_tree_reverse_iterator<U>::difference_type
-operator-(const rb_tree_reverse_iterator<U>& lhs,
-          const rb_tree_reverse_iterator<V>& rhs)
-{
-  return (lhs.base() - rhs.base());
-}
-
-// Reorder arguments to call inner operator- (iterator at left)
-template <typename T>
-rb_tree_reverse_iterator<T>
-operator-(typename ft::rb_tree_reverse_iterator<T>::difference_type n,
-          rb_tree_reverse_iterator<T> it)
-{
-  return (it - n);
-}
-
-template <typename T>
-rb_tree_reverse_iterator<T>
-operator+(typename ft::rb_tree_reverse_iterator<T>::difference_type n,
-          rb_tree_reverse_iterator<T> it)
-{
-  return (it + n);
 }
 
 } // namespace ft

@@ -154,22 +154,6 @@ class rb_tree_iterator {
     return t;
   }
 
-  self operator+(size_type n) const {
-    self ret(*this);
-    while (n-- > 0) {
-      ++ret;
-    }
-    return ret;
-  }
-
-  self operator-(size_type n) const {
-    self ret(*this);
-    while (n-- > 0) {
-      --ret;
-    }
-    return ret;
-  }
-
 };
 
 template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
@@ -185,45 +169,6 @@ bool operator!=(const rb_tree_iterator<UVal, UPtr>& lhs,
 {
   return lhs.base() != rhs.base();
 }
-
-/*
- * Allows :
- * (rit1 +/- rit2) to work as an arithmetic value.
- * Two typenames are included for const T / T workarounds.
- */
-template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
-typename rb_tree_iterator<UVal, UPtr>::difference_type
-operator+(const rb_tree_iterator<UVal, UPtr>& lhs,
-          const rb_tree_iterator<VVal, VPtr>& rhs)
-{
-  return (lhs.base() + rhs.base());
-}
-
-template < typename UVal, typename UPtr, typename VVal, typename VPtr >  
-typename rb_tree_iterator<UVal, UPtr>::difference_type
-operator-(const rb_tree_iterator<UVal, UPtr>& lhs,
-          const rb_tree_iterator<VVal, VPtr>& rhs)
-{
-  return (lhs.base() - rhs.base());
-}
-
-// Reorder arguments to call inner operator- (iterator at left)
-template <typename TVal, typename TPtr>
-rb_tree_iterator<TVal, TPtr>
-operator-(typename ft::rb_tree_iterator<TVal, TPtr>::difference_type n,
-          rb_tree_iterator<TVal, TPtr> it)
-{
-  return (it - n);
-}
-
-template <typename TVal, typename TPtr>
-rb_tree_iterator<TVal, TPtr>
-operator+(typename ft::rb_tree_iterator<TVal, TPtr>::difference_type n,
-          rb_tree_iterator<TVal, TPtr> it)
-{
-  return (it + n);
-}
-
 
 } // namespace ft
 

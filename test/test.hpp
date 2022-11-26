@@ -2,6 +2,7 @@
 # define CONTAINERS_TEST_HPP
 
 long current_timestamp();
+void LoadErrorMap();
 
 void vector_test();
 void vector_performance();

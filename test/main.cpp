@@ -7,7 +7,6 @@
 #include <map>
 #include <stdio.h>
 #include <iostream>
-#include "map/rbtree_test.hpp"
 
 // static declarations and unused functions :
 // #include "test_utils.hpp"
@@ -21,7 +20,11 @@
 #include "ft/utils/utils.hpp"
 #include "ft/RBT/reb_black_tree_reverse_iterator.hpp"
 
+std::map<int, std::string> error_map;
+
 int main() {
+
+  LoadErrorMap();
 
   vector_test();
   vector_performance();
