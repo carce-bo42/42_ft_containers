@@ -6,7 +6,7 @@
 #include <cmath>
 
 template <typename T, typename U>
-inline bool Map_Equality_Check(std::map<T, U> v, ft::map<T, U> u) {
+inline bool Map_Equality_Check(std::map<T, U> u, ft::map<T, U> v) {
   if (!ft::equal_map(u.begin(), u.end(), v.begin())) {
     return false;
   }

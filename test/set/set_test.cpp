@@ -7,7 +7,7 @@
 #include <cmath>
 
 template <typename T>
-inline bool Set_Equality_Check(std::set<T> v, ft::set<T> u) {
+inline bool Set_Equality_Check(std::set<T> u, ft::set<T> v) {
   if (!ft::equal(u.begin(), u.end(), v.begin())) {
     return false;
   }

@@ -32,7 +32,7 @@ void vector_test() {
 // operator == would not work with ft vector and std one. This does,
 // and also allows me to add capacity comparison.
 template <typename T>
-inline bool Vector_Equality_Check(std::vector<T> v, ft::vector<T> u) {
+inline bool Vector_Equality_Check(std::vector<T> u, ft::vector<T> v) {
   if (!ft::equal(u.begin(), u.end(), v.begin())) {
     return ft::equal_diff(u.begin(), u.end(), v.begin());
   }
