@@ -3,9 +3,14 @@
 #include <vector>
 #include "../test.hpp"
 #include <cmath>
+#include "../colors.hpp"
 
 void vector_performance() {
-  
+
+  std::cout << BLUE_BOLD
+            << "//////////// [ VECTOR PERFORMANCE ] //////////// "
+            << UNSET << std::endl;
+
   int iterations = 1000;
 #define VECTOR_SPONGE_MAX_SIZE 8192
 
@@ -73,4 +78,7 @@ void vector_performance() {
   } else {
     std::cout << "% slower than stl" << std::endl;
   }
+  std::cout << BLUE_BOLD
+            << "/////////////////////////////////////////////////"
+            << std::endl;
 }

@@ -16,23 +16,130 @@ inline bool Map_Equality_Check(std::map<T, U> v, ft::map<T, U> u) {
   return true;
 }
 
-static void insert_delete_sponge_test();
-static void constructors_test();
-static void reverse_iteration();
-
-
-void map_test() {
-
-  insert_delete_sponge_test();
-  constructors_test();
-  reverse_iteration();
-}
-
-
 /* 
  * All map constructors that are not the empty one use insert.
  * Because of this, insert is tested first.
  */
+
+static void insert_no_fix();
+static void delete_no_fix();
+static void insert_delete_sponge_test();
+static void constructors_test();
+static void assignment_operator_test();
+static void reverse_iteration();
+
+void map_test() {
+
+  insert_no_fix();
+  delete_no_fix();
+  insert_delete_sponge_test();
+  constructors_test();
+  reverse_iteration();
+  assignment_operator_test();
+  insert_delete_sponge_test();
+}
+
+/*
+ *                      4                      -> Black
+ *                  /      \
+ *               /            \
+ *            /                  \
+ *           0                   13            -> Red
+ *       /       \           /       \
+ *      -9        2         11       60        -> Black
+ *    /   \     /   \     /   \     /   \
+ *  -12   -4   1    3    5    12  40    80     -> Red
+ */
+static void insert_no_fix() {
+
+  ft::map<int, std::string> ft_map;
+  std::map<int , std::string> std_map;
+
+  int matrix[15] = {4, 13, 0, -9, 2, -12, -4, 1, 3, 11, 60, 5, 12, 40, 80};
+
+  for (int i = 0; i < 15; i++) {
+    ft_map.insert(ft::pair<int, std::string>(matrix[i], "a"));
+    std_map.insert(std::pair<int, std::string>(matrix[i], "a"));
+  }
+
+  if (!Map_Equality_Check(std_map, ft_map)) {
+    return MAP_TEST_ERROR(KO_INSERT);
+  }
+  return MAP_TEST_OK(INSERT_TAG);
+}
+
+// Same tree as before, now deleting just the base
+// The others need fixing XD
+static void delete_no_fix() {
+  ft::map<int, std::string> ft_map;
+  std::map<int , std::string> std_map;
+
+  int matrix[15] = {4, 13, 0, -9, 2, -12, -4, 1, 3, 11, 60, 5, 12, 40, 80};
+
+  for (int i = 0; i < 15; i++) {
+    ft_map.insert(ft::pair<int, std::string>(matrix[i], "a"));
+    std_map.insert(std::pair<int, std::string>(matrix[i], "a"));
+  }
+
+  // 5, 12, 40, 80
+  for (int i = 14; i >= 11; i--) {
+    ft_map.erase(matrix[i]);
+    std_map.erase(matrix[i]);
+  }
+
+  // -12, -4, 1, 3
+  for (int i = 8; i >= 5; i--) {
+    ft_map.erase(matrix[i]);
+    std_map.erase(matrix[i]);
+  }
+  
+  if (!Map_Equality_Check(std_map, ft_map)) {
+    return MAP_TEST_ERROR(KO_ERASE);
+  }
+  return MAP_TEST_OK(ERASE_TAG);
+}
+
+
+static void assignment_operator_test() {
+
+  int matrix[11] = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
+
+  ft::map<int, std::string> ft_m_1;
+  ft::map<int, std::string> ft_m_2;
+  ft::map<int, std::string> ft_m_3;
+  for (int i = 0; i < 8; i++) {
+    ft_m_1.insert(ft::pair<int, std::string>(matrix[i], "a"));
+    ft_m_2.insert(ft::pair<int, std::string>(matrix[i + 1], "a"));
+    ft_m_2.insert(ft::pair<int, std::string>(matrix[i + 2], "a"));
+  }
+  ft::map<int, std::string> tmp = ft_m_1;
+  ft_m_1 = ft_m_2;
+  ft_m_2 = ft_m_3;
+  ft_m_3 = tmp;
+
+  std::map<int, std::string> std_m_1;
+  std::map<int, std::string> std_m_2;
+  std::map<int, std::string> std_m_3;
+  for (int i = 0; i < 8; i++) {
+    std_m_1.insert(std::pair<int, std::string>(matrix[i], "a"));
+    std_m_2.insert(std::pair<int, std::string>(matrix[i + 1], "a"));
+    std_m_2.insert(std::pair<int, std::string>(matrix[i + 2], "a"));
+  }
+  std::map<int, std::string> __tmp = std_m_1;
+  std_m_1 = std_m_2;
+  std_m_2 = std_m_3;
+  std_m_3 = __tmp;
+
+  if (!Map_Equality_Check(std_m_1, ft_m_1)) {
+    return MAP_TEST_ERROR(KO_ASSIGNMENT);
+  }
+  if (!Map_Equality_Check(std_m_2, ft_m_2)) {
+    return MAP_TEST_ERROR(KO_ASSIGNMENT);
+  }
+  if (!Map_Equality_Check(std_m_3, ft_m_3)) {
+    return MAP_TEST_ERROR(KO_ASSIGNMENT);
+  }
+}
 
 
 static void constructors_test() {
@@ -52,7 +159,7 @@ static void constructors_test() {
 
   int matrix[4] = {3, 4, 5, 6};
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 4; i++) {
     ft_m.insert(ft::pair<int, std::string>(matrix[i], "hello"));
     std_m.insert(std::pair<int, std::string>(matrix[i], "hello"));
   }
@@ -74,14 +181,17 @@ static void constructors_test() {
   return MAP_TEST_OK(CONSTRUCTOR_TAG);
 }
 
-
+/*
+ * Maps and sets do not allow key duplicates. This test does the
+ * palyndrome check by having false duplicates as negative numbers.
+ */
 static void reverse_iteration() {
 {
   ft::map<int, std::string> ft_map;
 
-  int matrix[11] = {1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1};
+  int matrix[12] = {1, 2, 3, 4, 5, 6, -6, -5, -4, -3, -2, -1};
 
-  for (int i = 0; i < 11; i++) {
+  for (int i = 0; i < 12; i++) {
     ft_map.insert(ft::pair<int, std::string>(matrix[i], "hello"));
   }
 
@@ -91,23 +201,25 @@ static void reverse_iteration() {
   ft::map<int, std::string>::reverse_iterator ti_end = ft_map.rend();
 
   for (; ti_ != ti_end && it_ != it_end; ++it_, ++ti_) {
-    if (*ti_ != *it_) {
-      return VECTOR_TEST_ERROR(KO_ITERATORS);
+    if (ti_->first != (-1)*(it_->first)) {
+      std::cout << "expected : " << it_->first
+                << " actual : " << (-1)*(ti_->first) << std::endl;
+      return MAP_TEST_ERROR(KO_ITERATORS);
     }
   }
   if (ti_ != ti_end
       || it_ != it_end)
   {
-    return VECTOR_TEST_ERROR(KO_ITERATORS);
+    return MAP_TEST_ERROR(KO_ITERATORS);
   }
 }
 // same thing now from end to begin.
 {
   ft::map<int, std::string> ft_map;
 
-  int matrix[11] = {1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1};
+  int matrix[12] = {1, 2, 3, 4, 5, 6, -6, -5, -4, -3, -2, -1};
 
-  for (int i = 0; i < 11; i++) {
+  for (int i = 0; i < 12; i++) {
     ft_map.insert(ft::pair<int, std::string>(matrix[i], "hello"));
   }
 
@@ -118,21 +230,21 @@ static void reverse_iteration() {
 
   --it_end;
   --ti_end;
-  for (; ti_end != ti_begin && it_end != it_end; --it_end, --ti_end) {
-    if (it_end->first != ti_end->first) {
-      return VECTOR_TEST_ERROR(KO_ITERATORS);
+  for (; ti_end != ti_begin && it_end != it_begin; --it_end, --ti_end) {
+    if (it_end->first != (-1)*(ti_end->first)) {
+      std::cout << "expected : " << it_end->first
+                << " actual : " << (-1)*(ti_end->first) << std::endl;
+      return MAP_TEST_ERROR(KO_ITERATORS);
     }
   }
   if (it_end != it_begin
       || ti_end != ti_end)
   {
-    return VECTOR_TEST_ERROR(KO_ITERATORS);
+    return MAP_TEST_ERROR(KO_ITERATORS);
   }
 }
-
-  return MAP_TEST_OK(MAP_TAG);
+  return MAP_TEST_OK(ITERATOR_TAG);
 }
-
 
 // inserts TREE_SPONGE_MAX_SIZE, then deletes it entirely. Does this
 // <iterations> times. 
@@ -174,4 +286,5 @@ static void insert_delete_sponge_test() {
     map.insert(std::pair<int, std::string>(random_number, "hello"));
     save_insertions[insertions++] = random_number;
   }
+  return MAP_TEST_OK(INSERT_TAG);
 }

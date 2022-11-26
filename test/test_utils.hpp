@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <utility>
+#include "colors.hpp"
 
 #define VECTOR_TAG "VECTOR"
 #define STACK_TAG "STACK"
@@ -34,12 +35,6 @@ typedef enum {
   KO_FROG,
   KO_RESERVE
 } TEST_RESULT;
-
-# define BLUE_BOLD "\e[1;34m"
-# define GREEN_BOLD "\e[1;32m"
-# define MAG_BOLD "\e[1;35m"
-# define RED_BOLD "\e[1;31m"
-# define UNSET "\033[0m"
 
 // why static:
 // https://stackoverflow.com/questions/53335887/

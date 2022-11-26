@@ -243,7 +243,7 @@ static void reserve_test() {
     ft_vec.push_back(420);
     std_vec.push_back(420);
     if (!Vector_Equality_Check(std_vec, ft_vec)) {
-      return VECTOR_TEST_ERROR(KO_FROG);
+      return VECTOR_TEST_ERROR(KO_RESERVE);
     }
   }
   return VECTOR_TEST_OK(RESERVE_TAG);
