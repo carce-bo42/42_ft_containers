@@ -10,4 +10,7 @@ void vector_performance();
 void map_test();
 void map_performance();
 
+void set_test();
+void set_performance();
+
 #endif /* CONTAINERS_TEST_HPP */

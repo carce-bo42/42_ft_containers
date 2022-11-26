@@ -31,6 +31,9 @@ int main() {
 
   map_test();
   map_performance();
+
+  set_test();
+  set_performance();
   
   return 0;
 }

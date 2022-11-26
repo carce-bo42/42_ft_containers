@@ -482,12 +482,16 @@ static void range_and_bounds_test() {
     std_map.insert(std::pair<int, std::string>(matrix[i], "a"));
   }
 
-  if (ft_map.equal_range(-4).first->first != std_map.equal_range(-4).first->first) {
+  if (ft_map.lower_bound(3)->first != std_map.lower_bound(3)->first) {
     return MAP_TEST_ERROR(KO_RANGE);
   }
-
-
-
-
-
+  if (ft_map.upper_bound(5)->first != std_map.upper_bound(5)->first) {
+    return MAP_TEST_ERROR(KO_RANGE);
+  }
+  if (ft_map.equal_range(-4).first->first != std_map.equal_range(-4).first->first
+      || ft_map.equal_range(-4).second->first != std_map.equal_range(-4).second->first)
+  {
+    return MAP_TEST_ERROR(KO_RANGE);
+  }
+  return MAP_TEST_OK(RANGE_TAG);
 }

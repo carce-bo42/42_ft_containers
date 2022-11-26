@@ -4,7 +4,9 @@ SRCS		=	test/main.cpp \
 				test/vector/vector_performance.cpp \
 				test/test_utils.cpp \
 				test/map/map_test.cpp \
-				test/map/map_performance.cpp
+				test/map/map_performance.cpp \
+				test/set/set_test.cpp \
+				test/set/set_performance.cpp
 
 CXX			=	g++ 
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g3 -Wno-c++0x-compat -fsanitize=address

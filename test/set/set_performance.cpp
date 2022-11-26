@@ -1,12 +1,12 @@
-#include "ft/map.hpp"
-#include <map>
+#include "ft/set.hpp"
+#include <set>
 #include <cmath>
 #include <string.h>
 #include "../test_utils.hpp"
 #include "../test.hpp"
 
 // Timing sponge test is about right for a performance test
-void map_performance() {
+void set_performance() {
 
   std::cout << BLUE_BOLD
             << "////////////// [ MAP PERFORMANCE ] ////////////// "
@@ -16,7 +16,7 @@ void map_performance() {
   int iterations = 100;
   int save_insertions[TREE_SPONGE_MAX_SIZE] = {0};
 
-  ft::map<int, std::string> ft_map;
+  ft::set<int> ft_set;
   time_t ft_start = current_timestamp();
 
   srand(time(NULL));
@@ -29,19 +29,19 @@ void map_performance() {
     if (insertions == TREE_SPONGE_MAX_SIZE) {
       if (!invert_deletion) {
         for (int k = insertions - 1; k >= 0; k--) {
-          ft_map.erase(save_insertions[k]);
+          ft_set.erase(save_insertions[k]);
         }
         invert_deletion = true;
       } else {
         for (int k = 0; k < insertions; k++) {
-          ft_map.erase(save_insertions[k]);
+          ft_set.erase(save_insertions[k]);
         }
         invert_deletion = false;
       }
       insertions = 0;
     }
     int random_number = rand();
-    ft_map.insert(ft::pair<int, std::string>(random_number, "hello"));
+    ft_set.insert(random_number);
     save_insertions[insertions++] = random_number;
   }
 
@@ -51,7 +51,7 @@ void map_performance() {
   memset(save_insertions, 0, sizeof(save_insertions));
 
   // std
-  std::map<int, std::string> std_map;
+  std::set<int> std_set;
   time_t std_start = current_timestamp();
 
   insertions = 0;
@@ -61,19 +61,19 @@ void map_performance() {
     if (insertions == TREE_SPONGE_MAX_SIZE) {
       if (!invert_deletion) {
         for (int k = insertions - 1; k >= 0; k--) {
-          std_map.erase(save_insertions[k]);
+          std_set.erase(save_insertions[k]);
         }
         invert_deletion = true;
       } else {
         for (int k = 0; k < insertions; k++) {
-          std_map.erase(save_insertions[k]);
+          std_set.erase(save_insertions[k]);
         }
         invert_deletion = false;
       }
       insertions = 0;
     }
     int random_number = rand();
-    std_map.insert(std::pair<int, std::string>(random_number, "hello"));
+    std_set.insert(random_number);
     save_insertions[insertions++] = random_number;
   }
 

@@ -84,7 +84,7 @@ class set {
   set( const set& other )
   :
     tree(other.tree),
-    allocator(other.alloc),
+    allocator(other.allocator),
     value_cmp()
   {}
 
