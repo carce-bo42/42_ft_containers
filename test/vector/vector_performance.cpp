@@ -11,8 +11,8 @@ void vector_performance() {
             << "//////////// [ VECTOR PERFORMANCE ] //////////// "
             << UNSET << std::endl;
 
-  int iterations = 1000;
-#define VECTOR_SPONGE_MAX_SIZE 8192
+  int iterations = 100;
+#define VECTOR_SPONGE_MAX_SIZE 100000
 
   int insertions = 0;
   bool invert_deletion = false;

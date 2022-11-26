@@ -14,16 +14,6 @@ struct true_type {
     static const bool value = true;
 };
 
-template <typename T>
-struct UnConst {
-    static T& value(T& value) { return value; }
-};
-
-template <typename T>
-struct UnConst <const T> {
-    static T& value(const T& value) { return const_cast<T&>(value); }
-};
-
 /* 
  * enable_if
  *

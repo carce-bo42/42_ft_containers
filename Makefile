@@ -7,7 +7,8 @@ SRCS		=	test/main.cpp \
 				test/map/map_performance.cpp \
 				test/set/set_test.cpp \
 				test/set/set_performance.cpp \
-				test/stack/stack_test.cpp
+				test/stack/stack_test.cpp \
+				test/stack/stack_performance.cpp
 
 UNAME := $(shell uname)
 # if evaluating 

@@ -30,6 +30,7 @@ int main() {
   vector_performance();
 
   stack_test();
+  stack_performance();
 
   map_test();
   map_performance();

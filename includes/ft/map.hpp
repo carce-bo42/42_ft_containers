@@ -6,7 +6,6 @@
 #include <ft/utils/pair.hpp>
 #include <ft/utils/utils.hpp>
 #include <stdexcept>
-#include <map>
 
 namespace ft {
 

@@ -215,27 +215,8 @@ class set {
     return end();
   }
 
-  /*
-   * Returns a range containing all elements with the given key in the
-   * container. The range is defined by two iterators, one pointing to
-   * the first element that is not less than key and another pointing
-   * to the first element greater than key
-   */
-  ft::pair<iterator,iterator> equal_range( const Key& key ) {
-    return ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
-  }
+  /*#include <map>
 
-  ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
-    return ft::pair<const_iterator,
-                    const_iterator>(lower_bound(key), upper_bound(key));
-  }
-
-  /*
-   * Returns an iterator pointing to the first element that is not
-   * less than (i.e. greater or equal to) key.
-   */
-  inline iterator lower_bound( const Key& key ) {
-    return tree.lower_bound(key);
   }
 
   inline const_iterator lower_bound( const Key& key ) const {
