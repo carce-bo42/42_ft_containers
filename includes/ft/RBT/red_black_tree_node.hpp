@@ -2,7 +2,7 @@
 # define CONTAINERS_RBT_NODE_HPP
 
 #include <string.h>
-#include <iostream>
+//#include <iostream>
 
 enum rb_tree_node_color {
   red = false,
@@ -104,6 +104,7 @@ struct rb_tree_node {
   }
 
   // debug:
+  /*
   void print_node_state(node_ptr node_end) {
     std::cout << std::endl;
     std::cout << "node_ptr : " << this << std::endl;
@@ -135,6 +136,7 @@ struct rb_tree_node {
               << (is_left_child() ? "left" : "right") << ")"
               << std::endl;
   }
+  */
 
 }; // struct rb_tree_node
 

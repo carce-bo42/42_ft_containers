@@ -39,7 +39,7 @@ typedef enum {
 
 // why static:
 // https://stackoverflow.com/questions/53335887/
-static void printTestError(int result, const char* container,
+static inline void printTestError(int result, const char* container,
                           int line, const char* file)
 {
   (void)result;
@@ -49,7 +49,7 @@ static void printTestError(int result, const char* container,
             << file << ":" << line << UNSET << std::endl;
 }
 
-static void printTestOk(const char* tag, const char* container) {
+static inline void printTestOk(const char* tag, const char* container) {
   std::cout << BLUE_BOLD << "["<< container << "]: "
             << UNSET << GREEN_BOLD << tag << " TEST OK"
             << UNSET << std::endl; 

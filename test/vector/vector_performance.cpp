@@ -4,6 +4,7 @@
 #include "../test.hpp"
 #include <cmath>
 #include "../colors.hpp"
+#include <iostream>
 
 void vector_performance() {
 
