@@ -25,24 +25,22 @@ static void insert_no_fix();
 static void delete_no_fix();
 static void insert_random();
 static void erase_random();
-
-static void insert_delete_sponge_test();
+static void sponge_test();
+static void frog_on_well();
 static void constructors_test();
 static void assignment_operator_test();
 static void reverse_iteration();
 
 void map_test() {
-
   insert_no_fix();
   delete_no_fix();
   insert_random();
   erase_random();
-
-  insert_delete_sponge_test();
+  sponge_test();
+  frog_on_well();
   constructors_test();
   reverse_iteration();
   assignment_operator_test();
-  insert_delete_sponge_test();
 }
 
 /*
@@ -156,7 +154,7 @@ static void erase_random() {
     return MAP_TEST_ERROR(KO_ERASE);
   }
 #undef RANDOM_ITERATIONS_NBR
-return MAP_TEST_OK(INSERT_TAG);
+  return MAP_TEST_OK(ERASE_TAG);
 }
 
 static void assignment_operator_test() {
@@ -198,6 +196,7 @@ static void assignment_operator_test() {
   if (!Map_Equality_Check(std_m_3, ft_m_3)) {
     return MAP_TEST_ERROR(KO_ASSIGNMENT);
   }
+  return MAP_TEST_OK(ASSIGNMENT_TAG);
 }
 
 
@@ -307,7 +306,7 @@ static void reverse_iteration() {
 
 // inserts TREE_SPONGE_MAX_SIZE, then deletes it entirely. Does this
 // <iterations> times. 
-static void insert_delete_sponge_test() {
+static void sponge_test() {
 
 #define TREE_SPONGE_MAX_SIZE 8192
 
@@ -345,5 +344,70 @@ static void insert_delete_sponge_test() {
     map.insert(std::pair<int, std::string>(random_number, "hello"));
     save_insertions[insertions++] = random_number;
   }
+#undef TREE_SPONGE_MAX_SIZE
   return MAP_TEST_OK(INSERT_TAG);
+}
+
+/*
+ * If we insert one by one, which we do, it is impossible to achieve
+ * some red black tree configurations. BUT by inserting-N and erasing-M
+ * where N > M interesting configurations can appear.
+ * This cannot ensure 100% that all possible erase scenarios will be met,
+ * but it does get close.
+ * Example : 
+ *
+ *         R
+ *     /      \      
+ *    B        B     ==> unachievable by insertion.  
+ *  /  \     /  \
+ * nil nil nil nil
+ */
+static void frog_on_well() {
+
+#define TREE_SPONGE_MAX_SIZE 8400
+#define ERASE_STEP (TREE_SPONGE_MAX_SIZE / 10)
+#define ITERATIONS 100
+
+  int save_insertions[TREE_SPONGE_MAX_SIZE * ITERATIONS] = {0};
+
+  ft::map<int, std::string> ft_map;
+  std::map<int, std::string> std_map;
+
+  srand(time(NULL));
+
+  int insertions = 0;
+  int step = 1;
+  // deletes TREE_SPONGE_MAX_SIZE / 40 nodes every TREE_SPONGE_MAX_SIZE / 10,
+  // then adds TREE_SPONGE_MAX_SIZE / 10 more, etc, ITERATIONS times.
+  for (int i = 0; i < ITERATIONS * TREE_SPONGE_MAX_SIZE; i++) {
+    // delete all entries 
+    if (insertions == ERASE_STEP) {
+      // 1st erase [0, (1/4) * ERASE_STEP]
+      // 2nd erase [ERASE_STEP, (1 + 1/4) * ERASE_STEP]
+      // 3d erase [2 * ERASE_STEP, (2 + 1/4) * ERASE_STEP]
+      // ...
+      for (int k = ERASE_STEP * (step - 1);
+           k < (insertions / 4) + (ERASE_STEP * (step - 1)); k++)
+      {
+        ft_map.erase(save_insertions[k]);
+        std_map.erase(save_insertions[k]);
+      }
+      step += 1;
+      insertions = 0;
+    }
+    int random_number = rand();
+    ft_map.insert(ft::pair<int, std::string>(random_number, "hello"));
+    std_map.insert(std::pair<int, std::string>(random_number, "hello"));
+    save_insertions[insertions++] = random_number;
+  }
+
+  if (!Map_Equality_Check(std_map, ft_map)) {
+    return MAP_TEST_ERROR(KO_FROG);
+  }
+  
+#undef TREE_SPONGE_MAX_SIZE
+#undef ERASE_STEP
+#undef ITERATIONS
+
+  return MAP_TEST_OK(FROG_ON_WELL);
 }

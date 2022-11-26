@@ -579,6 +579,7 @@ class rb_tree {
     bool update_min = n == node_end->left;
     bool update_max = n == node_end->right;
 
+    // deleting the only node
     if (n == _root && node_count == 1) {
       destroy_node(n);
       --node_count;

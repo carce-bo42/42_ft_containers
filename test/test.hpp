@@ -7,5 +7,6 @@ void vector_test();
 void vector_performance();
 
 void map_test();
+void map_performance();
 
 #endif /* CONTAINERS_TEST_HPP */
