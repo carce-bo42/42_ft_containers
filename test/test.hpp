@@ -7,6 +7,8 @@ void LoadErrorMap();
 void vector_test();
 void vector_performance();
 
+void stack_test();
+
 void map_test();
 void map_performance();
 

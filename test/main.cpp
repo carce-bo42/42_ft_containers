@@ -29,6 +29,8 @@ int main() {
   vector_test();
   vector_performance();
 
+  stack_test();
+
   map_test();
   map_performance();
 
