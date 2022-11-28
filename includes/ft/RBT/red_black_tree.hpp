@@ -15,7 +15,6 @@ namespace ft {
 template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
 struct map_get_key {
-
   const Key operator()(const Val& value) const {
     return value.first;
   }
@@ -691,7 +690,15 @@ class rb_tree {
   }
 
   const_iterator lower_bound(const Key& key) const {
-    return const_iterator(lower_bound(key));
+    const_iterator it = const_iterator(get_minimum(), node_end);
+    while (it.base() != node_end) {
+      if (key_cmp(key_of_val(*it), key)) {
+        ++it;
+      } else { // not less than key 
+        break;
+      }
+    }
+    return it;
   }
 
   /*
@@ -713,7 +720,17 @@ class rb_tree {
   }
 
   const_iterator upper_bound(const Key& key) const {
-    return const_iterator(upper_bound(key));
+    const_iterator it = const_iterator(get_minimum(), node_end);
+    while (it.base() != node_end) {
+      if (key_cmp(key_of_val(*it), key)
+          || key_of_val(*it) == key)
+      {
+        ++it;
+      } else { // not less than key or equal
+        break;
+      }
+    }
+    return it;
   }
 
   node_ptr get_maximum() {
@@ -757,11 +774,11 @@ class rb_tree {
   }
 
   inline reverse_iterator rbegin() {
-    return reverse_iterator(iterator(get_maximum(), node_end));
+    return reverse_iterator(end());
   }
 
   inline const_reverse_iterator rbegin() const {
-    return const_reverse_iterator(const_iterator(get_maximum(), node_end));
+    return const_reverse_iterator(end());
   }
 
   inline iterator end() {
@@ -773,11 +790,11 @@ class rb_tree {
   }
 
   inline reverse_iterator rend() {
-    return reverse_iterator(end());
+    return reverse_iterator(begin());
   }
 
   inline const_reverse_iterator rend() const {
-    return const_reverse_iterator(end());
+    return const_reverse_iterator(begin());
   }
 
   inline bool empty() const {
@@ -844,13 +861,6 @@ class rb_tree {
       return NULL;
     }
     return start;
-  }
-
-  void erase(iterator pos) {
-    node_ptr n = pos.base();
-    if (n && n != node_end) {
-      erase(n);
-    }
   }
 
   bool erase(const Key& key) {

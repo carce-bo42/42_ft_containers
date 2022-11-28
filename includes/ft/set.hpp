@@ -3,6 +3,7 @@
 #pragma once
 
 #include <ft/RBT/red_black_tree.hpp>
+#include <set>
 
 namespace ft {
 
@@ -15,7 +16,7 @@ class set {
   public: 
 
   typedef Key                                        key_type;
-  typedef Key                                        value_type;
+  typedef const Key                                  value_type;
   typedef size_t                                     size_type;
   typedef Compare                                    key_compare;
   typedef Allocator                                  allocator_type;
@@ -26,8 +27,8 @@ class set {
 
   typedef struct ValueCompare {
 
-    set_get_key<Key> get_key;
-    key_compare      key_cmp;
+    set_get_key<const Key> get_key;
+    key_compare            key_cmp;
 
     bool operator()(const value_type& x, const value_type& y) {
       return key_cmp(get_key(x), get_key(y));
@@ -37,8 +38,8 @@ class set {
 
   private:
 
-  typedef rb_tree<Key, Key,
-                  set_get_key<Key>,
+  typedef rb_tree<Key, const Key,
+                  set_get_key<const Key>,
                   Compare,
                   Allocator >                        tree_type;
   typedef typename tree_type::node_ptr               node_ptr;
@@ -49,9 +50,9 @@ class set {
 
   public:
 
-  typedef typename tree_type::iterator               iterator;
+  typedef typename tree_type::const_iterator         iterator;
   typedef typename tree_type::const_iterator         const_iterator;
-  typedef typename tree_type::reverse_iterator       reverse_iterator;
+  typedef typename tree_type::const_reverse_iterator reverse_iterator;
   typedef typename tree_type::const_reverse_iterator const_reverse_iterator;
 
   set()
@@ -72,7 +73,12 @@ class set {
   template< class InputIt >
   set( InputIt first, InputIt last,
       const Compare& comp = Compare(),
-      const Allocator& alloc = Allocator())
+      const Allocator& alloc = Allocator(),
+      typename ft::enable_if<
+                 ft::is_same_type<
+          typename InputIt::value_type,
+                   value_type>::value,
+                 value_type>::type* = 0 )
   :
     tree(comp),
     allocator(alloc),
@@ -85,7 +91,7 @@ class set {
   :
     tree(other.tree),
     allocator(other.allocator),
-    value_cmp()
+    value_cmp(other.value_cmp)
   {}
 
   ~set() {}
@@ -155,11 +161,18 @@ class set {
   }
 
   iterator insert( iterator pos, const value_type& value ) {
-    return tree.insert_with_hint(pos, value);
+    (void)pos;
+    return (tree.insert(value)).first;
   }
 
   template< class InputIt >
-  void insert( InputIt first, InputIt last) {
+  void insert( InputIt first, InputIt last,
+              typename ft::enable_if<
+                        ft::is_same_type<
+                typename InputIt::value_type,
+                          value_type>::value,
+                        value_type>::type* = 0 )
+  {
     while (first != last) {
       tree.insert(*first);
       ++first;
@@ -167,7 +180,7 @@ class set {
   }
 
   void erase( iterator pos ) {
-    return tree.erase(pos);
+    tree.erase(*pos);
   }
 
   // This does not invalidate iterators because we substitute
@@ -175,7 +188,7 @@ class set {
   // up with greater key values when incrementing.
   void erase( iterator first, iterator last ) {
     while (first != last) {
-      tree.erase(first++);
+      tree.erase(*first++);
     }
   }
   

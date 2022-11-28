@@ -175,18 +175,18 @@ bool operator<=(const random_access_iterator<U>& lhs,
  * Two typenames are included for const T / T workarounds.
  */
 
-template < typename U > 
+template < typename U, typename V > 
 typename random_access_iterator<U>::difference_type
 operator+(const random_access_iterator<U>& lhs,
-          const random_access_iterator<U>& rhs)
+          const random_access_iterator<V>& rhs)
 {
   return (lhs.base() + rhs.base());
 }
 
-template < typename U > 
+template < typename U, typename V > 
 typename random_access_iterator<U>::difference_type
 operator-(const random_access_iterator<U>& lhs,
-          const random_access_iterator<U>& rhs)
+          const random_access_iterator<V>& rhs)
 {
   return (lhs.base() - rhs.base());
 }

@@ -16,14 +16,15 @@ class rb_tree_iterator {
 
   public:
 
-  typedef Val                             value_type;
-  typedef value_type&                     reference;
-  typedef value_type*                     pointer;
-  typedef bidirectional_iterator_tag      iterator_category;
-  typedef ptrdiff_t                       difference_type;
-  typedef rb_tree_iterator<Val, Node>     self;
-  typedef Node                            node_ptr;
-  typedef size_t                          size_type;
+  typedef Val                                               value_type;
+  typedef value_type&                                       reference;
+  typedef value_type*                                       pointer;
+  typedef bidirectional_iterator_tag                        iterator_category;
+  typedef ptrdiff_t                                         difference_type;
+  typedef typename ft::iterator_traits<Node>::pointer       node_ptr;
+  typedef const node_ptr                                    const_node_ptr;
+  typedef size_t                                            size_type;
+  typedef rb_tree_iterator                                  self;
 
   private:
 
@@ -43,8 +44,8 @@ class rb_tree_iterator {
   template < typename UVal, typename UPtr >
   rb_tree_iterator(const rb_tree_iterator<UVal, UPtr>& it)
   :
-    node(it.base()),
-    node_end(it.get_node_end())
+    node(it.base_const()),
+    node_end(it.get_node_end_const())
   {}
 
   rb_tree_iterator(node_ptr start, node_ptr end)
@@ -62,12 +63,19 @@ class rb_tree_iterator {
     return *this;
   }
 
-
   node_ptr base() const {
     return node;
   }
 
+  const_node_ptr base_const() const {
+    return node;
+  }
+
   node_ptr get_node_end() const {
+    return node_end;
+  }
+
+  const_node_ptr get_node_end_const() const {
     return node_end;
   }
 
@@ -158,14 +166,14 @@ class rb_tree_iterator {
 
 template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
 bool operator==(const rb_tree_iterator<UVal, UPtr>& lhs,
-          const rb_tree_iterator<VVal, VPtr>& rhs)
+                const rb_tree_iterator<VVal, VPtr>& rhs)
 {
   return lhs.base() == rhs.base();
 }
 
 template < typename UVal, typename UPtr, typename VVal, typename VPtr > 
 bool operator!=(const rb_tree_iterator<UVal, UPtr>& lhs,
-          const rb_tree_iterator<VVal, VPtr>& rhs)
+                const rb_tree_iterator<VVal, VPtr>& rhs)
 {
   return lhs.base() != rhs.base();
 }

@@ -56,7 +56,7 @@ class reverse_iterator {
   virtual ~reverse_iterator() {}
 
   iterator_type base() const {
-    return _ptr ;
+    return _ptr;
   }
 
   reverse_iterator& operator=( const reverse_iterator& other) {
@@ -78,7 +78,7 @@ class reverse_iterator {
 
   pointer operator->() const {
     iterator_type _tmp = _ptr;
-    return --_tmp ;
+    return (--_tmp).base();
   }
 
   /*
@@ -207,7 +207,7 @@ typename reverse_iterator<U>::difference_type
 operator-(const reverse_iterator<U>& lhs,
           const reverse_iterator<V>& rhs)
 {
-  return (lhs.base() - rhs.base());
+  return (rhs.base() - lhs.base());
 }
 
 // Reorder arguments to call inner operator- (iterator at left)

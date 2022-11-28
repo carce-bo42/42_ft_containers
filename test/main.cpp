@@ -23,7 +23,7 @@
 std::map<int, std::string> error_map;
 
 int main() {
-
+  
   LoadErrorMap();
 
   vector_test();

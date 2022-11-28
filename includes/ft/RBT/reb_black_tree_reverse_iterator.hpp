@@ -29,7 +29,7 @@ class rb_tree_reverse_iterator {
 
   explicit rb_tree_reverse_iterator(iterator_type x)
   :
-    iter(x.base(), x.get_node_end())
+    iter(x)
   {}
 
   template < typename U >
@@ -45,8 +45,8 @@ class rb_tree_reverse_iterator {
 
   virtual ~rb_tree_reverse_iterator() {}
 
-  node_ptr base() const {
-    return iter.base();
+  iterator_type base() const {
+    return iter;
   }
 
   node_ptr get_node_end() const {
@@ -60,23 +60,14 @@ class rb_tree_reverse_iterator {
     return *this;
   }
 
-  /*
-   * THIS IS A TRICK !!! I do not want to implement a super structure
-   * over the red black tree to manage dumb fucking dereferences on
-   * reverse iterators as they are on vectors. This will work the same
-   * and save a thousand headaches. Reverse iterators on the red black tree
-   * will just be normal iterators that call ++ when -- and viceversa.
-   * Since the tree has an end at the left side of the minium and the
-   * right side of the maximum, rend() can be initialized the same as
-   * end(), as long as rbegin starts at the maximumm and begin at the
-   * minimum. Se rb_tree implementation.
-   */
   reference operator*() const {
-    return iter.operator*();
+    iterator_type _tmp = iter;
+    return (--_tmp).operator*();
   }
 
   pointer operator->() const {
-    return iter.operator->();
+    iterator_type _tmp = iter;
+    return (--_tmp).operator->();
   }
 
   rb_tree_reverse_iterator& operator++() {

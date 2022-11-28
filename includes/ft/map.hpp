@@ -11,16 +11,15 @@ namespace ft {
 
 template < typename Key,
            typename T,
-           typename Val = ft::pair<const Key, T>,
            typename Compare = std::less<Key>,
-           typename Allocator = std::allocator<Val> >
+           typename Allocator = std::allocator<ft::pair<const Key, T> > >
 class map {
 
   public:
 
   typedef Key                                        key_type;
   typedef T                                          mapped_type;
-  typedef Val                                        value_type;
+  typedef ft::pair<const Key, T>                     value_type;
   typedef size_t                                     size_type;
   typedef Compare                                    key_compare;
   typedef Allocator                                  allocator_type;
@@ -31,7 +30,7 @@ class map {
 
   typedef struct ValueCompare {
 
-    map_get_key<Key, Val> get_key;
+    map_get_key<Key, value_type> get_key;
     key_compare           key_cmp;
 
     bool operator()(const value_type& x, const value_type& y) {
@@ -42,8 +41,8 @@ class map {
 
   private:
 
-  typedef rb_tree<Key, Val,
-                  map_get_key<Key, Val>,
+  typedef rb_tree<Key, value_type,
+                  map_get_key<Key, value_type>,
                   Compare,
                   Allocator >                        tree_type;
   typedef typename tree_type::node_ptr               node_ptr;
@@ -131,7 +130,10 @@ class map {
   T& operator[]( const Key& key ) {
     node_ptr n = tree.find(key);
     if (!n) {
-      return tree.insert(value_type(key, T())).first->second;
+      // tree.insert(pair).first == iterator
+      // *iterator = node->data
+      // node->data.second = mapped_type.
+      return (*tree.insert(value_type(key, T())).first).second;
     }
     return n->data.second;
   }
@@ -207,7 +209,9 @@ class map {
   }
 
   void erase( iterator pos ) {
-    return tree.erase(pos);
+    if (pos != end()) {
+      tree.erase((*pos).first);
+    }
   }
 
   // This does not invalidate iterators because we substitute
@@ -215,7 +219,7 @@ class map {
   // up with greater key values when incrementing.
   void erase( iterator first, iterator last ) {
     while (first != last) {
-      tree.erase(first++);
+      tree.erase((*first++).first);
     }
   }
   
