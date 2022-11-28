@@ -368,19 +368,17 @@ class rb_tree {
    * In none of these conditions are met, the hint is
    * malicious and must be disregarded. 
    */
-  bool check_hint(const iterator hint, const Val& value) {
+  bool check_hint(node_ptr hint, const Val& value) {
 
-    node_ptr n = hint.base();
-    
-    if (n == _root) { // nice hint dumbass
+    if (hint == _root) { // nice hint dumbass
       return false;
     }
-    if (n->is_left_child()) { // n < parent
-      if (key_of_val(value) >= key_of_val(n->parent->data)) {
+    if (hint->is_left_child()) { // hint < parent
+      if (key_of_val(value) >= key_of_val(hint->parent->data)) {
         return false;
       }
-    } else { // n > parent
-      if (key_of_val(value) < key_of_val(n->parent->data)) {
+    } else { // hint > parent
+      if (key_of_val(value) < key_of_val(hint->parent->data)) {
         return false;
       }
     }
@@ -826,7 +824,7 @@ class rb_tree {
     if (hint == end()) {
       m = find_and_insert(n, _root);
     } else {
-      bool good_hint = check_hint(hint, value);
+      bool good_hint = check_hint(hint.base(), value);
       if (good_hint) {
         m = find_and_insert(n, hint.base());
       } else {
@@ -839,6 +837,34 @@ class rb_tree {
     }
     rebalance_after_insertion(n);
     return iterator(n, node_end);
+  }
+
+  /* Insert with hint for set. Problem is, set has no knowledge whatsoever
+   * of what an rb_tree::iterator is, so either this is done, or
+   * theres some other bridge function that connects const_iterator
+   * with the one with iterator.
+   */
+  const_iterator insert_with_hint( const_iterator hint, const Val& value)
+  {
+    node_ptr n = construct_node(value, node_end);
+    node_ptr m = NULL;
+
+    if (hint == end()) {
+      m = find_and_insert(n, _root);
+    } else {
+      bool good_hint = check_hint(const_cast<node_ptr>(hint.base()), value);
+      if (good_hint) {
+        m = find_and_insert(n, const_cast<node_ptr>(hint.base()));
+      } else {
+        m = find_and_insert(n, _root);
+      }
+    }
+    if (m != n) {
+      destroy_node(n);
+      return const_iterator(m, node_end);
+    }
+    rebalance_after_insertion(n);
+    return const_iterator(n, node_end);
   }
 
   node_ptr find(const Key& key) const {

@@ -44,8 +44,8 @@ class rb_tree_iterator {
   template < typename UVal, typename UPtr >
   rb_tree_iterator(const rb_tree_iterator<UVal, UPtr>& it)
   :
-    node(it.base_const()),
-    node_end(it.get_node_end_const())
+    node(it.base()),
+    node_end(it.get_node_end())
   {}
 
   rb_tree_iterator(node_ptr start, node_ptr end)
@@ -67,15 +67,7 @@ class rb_tree_iterator {
     return node;
   }
 
-  const_node_ptr base_const() const {
-    return node;
-  }
-
   node_ptr get_node_end() const {
-    return node_end;
-  }
-
-  const_node_ptr get_node_end_const() const {
     return node_end;
   }
 

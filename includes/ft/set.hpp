@@ -50,6 +50,25 @@ class set {
 
   public:
 
+  /*
+   * This happens, and is cool. But there is no such thing as
+   * 
+   *      tree_type::iterator it = const_cast<tree_type::iterator>(const_it)
+   * 
+   * Because :
+   * 
+   *      tree_type::const_iterator IS NOT const tree_type::iterator
+   * 
+   * Instead,
+   * 
+   *      const tree_type::node_ptr IS tree_type::const_node_ptr
+   *                                      *(See Allocator::const_pointer)
+   * 
+   * So we can then play around this value (see red_black_tree class) casting
+   * it here and there.
+   * *** Remember, const_cast retrieves const-ness from a const object,
+   * provided that it holds the equivalence shown.
+   */
   typedef typename tree_type::const_iterator         iterator;
   typedef typename tree_type::const_iterator         const_iterator;
   typedef typename tree_type::const_reverse_iterator reverse_iterator;
@@ -161,8 +180,9 @@ class set {
   }
 
   iterator insert( iterator pos, const value_type& value ) {
-    (void)pos;
-    return (tree.insert(value)).first;
+    /*(void)pos;
+    return (tree.insert(value)).first;*/
+    return tree.insert_with_hint(pos, value);
   }
 
   template< class InputIt >
