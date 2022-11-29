@@ -65,6 +65,8 @@ static void insert_no_fix() {
   std::set<int> std_set;
 
   int matrix[15] = {4, 13, 0, -9, 2, -12, -4, 1, 3, 11, 60, 5, 12, 40, 80};
+  // 16, 25, 12, 3, 14, 0, 8, 13, 15, 23, 72, 17, 14, 52, 92 (with > 0,
+  // to try on https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
 
   for (int i = 0; i < 15; i++) {
     ft_set.insert(matrix[i]);

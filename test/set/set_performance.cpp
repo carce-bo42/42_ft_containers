@@ -9,7 +9,7 @@
 void set_performance() {
 
   std::cout << BLUE_BOLD
-            << "////////////// [ MAP PERFORMANCE ] ////////////// "
+            << "////////////// [ SET PERFORMANCE ] ////////////// "
             << UNSET << std::endl;
 
 #define TREE_SPONGE_MAX_SIZE 10000

@@ -11,16 +11,15 @@ SRCS		=	test/main.cpp \
 				test/stack/stack_performance.cpp
 
 UNAME := $(shell uname)
-# if evaluating 
 ifeq ($(UNAME), Darwin)
 CXX	= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
-endif
-# If able to use a real compiler, use it.
-ifeq ($(UNAME), Linux)
+else ifeq ($(UNAME), Linux)
 CXX	= g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -Wno-c++0x-compat -g3 -fsanitize=address #-O3
-
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -Wno-c++0x-compat -O3#-g3 -fsanitize=address #-O3
+else
+	@echo "unsupported OS"
+	exit 1
 endif
 
 RM			=	rm -f
