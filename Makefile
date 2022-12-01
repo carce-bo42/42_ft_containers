@@ -16,7 +16,7 @@ CXX	= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
 else ifeq ($(UNAME), Linux)
 CXX	= g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -Wno-c++0x-compat -O3#-g3 -fsanitize=address #-O3
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -Wno-c++0x-compat -O3 -g3 -fsanitize=address
 else
 	@echo "unsupported OS"
 	exit 1
