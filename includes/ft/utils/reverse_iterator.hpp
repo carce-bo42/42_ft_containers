@@ -1,5 +1,5 @@
-#ifndef REVERSE_ITERATOR_HPP
-# define REVERSE_ITERATOR_HPP
+#ifndef FT_CONTAINERS_REVERSE_ITERATOR_HPP
+# define FT_CONTAINERS_REVERSE_ITERATOR_HPP
 #pragma once
 
 #include "ft/utils/iterator_traits.hpp"
@@ -161,6 +161,7 @@ bool operator==(const reverse_iterator<U>& lhs,
   return lhs.base() == rhs.base();
 }
 
+// this one is evil
 template < typename U, typename V >
 bool operator>(const reverse_iterator<U>& lhs,
                 const reverse_iterator<V>& rhs)
@@ -229,4 +230,4 @@ operator+(typename ft::reverse_iterator<T>::difference_type n,
 
 } /* namespace ft */
 
-#endif /* REVERSE_ITERATOR_HPP */
+#endif /* FT_CONTAINERS_REVERSE_ITERATOR_HPP */

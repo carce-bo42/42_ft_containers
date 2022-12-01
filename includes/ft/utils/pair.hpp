@@ -1,5 +1,5 @@
-#ifndef CONTAINERS_PAIR_HPP
-# define CONTAINERS_PAIR_HPP
+#ifndef FT_CONTAINERS_PAIR_HPP
+# define FT_CONTAINERS_PAIR_HPP
 #pragma once
 
 namespace ft {
@@ -96,6 +96,17 @@ bool operator>=(const pair<T1, T2>& lhs,
   return !(lhs < rhs);
 }
 
+/* 
+ * This is garbage on C++98. Creates one more copy than 
+ * just typing the code, and makes it less expressive. 
+ * (sometimes the types in a pair are not trivial).
+ * At least with rvalue references its faster. 
+ */
+template< class T1, class T2 >
+ft::pair<T1, T2> make_pair( T1 t, T2 u ) {
+  return ft::pair<T1, T2>(t, u);
+}
+
 } /* namespace ft */
 
-#endif /* CONTAINERS_PAIR_HPP */
+#endif /* FT_CONTAINERS_PAIR_HPP */

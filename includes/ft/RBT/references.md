@@ -39,29 +39,3 @@ https://tildesites.bowdoin.edu/~ltoma/teaching/cs231/fall16/Lectures/05-BST/rbtr
 
 BEST LINK FOR DELETION:
 https://www.youtube.com/watch?v=_c30ot0Kcis&t=275s
-
-
-RED BLACK TREE RULES
-
- Red black trees must hold :
-
-(0)   Nodes are either RED or BLACK (surprise)
-
-(1)   Root and nil leaves are BLACK.
-
-(2)   If a node is RED, its children are BLACK.
-
-(3)   All paths from a node (not counting the starting
-
-​       one) to its nil descendants contain the same number
-
-​       of black nodes.
-
-
-NOTES:
-
-Why is default color in insertion RED ? 
-
-If (1) holds, and insertion is always on nil nodes, inserting RED never violates (3). By inserting red the only initial
-problem we deal with is (2). This is why, when inserting, we will always check if the parent is BLACK first, and when
-it is, no violation happens.

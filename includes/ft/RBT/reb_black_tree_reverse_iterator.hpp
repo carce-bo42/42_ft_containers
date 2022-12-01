@@ -1,5 +1,6 @@
-#ifndef RBT_REVERSE_ITERATOR
-# define RBT_REVERSE_ITERATOR
+#ifndef FT_CONTAINERS_RED_BLACK_TREE_REVERSE_ITERATOR
+# define FT_CONTAINERS_RED_BLACK_TREE_REVERSE_ITERATOR
+#pragma once
 
 #include "ft/utils/iterator_traits.hpp"
 #include "ft/RBT/red_black_tree_node.hpp"
@@ -8,8 +9,6 @@
 
 namespace ft {
 
-//  https://www.geeksforgeeks.org/implementing-forward-iterator-in-bst/ 
-// why use nil https://cs.stackexchange.com/questions/44422/what-is-the-purpose-of-using-nil-for-representing-null-nodes
 template < typename Iterator >
 class rb_tree_reverse_iterator {
 
@@ -140,4 +139,4 @@ bool operator<=(const rb_tree_reverse_iterator<X>& x,
 } // namespace ft
 
 
-#endif /* # define RBT_REVERSE_ITERATOR */
+#endif /* FT_CONTAINERS_RED_BLACK_TREE_REVERSE_ITERATOR */

@@ -1,5 +1,5 @@
-#ifndef CONTAINERS_UTILS_HPP
-# define CONTAINERS_UTILS_HPP
+#ifndef FT_CONTAINERS_UTILS_HPP
+# define FT_CONTAINERS_UTILS_HPP
 #pragma once
 
 #include "ft/utils/iterator_traits.hpp"
@@ -42,6 +42,12 @@ template < typename T >
 struct enable_if<true, T>
 { typedef T type; };
 
+/*
+ * Utilities. Helps with iterators, InputIt
+ * sounded like waytoo permissive, so with this
+ * I literally make sure the iterator contains 
+ * the same type (const or not) as the container.
+ */
 template < typename T, typename V > 
 struct is_same_type : false_type {};
 
@@ -242,4 +248,4 @@ void swap( T& x, T& y) {
 
 } /* namespace ft */
 
-#endif /* CONTAINERS_UTILS_HPP */
+#endif /* FT_CONTAINERS_UTILS_HPP */

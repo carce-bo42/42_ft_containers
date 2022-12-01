@@ -1,9 +1,8 @@
-#ifndef CONTAINERS_SET_HPP
-# define CONTAINERS_SET_HPP
+#ifndef FT_CONTAINERS_SET_HPP
+# define FT_CONTAINERS_SET_HPP
 #pragma once
 
 #include <ft/RBT/red_black_tree.hpp>
-#include <set>
 
 namespace ft {
 
@@ -350,4 +349,4 @@ void swap( ft::set<Key,Compare,Alloc>& x,
 
 } // namespace 
 
-#endif
+#endif /* FT_CONTAINERS_SET_HPP */

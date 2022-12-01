@@ -1,8 +1,9 @@
-#ifndef CONTAINERS_RBT_NODE_HPP
-# define CONTAINERS_RBT_NODE_HPP
+#ifndef FT_CONTAINERS_RBT_NODE_HPP
+# define FT_CONTAINERS_RBT_NODE_HPP
+#pragma once
 
 #include <string.h>
-//#include <iostream>
+//#include <iostream> 
 
 enum rb_tree_node_color {
   red = false,
@@ -12,8 +13,9 @@ enum rb_tree_node_color {
 namespace ft {
 
 /*
- * A node template from a red-black tree. T will
- * always be pairs in case of the map.
+ * A node template from a red-black tree.
+ * T for map is ft::pair<What, Ever>
+ * T for set is just const Whatever
  */
 template <typename T>
 struct rb_tree_node {
@@ -143,4 +145,4 @@ struct rb_tree_node {
 } // namespace
 
 
-#endif
+#endif /* FT_CONTAINERS_RBT_NODE_HPP */

@@ -1,5 +1,5 @@
-#ifndef CONTAINERS_ITERATOR_TRAITS_HPP
-# define CONTAINERS_ITERATOR_TRAITS_HPP
+#ifndef FT_CONTAINERS_ITERATOR_TRAITS_HPP
+# define FT_CONTAINERS_ITERATOR_TRAITS_HPP
 #pragma once
 
 #include <cstddef> /* std::ptrdiff_t */
@@ -71,4 +71,4 @@ struct iterator_traits< const T* > {
   /* ---------------------------------------------------------------*/
 }
 
-#endif /* CONTAINERS_ITERATOR_TRAITS_HPP */
+#endif /* FT_CONTAINERS_ITERATOR_TRAITS_HPP */

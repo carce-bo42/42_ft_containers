@@ -1,5 +1,5 @@
-#ifndef CONTAINERS_VECTOR_HPP
-# define CONTAINERS_VECTOR_HPP
+#ifndef FT_CONTAINERS_VECTOR_HPP
+# define FT_CONTAINERS_VECTOR_HPP
 #pragma once
 
 #include <memory> /* std::allocator, std::allocator_traits. */
@@ -10,7 +10,6 @@
 #include "ft/utils/reverse_iterator.hpp"
 #include "ft/utils/random_access_iterator.hpp"
 #include <sys/queue.h>
-#include <iostream>
 
 /*
  * INFO : REFS
@@ -767,4 +766,4 @@ void swap( ft::vector<T,Alloc>& x,
 
 } /* namespace ft */
 
-#endif /* CONTAINERS_VECTOR_HPP */
+#endif /* FT_CONTAINERS_VECTOR_HPP */

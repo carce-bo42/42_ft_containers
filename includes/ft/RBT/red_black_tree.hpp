@@ -1,5 +1,5 @@
-#ifndef CONTAINERS_RED_BLACK_TREE_HPP
-# define CONTAINERS_RED_BLACK_TREE_HPP
+#ifndef FT_CONTAINERS_RED_BLACK_TREE_HPP
+# define FT_CONTAINERS_RED_BLACK_TREE_HPP
 #pragma once
 
 #include <memory>
@@ -11,7 +11,7 @@
 
 namespace ft {
 
-// KeyOfVal functor for rb_tree
+// KeyOfVal functor for map
 template < typename Key,
            typename Val /* = ft::pair<Key, typename T> */ >
 struct map_get_key {
@@ -20,7 +20,7 @@ struct map_get_key {
   }
 };
 
-// As dumb as this is it is necessary 
+// KeyOfVal functor for set
 template < typename Key >
 struct set_get_key {
   const Key operator()(const Key& value) const {
@@ -36,17 +36,6 @@ struct set_get_key {
  * im calling the template inside std::allocator which is the same. 
  */
 
-/* 
- * Things about optimization :
- * - Less code does not mean more optimized.
- * - Recursion is cool but runs terribly slow compared to loops.
- * - STL implements a rb_tree_header struct, with which they can do cool things,
- *   such as access quickly to minimum/maximum, which is curcial
- *   when inserting, because you can skip checking if the key is
- *   already in the map by just checking if its outside of [min, max]
- *   interval.
- */
-
 /*
  * Red black trees must hold :
  * (0) Nodes are either RED or BLACK (surprise)
@@ -55,22 +44,12 @@ struct set_get_key {
  * (3) All paths from a node (not counting the starting
  *     one) to its nil descendants contain the same number
  *     of black nodes.
- * 
- * This implementation's rules :
- * _root is the only node which has !node->parent.
- * A leaf of the tree will !have node->right && !node->left
  */
-
-template < typename Key,
-           typename Val, // Val is some implementation of a pair of values.
-           typename KeyOfVal,
-                              // In stl, this is used presumably to generalize
-                              // Val to any structure containing Key. With this
-                              // functor you are supposed to operate on Val
-                              // types to extract Keys.
-                              // I like how this also hints how there must
-                              // be a Key inside Val (Key Of Val).
-           typename Compare = std::less<Key>, // functor
+template < typename Key, // Unique for Map and Set. Allows ordering
+           typename Val, // Some Type that contains Key
+           typename KeyOfVal, // Functor that extracts a Key
+                              // from some arbitrary Val
+           typename Compare = std::less<Key>,
            typename Allocator = std::allocator<Val> >
 class rb_tree {
 
@@ -98,11 +77,11 @@ class rb_tree {
   private:
 
   node_ptr       _root;
-  node_ptr       node_end;
-  // node end is the dummy node used for end() and rend().
-  // it contains no parent, no childs, and is appended to
-  // the right of the max and to the left of the min. If
-  // the tree is empty, is equal to root.
+  node_ptr       node_end; // node end is my STL's header node
+                           // If the tree is empty, is equal to root.
+                           // It is always black and its parent is always itself. 
+                           // max/min correspond to its right/left child,
+                           // or NULL if the tree is empty (see init_tree)
   size_type      node_count;
   node_allocator node_alloc;
 
@@ -901,4 +880,5 @@ class rb_tree {
 }; // class rbtree
 
 } // namespace
-#endif
+
+#endif /* FT_CONTAINERS_RED_BLACK_TREE_HPP */
