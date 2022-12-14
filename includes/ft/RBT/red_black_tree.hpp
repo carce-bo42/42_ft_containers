@@ -153,6 +153,23 @@ class rb_tree {
 
   private:
 
+
+  const_node_ptr get_minimum_the_hard_way() const {
+    const_node_ptr p = _root;
+    while (p->left && p->left != node_end) {
+      p = p->left;
+    }
+    return p;
+  }
+
+  const_node_ptr get_maximum_the_hard_way() const {
+    const_node_ptr p = _root;
+    while (p->right && p->right != node_end) {
+      p = p->right;
+    }
+    return p;
+  }
+
   // Node end acts as nil. Starts being root
   void init_tree() {
     node_end = construct_node(Val(), 0);
@@ -710,36 +727,23 @@ class rb_tree {
     return it;
   }
 
+  /*
+   * 4 because it means that there is amin, a root and a max !!! 
+   */
   node_ptr get_maximum() {
-    node_ptr p = _root;
-    while (p->right && p->right != node_end) {
-      p = p->right;
-    }
-    return p;
+    return node_count < 5 ? const_cast<node_ptr>(get_maximum_the_hard_way()) : node_end->right;
   }
 
   const_node_ptr get_maximum() const {
-    const_node_ptr p = _root;
-    while (p->right && p->right != node_end) {
-      p = p->right;
-    }
-    return p;
+    return node_count < 5 ? get_maximum_the_hard_way() : node_end->right;
   }
 
   node_ptr get_minimum() {
-    node_ptr p = _root;
-    while (p->left && p->left != node_end) {
-      p = p->left;
-    }
-    return p;
+    return node_count < 5 ? const_cast<node_ptr>(get_minimum_the_hard_way()) : node_end->left;
   }
 
   const_node_ptr get_minimum() const {
-    const_node_ptr p = _root;
-    while (p->left && p->left != node_end) {
-      p = p->left;
-    }
-    return p;
+    return node_count < 5 ? get_minimum_the_hard_way() : node_end->left;
   }
 
   inline iterator begin() {
