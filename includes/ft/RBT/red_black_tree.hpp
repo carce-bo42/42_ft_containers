@@ -412,6 +412,13 @@ class rb_tree {
     while (r->right != node_end) {
       r = r->right;
     }
+    // update min/max before switching !! else this causes use after free
+    if (r == node_end->left) {
+      node_end->left = n;
+    }
+    if (r == node_end->right) {
+      node_end->right = n;
+    }
     swap_node_values(r, n);
     return r;
   }
@@ -637,10 +644,12 @@ class rb_tree {
      * the new minimum/maximum.
      */
     if (update_min) {
-      node_end->assign_left_child(get_minimum());
+      node_end->assign_left_child(
+                const_cast<node_ptr>(get_minimum_the_hard_way()));
     }
     if (update_max) {
-      node_end->assign_right_child(get_maximum());
+      node_end->assign_right_child(
+                const_cast<node_ptr>(get_maximum_the_hard_way()));
     }
     destroy_node(n);
     --node_count;
@@ -728,22 +737,26 @@ class rb_tree {
   }
 
   /*
-   * 4 because it means that there is amin, a root and a max !!! 
+   * 4 because it means that there is a min, a root and a max !!! 
    */
   node_ptr get_maximum() {
-    return node_count < 5 ? const_cast<node_ptr>(get_maximum_the_hard_way()) : node_end->right;
+    return node_count < 4 ? const_cast<node_ptr>(get_maximum_the_hard_way())
+                          : node_end->right;
   }
 
   const_node_ptr get_maximum() const {
-    return node_count < 5 ? get_maximum_the_hard_way() : node_end->right;
+    return node_count < 4 ? get_maximum_the_hard_way()
+                          : node_end->right;
   }
 
   node_ptr get_minimum() {
-    return node_count < 5 ? const_cast<node_ptr>(get_minimum_the_hard_way()) : node_end->left;
+    return node_count < 4 ? const_cast<node_ptr>(get_minimum_the_hard_way())
+                          : node_end->left;
   }
 
   const_node_ptr get_minimum() const {
-    return node_count < 5 ? get_minimum_the_hard_way() : node_end->left;
+    return node_count < 4 ? get_minimum_the_hard_way()
+                          : node_end->left;
   }
 
   inline iterator begin() {
