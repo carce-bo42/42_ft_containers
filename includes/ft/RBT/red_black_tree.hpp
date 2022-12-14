@@ -736,26 +736,23 @@ class rb_tree {
     return it;
   }
 
-  /*
-   * 4 because it means that there is a min, a root and a max !!! 
-   */
   node_ptr get_maximum() {
-    return node_count < 4 ? const_cast<node_ptr>(get_maximum_the_hard_way())
+    return node_count < 2 ? const_cast<node_ptr>(get_maximum_the_hard_way())
                           : node_end->right;
   }
 
   const_node_ptr get_maximum() const {
-    return node_count < 4 ? get_maximum_the_hard_way()
+    return node_count < 2 ? get_maximum_the_hard_way()
                           : node_end->right;
   }
 
   node_ptr get_minimum() {
-    return node_count < 4 ? const_cast<node_ptr>(get_minimum_the_hard_way())
+    return node_count < 2 ? const_cast<node_ptr>(get_minimum_the_hard_way())
                           : node_end->left;
   }
 
   const_node_ptr get_minimum() const {
-    return node_count < 4 ? get_minimum_the_hard_way()
+    return node_count < 2 ? get_minimum_the_hard_way()
                           : node_end->left;
   }
 
